@@ -128,7 +128,7 @@ func Test_handler_GetCategoryTree(t *testing.T) {
 	}
 }
 
-func Test_handler_GetCategoryByID(t *testing.T) {
+func Test_handler_GetCategoryDetails(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -157,7 +157,7 @@ func Test_handler_GetCategoryByID(t *testing.T) {
 				statusCode: http.StatusOK,
 			},
 			mock: func() {
-				mockRepository.EXPECT().GetCategoryByID(gomock.Any(), 1).Return(m.Category{
+				mockRepository.EXPECT().GetCategoryDetails(gomock.Any(), 1).Return(m.Category{
 					Id:        1,
 					Title:     "category 1",
 					Slug:      "category-1",
@@ -187,7 +187,7 @@ func Test_handler_GetCategoryByID(t *testing.T) {
 				statusCode: http.StatusOK,
 			},
 			mock: func() {
-				mockRepository.EXPECT().GetCategoryByID(gomock.Any(), 1).Return(m.Category{}, utils.ErrNotFound)
+				mockRepository.EXPECT().GetCategoryDetails(gomock.Any(), 1).Return(m.Category{}, utils.ErrNotFound)
 			},
 		},
 		{
@@ -200,7 +200,7 @@ func Test_handler_GetCategoryByID(t *testing.T) {
 				statusCode: http.StatusInternalServerError,
 			},
 			mock: func() {
-				mockRepository.EXPECT().GetCategoryByID(gomock.Any(), 1).Return(m.Category{
+				mockRepository.EXPECT().GetCategoryDetails(gomock.Any(), 1).Return(m.Category{
 					Id:        1,
 					Title:     "category 1",
 					Slug:      "category-1",
@@ -223,8 +223,8 @@ func Test_handler_GetCategoryByID(t *testing.T) {
 				repository: mockRepository,
 			}
 
-			if err := h.GetCategoryByID(c); err != nil {
-				t.Errorf("handler.GetCategoryByID() error = %v", err)
+			if err := h.GetCategoryDetails(c); err != nil {
+				t.Errorf("handler.GetCategoryDetails() error = %v", err)
 			}
 
 			assert.Equal(t, tt.wants.statusCode, rec.Code)

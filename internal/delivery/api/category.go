@@ -34,7 +34,7 @@ func (h *handler) GetCategoryTree(ctx echo.Context) (err error) {
 	res := m.SetResponse(http.StatusOK, "success", categories)
 	return ctx.JSON(http.StatusOK, res)
 }
-func (h *handler) GetCategoryByID(ctx echo.Context) (err error) {
+func (h *handler) GetCategoryDetails(ctx echo.Context) (err error) {
 	var (
 		id int
 	)
@@ -46,13 +46,13 @@ func (h *handler) GetCategoryByID(ctx echo.Context) (err error) {
 		id, _ = strconv.Atoi(ctx.FormValue("id"))
 	}
 
-	category, err := h.repository.GetCategoryByID(ctx.Request().Context(), id)
+	category, err := h.repository.GetCategoryDetails(ctx.Request().Context(), id)
 	if err != nil {
 		if err == utils.ErrNotFound {
 			res := m.SetResponse(http.StatusOK, utils.ErrNotFound.Error(), []interface{}{})
 			return ctx.JSON(http.StatusOK, res)
 		} else {
-			log.Println("[Delivery][GetCategoryByID] can't get category details, err:", err.Error())
+			log.Println("[Delivery][GetCategoryDetails] can't get category details, err:", err.Error())
 			res := m.SetError(http.StatusInternalServerError, "failed to get category details")
 			return ctx.JSON(http.StatusInternalServerError, res)
 		}
@@ -63,4 +63,13 @@ func (h *handler) GetCategoryByID(ctx echo.Context) (err error) {
 
 	res := m.SetResponse(http.StatusOK, "success", data)
 	return ctx.JSON(http.StatusOK, res)
+}
+func (h *handler) InsertCategory(ctx echo.Context) (err error) {
+	return
+}
+func (h *handler) UpdateCategory(ctx echo.Context) (err error) {
+	return
+}
+func (h *handler) DeleteCategory(ctx echo.Context) (err error) {
+	return
 }

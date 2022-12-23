@@ -4,7 +4,7 @@ const (
 	GetCategoryTree = `SELECT * FROM cms_category 
 							ORDER BY id`
 
-	GetCategoryByID = `SELECT * FROM cms_category 
+	GetCategoryDetails = `SELECT * FROM cms_category 
 							WHERE id = $1`
 
 	InsertCategory = `INSERT INTO categories (id, title, slug, created_at, updated_at)

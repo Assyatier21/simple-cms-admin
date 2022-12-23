@@ -20,9 +20,9 @@ func GetRoutes(handler api.Handler) *echo.Echo {
 	// g.DELETE("/article", handler.DeleteArticle)
 
 	g.GET("/categories", handler.GetCategoryTree)
-	g.GET("/category", handler.GetCategoryByID)
+	g.GET("/category", handler.GetCategoryDetails)
 	// g.POST("/category", handler.InsertCategory)
-	// g.PUT("/category", handler.Updatecategory)
+	// g.PUT("/category", handler.UpdateCategory)
 	// g.DELETE("/category", handler.DeleteCategory)
 
 	return e

@@ -127,7 +127,7 @@ func Test_repository_GetCategoryTree(t *testing.T) {
 	}
 }
 
-func Test_repository_GetCategoryByID(t *testing.T) {
+func Test_repository_GetCategoryDetails(t *testing.T) {
 	ctx := context.Background()
 
 	db, sqlMock, err := sqlmock.New()
@@ -199,13 +199,13 @@ func Test_repository_GetCategoryByID(t *testing.T) {
 			r := &repository{
 				db: db,
 			}
-			got, err := r.GetCategoryByID(tt.args.ctx, tt.args.id)
+			got, err := r.GetCategoryDetails(tt.args.ctx, tt.args.id)
 			if (err != nil) != tt.wantErr {
-				t.Errorf("repository.GetCategoryByID() error = %v, wantErr %v", err, tt.wantErr)
+				t.Errorf("repository.GetCategoryDetails() error = %v, wantErr %v", err, tt.wantErr)
 				return
 			}
 			if !reflect.DeepEqual(got, tt.want) {
-				t.Errorf("repository.GetCategoryByID() = %v, want %v", got, tt.want)
+				t.Errorf("repository.GetCategoryDetails() = %v, want %v", got, tt.want)
 			}
 		})
 	}

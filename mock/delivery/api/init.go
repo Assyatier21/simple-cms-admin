@@ -34,6 +34,34 @@ func (m *MockHandler) EXPECT() *MockHandlerMockRecorder {
 	return m.recorder
 }
 
+// DeleteArticle mocks base method.
+func (m *MockHandler) DeleteArticle(ctx echo.Context) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteArticle", ctx)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteArticle indicates an expected call of DeleteArticle.
+func (mr *MockHandlerMockRecorder) DeleteArticle(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteArticle", reflect.TypeOf((*MockHandler)(nil).DeleteArticle), ctx)
+}
+
+// DeleteCategory mocks base method.
+func (m *MockHandler) DeleteCategory(ctx echo.Context) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "DeleteCategory", ctx)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// DeleteCategory indicates an expected call of DeleteCategory.
+func (mr *MockHandlerMockRecorder) DeleteCategory(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "DeleteCategory", reflect.TypeOf((*MockHandler)(nil).DeleteCategory), ctx)
+}
+
 // GetArticleDetails mocks base method.
 func (m *MockHandler) GetArticleDetails(ctx echo.Context) error {
 	m.ctrl.T.Helper()
@@ -62,18 +90,18 @@ func (mr *MockHandlerMockRecorder) GetArticles(ctx interface{}) *gomock.Call {
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetArticles", reflect.TypeOf((*MockHandler)(nil).GetArticles), ctx)
 }
 
-// GetCategoryByID mocks base method.
-func (m *MockHandler) GetCategoryByID(ctx echo.Context) error {
+// GetCategoryDetails mocks base method.
+func (m *MockHandler) GetCategoryDetails(ctx echo.Context) error {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "GetCategoryByID", ctx)
+	ret := m.ctrl.Call(m, "GetCategoryDetails", ctx)
 	ret0, _ := ret[0].(error)
 	return ret0
 }
 
-// GetCategoryByID indicates an expected call of GetCategoryByID.
-func (mr *MockHandlerMockRecorder) GetCategoryByID(ctx interface{}) *gomock.Call {
+// GetCategoryDetails indicates an expected call of GetCategoryDetails.
+func (mr *MockHandlerMockRecorder) GetCategoryDetails(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCategoryByID", reflect.TypeOf((*MockHandler)(nil).GetCategoryByID), ctx)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCategoryDetails", reflect.TypeOf((*MockHandler)(nil).GetCategoryDetails), ctx)
 }
 
 // GetCategoryTree mocks base method.
@@ -88,4 +116,60 @@ func (m *MockHandler) GetCategoryTree(ctx echo.Context) error {
 func (mr *MockHandlerMockRecorder) GetCategoryTree(ctx interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCategoryTree", reflect.TypeOf((*MockHandler)(nil).GetCategoryTree), ctx)
+}
+
+// InsertArticle mocks base method.
+func (m *MockHandler) InsertArticle(ctx echo.Context) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "InsertArticle", ctx)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// InsertArticle indicates an expected call of InsertArticle.
+func (mr *MockHandlerMockRecorder) InsertArticle(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertArticle", reflect.TypeOf((*MockHandler)(nil).InsertArticle), ctx)
+}
+
+// InsertCategory mocks base method.
+func (m *MockHandler) InsertCategory(ctx echo.Context) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "InsertCategory", ctx)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// InsertCategory indicates an expected call of InsertCategory.
+func (mr *MockHandlerMockRecorder) InsertCategory(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertCategory", reflect.TypeOf((*MockHandler)(nil).InsertCategory), ctx)
+}
+
+// UpdateArticle mocks base method.
+func (m *MockHandler) UpdateArticle(ctx echo.Context) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateArticle", ctx)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateArticle indicates an expected call of UpdateArticle.
+func (mr *MockHandlerMockRecorder) UpdateArticle(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateArticle", reflect.TypeOf((*MockHandler)(nil).UpdateArticle), ctx)
+}
+
+// UpdateCategory mocks base method.
+func (m *MockHandler) UpdateCategory(ctx echo.Context) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "UpdateCategory", ctx)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// UpdateCategory indicates an expected call of UpdateCategory.
+func (mr *MockHandlerMockRecorder) UpdateCategory(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateCategory", reflect.TypeOf((*MockHandler)(nil).UpdateCategory), ctx)
 }

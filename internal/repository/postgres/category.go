@@ -43,18 +43,18 @@ func (r *repository) GetCategoryTree(ctx context.Context) ([]m.Category, error) 
 		return []m.Category{}, nil
 	}
 }
-func (r *repository) GetCategoryByID(ctx context.Context, id int) (m.Category, error) {
+func (r *repository) GetCategoryDetails(ctx context.Context, id int) (m.Category, error) {
 	var (
 		category m.Category
 		err      error
 	)
 
-	err = r.db.QueryRow(database.GetCategoryByID, id).Scan(&category.Id, &category.Title, &category.Slug, &category.CreatedAt, &category.UpdatedAt)
+	err = r.db.QueryRow(database.GetCategoryDetails, id).Scan(&category.Id, &category.Title, &category.Slug, &category.CreatedAt, &category.UpdatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return m.Category{}, utils.ErrNotFound
 		} else {
-			log.Println("[GetCategoryByID] failed to scan category, err:", err.Error())
+			log.Println("[GetCategoryDetails] failed to scan category, err:", err.Error())
 			return m.Category{}, err
 		}
 	}
@@ -62,4 +62,13 @@ func (r *repository) GetCategoryByID(ctx context.Context, id int) (m.Category, e
 	category.UpdatedAt = utils.FormattedTime(category.UpdatedAt)
 
 	return category, nil
+}
+func (r *repository) InsertCategory(ctx context.Context, category m.Category) (m.Category, error) {
+	return m.Category{}, nil
+}
+func (r *repository) UpdateCategory(ctx context.Context, category m.Category) (m.Category, error) {
+	return m.Category{}, nil
+}
+func (r *repository) DeleteCategory(ctx context.Context, id int) error {
+	return nil
 }

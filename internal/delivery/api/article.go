@@ -85,3 +85,12 @@ func (h *handler) GetArticleDetails(ctx echo.Context) (err error) {
 	res := m.SetResponse(http.StatusOK, "success", data)
 	return ctx.JSON(http.StatusOK, res)
 }
+func (h *handler) InsertArticle(ctx echo.Context) (err error) {
+	return
+}
+func (h *handler) UpdateArticle(ctx echo.Context) (err error) {
+	return
+}
+func (h *handler) DeleteArticle(ctx echo.Context) (err error) {
+	return
+}
