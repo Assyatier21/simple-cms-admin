@@ -89,11 +89,56 @@ func (r *repository) GetArticleDetails(ctx context.Context, id int) (m.ResArticl
 	return article, nil
 }
 func (r *repository) InsertArticle(ctx context.Context, article m.Article) (m.ResArticle, error) {
-	return m.ResArticle{}, nil
+	var (
+		resArticle m.ResArticle
+	)
+
+	res, err := r.db.Exec(database.InsertArticle, article.Id, article.Title, article.Slug, article.HtmlContent, article.CategoryID, article.MetaData, article.CreatedAt, article.UpdatedAt)
+	if err != nil {
+		log.Println("[InsertArticle] can't insert article, err:", err.Error())
+		return m.ResArticle{}, err
+	}
+	id, _ := res.LastInsertId()
+
+	resArticle, err = r.GetArticleDetails(context.Background(), int(id))
+	if err != nil {
+		log.Println("[InsertArticle] can't get article details response, err:", err.Error())
+		return m.ResArticle{}, err
+	}
+
+	return resArticle, nil
 }
 func (r *repository) UpdateArticle(ctx context.Context, article m.Article) (m.ResArticle, error) {
-	return m.ResArticle{}, nil
+	var (
+		resArticle m.ResArticle
+		err        error
+	)
+
+	err = r.db.QueryRow(database.UpdateArticle, article.Id).Scan(&article.Title, &article.Slug, &article.HtmlContent, &article.CategoryID, &article.MetaData, utils.TimeNow, &article.Id)
+	if err != nil {
+		log.Println("[UpdateArticle] can't update article, err:", err.Error())
+		return m.ResArticle{}, err
+	}
+	resArticle, err = r.GetArticleDetails(context.Background(), int(article.Id))
+	if err != nil {
+		log.Println("[InsertArticle] can't get article details response, err:", err.Error())
+		return m.ResArticle{}, err
+	}
+
+	return resArticle, nil
 }
 func (r *repository) DeleteArticle(ctx context.Context, id int) error {
-	return nil
+	rows, err := r.db.Exec(database.DeleteArticle, id)
+	if err != nil {
+		log.Println("[DeleteArticle] can't delete article, err:", err.Error())
+		return err
+	}
+
+	rowsAffected, _ := rows.RowsAffected()
+	if rowsAffected > 0 {
+		return nil
+	} else {
+		log.Println("[DeleteArticle] can't delete article, err:", utils.ErrNotFound)
+		return utils.ErrNotFound
+	}
 }

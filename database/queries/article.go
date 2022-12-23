@@ -12,12 +12,12 @@ const (
 	GetMetaData = `SELECT metadata 
 						FROM cms_article WHERE id = $1`
 
-	InsertArticles = `INSERT INTO cms_articles (id, title, slug, html_content, category_id, metadata, created_at, updated_at) 
+	InsertArticle = `INSERT INTO cms_articles (id, title, slug, html_content, category_id, metadata, created_at, updated_at) 
 							VALUES ($1, $2, $3, $4, $5, $6, $7, $8)`
 
-	UpdateArticles = `UPDATE cms_articles SET title = $1, slug = $2, html_content = $3, category_id = $4, metadata = $5, updated_at = $6 
+	UpdateArticle = `UPDATE cms_articles SET title = $1, slug = $2, html_content = $3, category_id = $4, metadata = $5, updated_at = $6 
 						WHERE id = $7`
 
-	DeleteArticles = `DELETE FROM cms_articles 
+	DeleteArticle = `DELETE FROM cms_articles 
 						WHERE id = $1`
 )
