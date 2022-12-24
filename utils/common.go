@@ -9,8 +9,9 @@ import (
 )
 
 var (
-	ErrNotFound = errors.New("data not found")
-	TimeNow     = fmt.Sprintf("%d-%d-%d %d:%d:%d", time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second())
+	ErrNotFound    = errors.New("data not found")
+	NoRowsAffected = errors.New("no rows affected")
+	TimeNow        = fmt.Sprintf("%d-%d-%d %d:%d:%d", time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second())
 )
 
 func IsValidAlphabet(s string) bool {
