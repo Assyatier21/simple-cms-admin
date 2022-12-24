@@ -8,6 +8,7 @@ import (
 	"reflect"
 	"regexp"
 	"testing"
+	"time"
 
 	"github.com/DATA-DOG/go-sqlmock"
 )
@@ -270,7 +271,7 @@ func Test_repository_InsertCategory(t *testing.T) {
 			want:    m.Category{},
 			wantErr: true,
 			mock: func() {
-				sqlMock.ExpectExec(`UPDATE INTO cms_category`).WillReturnError(errors.New("Query Error"))
+				sqlMock.ExpectExec(`UPDATE INTO cms_category`).WillReturnError(errors.New("query error"))
 			},
 		},
 	}
@@ -288,6 +289,78 @@ func Test_repository_InsertCategory(t *testing.T) {
 			}
 			if !reflect.DeepEqual(got, tt.want) {
 				t.Errorf("repository.InsertCategory() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
+
+func Test_repository_DeleteCategory(t *testing.T) {
+	ctx := context.Background()
+
+	db, sqlMock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
+
+	type args struct {
+		ctx context.Context
+		id  int
+	}
+	tests := []struct {
+		name    string
+		args    args
+		wantErr bool
+		mock    func()
+	}{
+		{
+			name: "no rows affected",
+			args: args{
+				ctx: ctx,
+				id:  1,
+			},
+			wantErr: true,
+			mock: func() {
+				sqlMock.ExpectExec(`DELETE FROM cms_category`).
+					WillDelayFor(time.Second).
+					WillReturnResult(sqlmock.NewResult(int64(1), int64(0)))
+			},
+		},
+		{
+			name: "success",
+			args: args{
+				ctx: ctx,
+				id:  1,
+			},
+			wantErr: false,
+			mock: func() {
+				sqlMock.ExpectExec(`DELETE FROM cms_category`).
+					WillDelayFor(time.Second).
+					WillReturnResult(sqlmock.NewResult(int64(1), int64(1)))
+			},
+		},
+		{
+			name: "query error",
+			args: args{
+				ctx: ctx,
+				id:  1,
+			},
+			wantErr: true,
+			mock: func() {
+				sqlMock.ExpectExec(`INSERT FROM cms_category`).
+					WillDelayFor(time.Second).
+					WillReturnResult(sqlmock.NewErrorResult(errors.New("query error")))
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.mock()
+			r := &repository{
+				db: db,
+			}
+			if err := r.DeleteCategory(tt.args.ctx, tt.args.id); (err != nil) != tt.wantErr {
+				t.Errorf("repository.DeleteCategory() error = %v, wantErr %v", err, tt.wantErr)
 			}
 		})
 	}

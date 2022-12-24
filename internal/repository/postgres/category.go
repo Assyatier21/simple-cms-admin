@@ -101,7 +101,7 @@ func (r *repository) DeleteCategory(ctx context.Context, id int) error {
 	if rowsAffected > 0 {
 		return nil
 	} else {
-		log.Println("[DeleteCategory] err:", utils.NoRowsAffected)
+		log.Println("[DeleteCategory], err:", utils.NoRowsAffected)
 		return utils.NoRowsAffected
 	}
 }
