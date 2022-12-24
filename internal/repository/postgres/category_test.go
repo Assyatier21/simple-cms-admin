@@ -210,3 +210,85 @@ func Test_repository_GetCategoryDetails(t *testing.T) {
 		})
 	}
 }
+
+func Test_repository_InsertCategory(t *testing.T) {
+	ctx := context.Background()
+
+	db, sqlMock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
+
+	type args struct {
+		ctx      context.Context
+		category m.Category
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    m.Category
+		wantErr bool
+		mock    func()
+	}{
+		{
+			name: "success",
+			args: args{
+				ctx: ctx,
+				category: m.Category{
+					Id:        1,
+					Title:     "category 1",
+					Slug:      "category-1",
+					CreatedAt: "2022-12-01T20:29:00Z",
+					UpdatedAt: "2022-12-01T20:29:00Z",
+				},
+			},
+			want: m.Category{
+				Id:        1,
+				Title:     "category 1",
+				Slug:      "category-1",
+				CreatedAt: "2022-12-01 20:29:00",
+				UpdatedAt: "2022-12-01 20:29:00",
+			},
+			wantErr: false,
+			mock: func() {
+				sqlMock.ExpectExec(`INSERT INTO cms_category`).WillReturnResult(sqlmock.NewResult(int64(1), int64(1)))
+			},
+		},
+		{
+			name: "query error",
+			args: args{
+				ctx: ctx,
+				category: m.Category{
+					Id:        1,
+					Title:     "category 1",
+					Slug:      "category-1",
+					CreatedAt: "2022-12-01T20:29:00Z",
+					UpdatedAt: "2022-12-01T20:29:00Z",
+				},
+			},
+			want:    m.Category{},
+			wantErr: true,
+			mock: func() {
+				sqlMock.ExpectExec(`UPDATE INTO cms_category`).WillReturnError(errors.New("Query Error"))
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.mock()
+
+			r := &repository{
+				db: db,
+			}
+			got, err := r.InsertCategory(tt.args.ctx, tt.args.category)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("repository.InsertCategory() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("repository.InsertCategory() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
