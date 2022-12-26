@@ -294,6 +294,104 @@ func Test_repository_InsertCategory(t *testing.T) {
 	}
 }
 
+func Test_repository_UpdateCategory(t *testing.T) {
+	ctx := context.Background()
+
+	db, sqlMock, err := sqlmock.New()
+	if err != nil {
+		t.Fatalf("an error '%s' was not expected when opening a stub database connection", err)
+	}
+	defer db.Close()
+
+	type args struct {
+		ctx      context.Context
+		category m.Category
+	}
+	tests := []struct {
+		name    string
+		args    args
+		want    m.Category
+		wantErr bool
+		mock    func()
+	}{
+		{
+			name: "success",
+			args: args{
+				ctx: ctx,
+				category: m.Category{
+					Id:        1,
+					Title:     "new category 1",
+					Slug:      "new-category-1",
+					CreatedAt: "2022-12-01T20:29:00Z",
+					UpdatedAt: "2022-12-01T20:29:00Z",
+				},
+			},
+			want: m.Category{
+				Id:        1,
+				Title:     "new category 1",
+				Slug:      "new-category-1",
+				CreatedAt: "2022-12-01 20:29:00",
+				UpdatedAt: "2022-12-01 20:29:00",
+			},
+			wantErr: false,
+			mock: func() {
+				sqlMock.ExpectExec("UPDATE cms_category").WillReturnResult(sqlmock.NewResult(1, 1))
+			},
+		},
+		{
+			name: "no rows affected",
+			args: args{
+				ctx: ctx,
+				category: m.Category{
+					Id:        1,
+					Title:     "new category 1",
+					Slug:      "new-category-1",
+					CreatedAt: "2022-12-01T20:29:00Z",
+					UpdatedAt: "2022-12-01T20:29:00Z",
+				},
+			},
+			want:    m.Category{},
+			wantErr: true,
+			mock: func() {
+				sqlMock.ExpectExec("UPDATE cms_category").WillReturnResult(sqlmock.NewResult(1, 0))
+			},
+		},
+		{
+			name: "query error",
+			args: args{
+				ctx: ctx,
+				category: m.Category{
+					Id:        1,
+					Title:     "new category 1",
+					Slug:      "new-category-1",
+					CreatedAt: "2022-12-01T20:29:00Z",
+					UpdatedAt: "2022-12-01T20:29:00Z",
+				},
+			},
+			want:    m.Category{},
+			wantErr: true,
+			mock: func() {
+				sqlMock.ExpectExec("UPDATE cms_category").WillReturnError(errors.New("query erro"))
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			tt.mock()
+			r := &repository{
+				db: db,
+			}
+			got, err := r.UpdateCategory(tt.args.ctx, tt.args.category)
+			if (err != nil) != tt.wantErr {
+				t.Errorf("repository.UpdateCategory() error = %v, wantErr %v", err, tt.wantErr)
+				return
+			}
+			if !reflect.DeepEqual(got, tt.want) {
+				t.Errorf("repository.UpdateCategory() = %v, want %v", got, tt.want)
+			}
+		})
+	}
+}
 func Test_repository_DeleteCategory(t *testing.T) {
 	ctx := context.Background()
 
