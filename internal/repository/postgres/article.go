@@ -87,7 +87,8 @@ func (r *repository) InsertArticle(ctx context.Context, article m.Article) (m.Re
 		resArticle m.ResArticle
 	)
 
-	rows, err := r.db.Exec(database.InsertArticle, article.Title, article.Slug, article.HtmlContent, article.CategoryID, article.MetaData, article.CreatedAt, article.UpdatedAt)
+	marshalMetadata, _ := json.Marshal(article.MetaData)
+	rows, err := r.db.Exec(database.InsertArticle, article.Title, article.Slug, article.HtmlContent, article.CategoryID, marshalMetadata, article.CreatedAt, article.UpdatedAt)
 	if err != nil {
 		log.Println("[InsertArticle] can't insert article, err:", err.Error())
 		return m.ResArticle{}, err
@@ -99,7 +100,6 @@ func (r *repository) InsertArticle(ctx context.Context, article m.Article) (m.Re
 		log.Println("[InsertArticle][GetArticleDetails] can't get article details response, err:", err.Error())
 		return m.ResArticle{}, err
 	}
-	FormatTimeResArticle(&resArticle)
 
 	return resArticle, nil
 }
@@ -108,8 +108,8 @@ func (r *repository) UpdateArticle(ctx context.Context, article m.Article) (m.Re
 		resArticle m.ResArticle
 		err        error
 	)
-
-	rows, err := r.db.Exec(database.UpdateArticle, &article.Title, &article.Slug, &article.HtmlContent, &article.CategoryID, &article.MetaData, &article.UpdatedAt, &article.Id)
+	marshalMetadata, _ := json.Marshal(article.MetaData)
+	rows, err := r.db.Exec(database.UpdateArticle, &article.Title, &article.Slug, &article.HtmlContent, &article.CategoryID, marshalMetadata, &article.UpdatedAt, &article.Id)
 	if err != nil {
 		log.Println("[UpdateArticle] can't update article, err:", err.Error())
 		return m.ResArticle{}, err
@@ -122,15 +122,11 @@ func (r *repository) UpdateArticle(ctx context.Context, article m.Article) (m.Re
 			log.Println("[UpdateArticle][GetArticleDetails] can't get article details response, err:", err.Error())
 			return m.ResArticle{}, err
 		}
-		FormatTimeResArticle(&resArticle)
-
 		return resArticle, nil
-
 	} else {
-		log.Println("[UpdateArticle] err:", utils.ErrNotFound)
-		return m.ResArticle{}, utils.ErrNotFound
+		log.Println("[UpdateArticle] err:", utils.NoRowsAffected)
+		return m.ResArticle{}, utils.NoRowsAffected
 	}
-
 }
 func (r *repository) DeleteArticle(ctx context.Context, id int) error {
 	rows, err := r.db.Exec(database.DeleteArticle, id)
