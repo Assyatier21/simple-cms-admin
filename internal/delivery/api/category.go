@@ -39,11 +39,10 @@ func (h *handler) GetCategoryDetails(ctx echo.Context) (err error) {
 		id int
 	)
 
-	if !utils.IsValidNumeric(ctx.FormValue("id")) {
+	id, err = strconv.Atoi(ctx.FormValue("id"))
+	if err != nil {
 		res := m.SetError(http.StatusBadRequest, "id must be an integer and can't be empty")
 		return ctx.JSON(http.StatusBadRequest, res)
-	} else {
-		id, _ = strconv.Atoi(ctx.FormValue("id"))
 	}
 
 	category, err := h.repository.GetCategoryDetails(ctx.Request().Context(), id)

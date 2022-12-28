@@ -61,11 +61,10 @@ func (h *handler) GetArticleDetails(ctx echo.Context) (err error) {
 		id int
 	)
 
-	if !utils.IsValidNumeric(ctx.FormValue("id")) {
+	id, err = strconv.Atoi(ctx.FormValue("id"))
+	if err != nil {
 		res := m.SetError(http.StatusBadRequest, "id must be an integer and can't be empty")
 		return ctx.JSON(http.StatusBadRequest, res)
-	} else {
-		id, _ = strconv.Atoi(ctx.FormValue("id"))
 	}
 
 	article, err := h.repository.GetArticleDetails(ctx.Request().Context(), id)
@@ -144,8 +143,8 @@ func (h *handler) UpdateArticle(ctx echo.Context) (err error) {
 		updatedArticle m.Article
 	)
 
-	id, err := strconv.Atoi(ctx.FormValue("id"))
-	if id == 0 || err != nil {
+	_, err = strconv.Atoi(ctx.FormValue("id"))
+	if err != nil {
 		res := m.SetError(http.StatusBadRequest, "id must be an integer and can't be empty")
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
@@ -211,7 +210,7 @@ func (h *handler) DeleteArticle(ctx echo.Context) (err error) {
 	)
 
 	id, err = strconv.Atoi(ctx.FormValue("id"))
-	if id == 0 || err != nil {
+	if err != nil {
 		res := m.SetError(http.StatusBadRequest, "id must be an integer and can't be empty")
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
