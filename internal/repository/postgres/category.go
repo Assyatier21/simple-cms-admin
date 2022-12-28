@@ -32,7 +32,7 @@ func (r *repository) GetCategoryTree(ctx context.Context) ([]m.Category, error) 
 			log.Println("[GetCategoryTree] failed to scan category, err :", err.Error())
 			return nil, err
 		}
-		FormatTimeResCategory(&temp)
+		utils.FormatTimeResCategory(&temp)
 		categories = append(categories, temp)
 	}
 
@@ -57,7 +57,7 @@ func (r *repository) GetCategoryDetails(ctx context.Context, id int) (m.Category
 			return m.Category{}, err
 		}
 	}
-	FormatTimeResCategory(&category)
+	utils.FormatTimeResCategory(&category)
 
 	return category, nil
 }
@@ -70,7 +70,7 @@ func (r *repository) InsertCategory(ctx context.Context, category m.Category) (m
 
 	id, _ := res.LastInsertId()
 	category.Id = int(id)
-	FormatTimeResCategory(&category)
+	utils.FormatTimeResCategory(&category)
 
 	return category, nil
 }
@@ -83,7 +83,7 @@ func (r *repository) UpdateCategory(ctx context.Context, category m.Category) (m
 
 	rowsAffected, _ := rows.RowsAffected()
 	if rowsAffected > 0 {
-		FormatTimeResCategory(&category)
+		utils.FormatTimeResCategory(&category)
 		return category, nil
 	} else {
 		log.Println("[UpdateCategory], err:", utils.NoRowsAffected)

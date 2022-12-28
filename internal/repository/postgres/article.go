@@ -41,7 +41,7 @@ func (r *repository) GetArticles(ctx context.Context, limit int, offset int) ([]
 			log.Println("[GetArticleDetails] failed to scan metadata, err :", err.Error())
 			return nil, err
 		}
-		FormatTimeResArticle(&temp)
+		utils.FormatTimeResArticle(&temp)
 		json.Unmarshal(tempMetaData, &metadata)
 		temp.MetaData = metadata
 		articles = append(articles, temp)
@@ -76,7 +76,7 @@ func (r *repository) GetArticleDetails(ctx context.Context, id int) (m.ResArticl
 		log.Println("[GetArticleDetails] failed to scan metadata, err :", err.Error())
 		return m.ResArticle{}, err
 	}
-	FormatTimeResArticle(&article)
+	utils.FormatTimeResArticle(&article)
 	json.Unmarshal(tempMetaData, &metadata)
 	article.MetaData = metadata
 
@@ -84,18 +84,18 @@ func (r *repository) GetArticleDetails(ctx context.Context, id int) (m.ResArticl
 }
 func (r *repository) InsertArticle(ctx context.Context, article m.Article) (m.ResArticle, error) {
 	var (
+		lastId     int
 		resArticle m.ResArticle
 	)
 
 	marshalMetadata, _ := json.Marshal(article.MetaData)
-	rows, err := r.db.Exec(database.InsertArticle, article.Title, article.Slug, article.HtmlContent, article.CategoryID, marshalMetadata, article.CreatedAt, article.UpdatedAt)
+	err := r.db.QueryRow(database.InsertArticle, article.Title, article.Slug, article.HtmlContent, article.CategoryID, marshalMetadata, article.CreatedAt, article.UpdatedAt).Scan(&lastId)
 	if err != nil {
 		log.Println("[InsertArticle] can't insert article, err:", err.Error())
 		return m.ResArticle{}, err
 	}
-	id, _ := rows.LastInsertId()
 
-	resArticle, err = r.GetArticleDetails(context.Background(), int(id))
+	resArticle, err = r.GetArticleDetails(context.Background(), lastId)
 	if err != nil {
 		log.Println("[InsertArticle][GetArticleDetails] can't get article details response, err:", err.Error())
 		return m.ResArticle{}, err

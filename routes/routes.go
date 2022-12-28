@@ -15,15 +15,15 @@ func GetRoutes(handler api.Handler) *echo.Echo {
 	g := e.Group("/admin/v1")
 	g.GET("/articles", handler.GetArticles)
 	g.GET("/article", handler.GetArticleDetails)
-	// g.POST("/article", handler.InsertArticle)
-	// g.PUT("/article", handler.UpdateArticle)
-	// g.DELETE("/article", handler.DeleteArticle)
+	g.POST("/article", handler.InsertArticle)
+	g.PUT("/article", handler.UpdateArticle)
+	g.DELETE("/article", handler.DeleteArticle)
 
 	g.GET("/categories", handler.GetCategoryTree)
 	g.GET("/category", handler.GetCategoryDetails)
-	// g.POST("/category", handler.InsertCategory)
-	// g.PUT("/category", handler.UpdateCategory)
-	// g.DELETE("/category", handler.DeleteCategory)
+	g.POST("/category", handler.InsertCategory)
+	g.PUT("/category", handler.UpdateCategory)
+	g.DELETE("/category", handler.DeleteCategory)
 
 	return e
 }
