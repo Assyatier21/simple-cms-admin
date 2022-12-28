@@ -96,7 +96,7 @@ func (h *handler) InsertArticle(ctx echo.Context) (err error) {
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
-	if ctx.FormValue("slug") == "" || !utils.IsValidAlphaNumericHyphen(ctx.FormValue("slug")) {
+	if ctx.FormValue("slug") == "" || !utils.IsValidSlug(ctx.FormValue("slug")) {
 		res := m.SetError(http.StatusBadRequest, "slug format is wrong")
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
@@ -144,23 +144,20 @@ func (h *handler) UpdateArticle(ctx echo.Context) (err error) {
 		updatedArticle m.Article
 	)
 
-	_, err = strconv.Atoi(ctx.FormValue(ctx.FormValue("id")))
-	if ctx.FormValue("id") == "" || err != nil {
+	id, err := strconv.Atoi(ctx.FormValue("id"))
+	if id == 0 || err != nil {
 		res := m.SetError(http.StatusBadRequest, "id must be an integer and can't be empty")
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
 	if ctx.FormValue("title") == "" {
 		updatedArticle.Title = ""
-	} else if !utils.IsValidAlphaNumericHyphen(ctx.FormValue("title")) {
-		res := m.SetError(http.StatusBadRequest, "title only accept alphanumeric and hypen")
-		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
 	if ctx.FormValue("slug") == "" {
 		updatedArticle.Slug = ""
-	} else if !utils.IsValidAlphaNumericHyphen(ctx.FormValue("slug")) {
-		res := m.SetError(http.StatusBadRequest, "title only accept alphanumeric and hypen and title can't be empty")
+	} else if !utils.IsValidSlug(ctx.FormValue("slug")) {
+		res := m.SetError(http.StatusBadRequest, "slug format wrong")
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
@@ -171,12 +168,19 @@ func (h *handler) UpdateArticle(ctx echo.Context) (err error) {
 	if ctx.FormValue("category_id") == "" {
 		updatedArticle.CategoryID = 0
 	} else if !utils.IsValidNumeric(ctx.FormValue("category_id")) {
-		res := m.SetError(http.StatusBadRequest, "category_id must be an integer and can't be empty")
+		res := m.SetError(http.StatusBadRequest, "category_id must be an integer")
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
 	if ctx.FormValue("metadata") == "" {
 		updatedArticle.MetaData = m.MetaData{}
+	} else {
+		metadataJSON := ctx.FormValue("metadata")
+		err := json.Unmarshal([]byte(metadataJSON), &updatedArticle.MetaData)
+		if err != nil {
+			res := m.SetError(http.StatusBadRequest, "error unmarshalling metadata")
+			return ctx.JSON(http.StatusBadRequest, res)
+		}
 	}
 
 	ctx.Bind(&updatedArticle)
@@ -184,9 +188,15 @@ func (h *handler) UpdateArticle(ctx echo.Context) (err error) {
 
 	article, err := h.repository.UpdateArticle(ctx.Request().Context(), updatedArticle)
 	if err != nil {
-		log.Println("[Delivery][UpdateArticle] can't insert article, err:", err.Error())
-		res := m.SetError(http.StatusInternalServerError, err.Error())
-		return ctx.JSON(http.StatusInternalServerError, res)
+		if err == utils.NoRowsAffected {
+			log.Println("[Delivery][UpdateArticle] can't update article, err:", err.Error())
+			res := m.SetError(http.StatusOK, utils.NoRowsAffected.Error())
+			return ctx.JSON(http.StatusOK, res)
+		} else {
+			log.Println("[Delivery][UpdateArticle] can't update article, err:", err.Error())
+			res := m.SetError(http.StatusInternalServerError, err.Error())
+			return ctx.JSON(http.StatusInternalServerError, res)
+		}
 	}
 
 	var data []interface{}
@@ -196,5 +206,28 @@ func (h *handler) UpdateArticle(ctx echo.Context) (err error) {
 	return ctx.JSON(http.StatusOK, res)
 }
 func (h *handler) DeleteArticle(ctx echo.Context) (err error) {
-	return
+	var (
+		id int
+	)
+
+	id, err = strconv.Atoi(ctx.FormValue("id"))
+	if id == 0 || err != nil {
+		res := m.SetError(http.StatusBadRequest, "id must be an integer and can't be empty")
+		return ctx.JSON(http.StatusBadRequest, res)
+	}
+
+	err = h.repository.DeleteArticle(ctx.Request().Context(), id)
+	if err != nil {
+		if err == utils.NoRowsAffected {
+			log.Println("[Delivery][DeleteArticle] can't delete article, err:", err.Error())
+			res := m.SetError(http.StatusOK, utils.NoRowsAffected.Error())
+			return ctx.JSON(http.StatusOK, res)
+		} else {
+			log.Println("[Delivery][DeleteArticle] can't delete article, err:", err.Error())
+			res := m.SetError(http.StatusInternalServerError, err.Error())
+			return ctx.JSON(http.StatusInternalServerError, res)
+		}
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]string{"message": "OK"})
 }

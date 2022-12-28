@@ -7,7 +7,9 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
+	"fmt"
 	"log"
+	"reflect"
 )
 
 func (r *repository) GetArticles(ctx context.Context, limit int, offset int) ([]m.ResArticle, error) {
@@ -105,10 +107,35 @@ func (r *repository) InsertArticle(ctx context.Context, article m.Article) (m.Re
 }
 func (r *repository) UpdateArticle(ctx context.Context, article m.Article) (m.ResArticle, error) {
 	var (
-		resArticle m.ResArticle
-		err        error
+		resArticle      m.ResArticle
+		err             error
+		marshalMetadata []byte
 	)
-	marshalMetadata, _ := json.Marshal(article.MetaData)
+	fmt.Println(article.Id)
+	resArticle, err = r.GetArticleDetails(context.Background(), int(article.Id))
+	if err != nil {
+		log.Println("[UpdateArticle][GetArticleDetails] can't get article details, err:", err.Error())
+		return m.ResArticle{}, err
+	}
+
+	if article.Title == "" {
+		article.Title = resArticle.Title
+	}
+	if article.Slug == "" {
+		article.Slug = resArticle.Slug
+	}
+	if article.HtmlContent == "" {
+		article.HtmlContent = resArticle.HtmlContent
+	}
+	if article.CategoryID == 0 {
+		article.CategoryID = resArticle.ResCategory.Id
+	}
+	if reflect.DeepEqual(article.MetaData, m.MetaData{}) {
+		article.MetaData = resArticle.MetaData
+	} else {
+		marshalMetadata, _ = json.Marshal(article.MetaData)
+	}
+
 	rows, err := r.db.Exec(database.UpdateArticle, &article.Title, &article.Slug, &article.HtmlContent, &article.CategoryID, marshalMetadata, &article.UpdatedAt, &article.Id)
 	if err != nil {
 		log.Println("[UpdateArticle] can't update article, err:", err.Error())
@@ -117,9 +144,9 @@ func (r *repository) UpdateArticle(ctx context.Context, article m.Article) (m.Re
 
 	rowsAffected, _ := rows.RowsAffected()
 	if rowsAffected > 0 {
-		resArticle, err = r.GetArticleDetails(context.Background(), int(article.Id))
+		resArticle, err = r.GetArticleDetails(context.Background(), int(resArticle.Id))
 		if err != nil {
-			log.Println("[UpdateArticle][GetArticleDetails] can't get article details response, err:", err.Error())
+			log.Println("[UpdateArticle][GetArticleDetailsv2] can't get article details response, err:", err.Error())
 			return m.ResArticle{}, err
 		}
 		return resArticle, nil

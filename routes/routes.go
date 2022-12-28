@@ -16,13 +16,13 @@ func GetRoutes(handler api.Handler) *echo.Echo {
 	g.GET("/articles", handler.GetArticles)
 	g.GET("/article", handler.GetArticleDetails)
 	g.POST("/article", handler.InsertArticle)
-	g.PUT("/article", handler.UpdateArticle)
+	g.PATCH("/article", handler.UpdateArticle)
 	g.DELETE("/article", handler.DeleteArticle)
 
 	g.GET("/categories", handler.GetCategoryTree)
 	g.GET("/category", handler.GetCategoryDetails)
 	g.POST("/category", handler.InsertCategory)
-	g.PUT("/category", handler.UpdateCategory)
+	g.PATCH("/category", handler.UpdateCategory)
 	g.DELETE("/category", handler.DeleteCategory)
 
 	return e
@@ -32,6 +32,6 @@ func useMiddlewares(e *echo.Echo) {
 	e.Use(middleware.Recover())
 	e.Use(middleware.CORSWithConfig(middleware.CORSConfig{
 		AllowOrigins: []string{"*"},
-		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodDelete, http.MethodPut},
+		AllowMethods: []string{http.MethodGet, http.MethodPost, http.MethodDelete, http.MethodPatch},
 	}))
 }

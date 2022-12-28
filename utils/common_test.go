@@ -31,11 +31,11 @@ func TestIsValidAlphaNumeric(t *testing.T) {
 	assert.False(t, result)
 }
 
-func TestIsValidAlphaNumericHyphen(t *testing.T) {
-	result := IsValidAlphaNumericHyphen("valid-number-2-with-hyphen")
+func TestIsValidSlug(t *testing.T) {
+	result := IsValidSlug("valid-number-2-with-hyphen")
 	assert.True(t, result)
 
-	result = IsValidAlphaNumericHyphen("")
+	result = IsValidSlug("")
 	assert.False(t, result)
 }
 

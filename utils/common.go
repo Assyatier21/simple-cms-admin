@@ -30,7 +30,7 @@ func IsValidAlphaNumeric(s string) bool {
 	return regex.MatchString(s)
 }
 
-func IsValidAlphaNumericHyphen(s string) bool {
+func IsValidSlug(s string) bool {
 	regex, _ := regexp.Compile(`^[a-z0-9-]+$`)
 	return regex.MatchString(s)
 }
