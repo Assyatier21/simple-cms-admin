@@ -17,7 +17,7 @@ type ResArticle struct {
 	Slug        string      `json:"slug"`
 	HtmlContent string      `json:"html_content"`
 	ResCategory ResCategory `json:"category"`
-	MetaData    MetaData    `json:"metadata" form:"metadata"`
+	MetaData    MetaData    `json:"metadata"`
 	CreatedAt   string      `json:"created_at"`
 	UpdatedAt   string      `json:"updated_at"`
 }

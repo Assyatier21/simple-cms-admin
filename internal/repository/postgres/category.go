@@ -62,15 +62,17 @@ func (r *repository) GetCategoryDetails(ctx context.Context, id int) (m.Category
 	return category, nil
 }
 func (r *repository) InsertCategory(ctx context.Context, category m.Category) (m.Category, error) {
-	res, err := r.db.Exec(database.InsertCategory, category.Title, category.Slug, category.CreatedAt, category.UpdatedAt)
+	var (
+		lastId int
+	)
+
+	err := r.db.QueryRow(database.InsertCategory, category.Title, category.Slug, category.CreatedAt, category.UpdatedAt).Scan(&lastId)
 	if err != nil {
 		log.Println("[InsertCategory] can't insert category, err:", err.Error())
 		return m.Category{}, err
 	}
 
-	id, _ := res.LastInsertId()
-	category.Id = int(id)
-	utils.FormatTimeResCategory(&category)
+	category.Id = int(lastId)
 
 	return category, nil
 }

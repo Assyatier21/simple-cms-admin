@@ -64,11 +64,101 @@ func (h *handler) GetCategoryDetails(ctx echo.Context) (err error) {
 	return ctx.JSON(http.StatusOK, res)
 }
 func (h *handler) InsertCategory(ctx echo.Context) (err error) {
-	return
+	var (
+		returnCategory m.Category
+	)
+
+	if ctx.FormValue("title") == "" {
+		res := m.SetError(http.StatusBadRequest, "title can't be empty")
+		return ctx.JSON(http.StatusBadRequest, res)
+	}
+
+	if ctx.FormValue("slug") == "" || !utils.IsValidSlug(ctx.FormValue("slug")) {
+		res := m.SetError(http.StatusBadRequest, "slug format is wrong")
+		return ctx.JSON(http.StatusBadRequest, res)
+	}
+
+	ctx.Bind(&returnCategory)
+	utils.SetCategoryCreatedUpdatedTimeNow(&returnCategory)
+
+	category, err := h.repository.InsertCategory(ctx.Request().Context(), returnCategory)
+	if err != nil {
+		log.Println("[Delivery][InsertCategory] can't insert category, err:", err.Error())
+		res := m.SetError(http.StatusInternalServerError, err.Error())
+		return ctx.JSON(http.StatusInternalServerError, res)
+	}
+
+	var data []interface{}
+	data = append(data, category)
+
+	res := m.SetResponse(http.StatusOK, "success", data)
+	return ctx.JSON(http.StatusOK, res)
 }
 func (h *handler) UpdateCategory(ctx echo.Context) (err error) {
-	return
+	var (
+		updatedCategory m.Category
+	)
+
+	_, err = strconv.Atoi(ctx.FormValue("id"))
+	if err != nil {
+		res := m.SetError(http.StatusBadRequest, "id must be an integer and can't be empty")
+		return ctx.JSON(http.StatusBadRequest, res)
+	}
+
+	if ctx.FormValue("title") == "" {
+		updatedCategory.Title = ""
+	}
+
+	if ctx.FormValue("slug") == "" {
+		updatedCategory.Slug = ""
+	} else if !utils.IsValidSlug(ctx.FormValue("slug")) {
+		res := m.SetError(http.StatusBadRequest, "slug format wrong")
+		return ctx.JSON(http.StatusBadRequest, res)
+	}
+
+	ctx.Bind(&updatedCategory)
+	utils.SetCategoryUpdatedTimeNow(&updatedCategory)
+
+	category, err := h.repository.UpdateCategory(ctx.Request().Context(), updatedCategory)
+	if err != nil {
+		log.Println("[Delivery][UpdateCategory] can't update category, err:", err.Error())
+		if err == utils.NoRowsAffected {
+			res := m.SetError(http.StatusOK, utils.NoRowsAffected.Error())
+			return ctx.JSON(http.StatusOK, res)
+		} else {
+			res := m.SetError(http.StatusInternalServerError, err.Error())
+			return ctx.JSON(http.StatusInternalServerError, res)
+		}
+	}
+
+	var data []interface{}
+	data = append(data, category)
+
+	res := m.SetResponse(http.StatusOK, "success", data)
+	return ctx.JSON(http.StatusOK, res)
 }
 func (h *handler) DeleteCategory(ctx echo.Context) (err error) {
-	return
+	var (
+		id int
+	)
+
+	id, err = strconv.Atoi(ctx.FormValue("id"))
+	if err != nil {
+		res := m.SetError(http.StatusBadRequest, "id must be an integer and can't be empty")
+		return ctx.JSON(http.StatusBadRequest, res)
+	}
+
+	err = h.repository.DeleteCategory(ctx.Request().Context(), id)
+	if err != nil {
+		log.Println("[Delivery][DeleteCategory] can't delete category, err:", err.Error())
+		if err == utils.NoRowsAffected {
+			res := m.SetError(http.StatusOK, utils.NoRowsAffected.Error())
+			return ctx.JSON(http.StatusOK, res)
+		} else {
+			res := m.SetError(http.StatusInternalServerError, err.Error())
+			return ctx.JSON(http.StatusInternalServerError, res)
+		}
+	}
+
+	return ctx.JSON(http.StatusOK, map[string]string{"message": "OK"})
 }
