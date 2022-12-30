@@ -5,7 +5,7 @@
 -- Dumped from database version 14.6 (Homebrew)
 -- Dumped by pg_dump version 15.1
 
--- Started on 2022-12-22 19:07:27 WIB
+-- Started on 2022-12-30 18:46:26 WIB
 
 SET statement_timeout = 0;
 SET lock_timeout = 0;
@@ -18,6 +18,7 @@ SET xmloption = content;
 SET client_min_messages = warning;
 SET row_security = off;
 
+DROP DATABASE "cms-repository";
 --
 -- TOC entry 3605 (class 1262 OID 16385)
 -- Name: cms-repository; Type: DATABASE; Schema: -; Owner: postgres
@@ -126,19 +127,7 @@ ALTER TABLE "cms-repository".cms_category ALTER COLUMN id ADD GENERATED ALWAYS A
 -- Data for Name: cms_article; Type: TABLE DATA; Schema: cms-repository; Owner: postgres
 --
 
-INSERT INTO "cms-repository".cms_article OVERRIDING SYSTEM VALUE VALUES (2, 'My Article Title', 'my-article-slug', '<p>This is the HTML content of my article.</p>', 2, '2022-12-19 23:20:15', '2022-12-19 23:20:15', '{
-  "meta_title": "Title 1",
-  "meta_description": "This is Description 1",
-  "meta_author": "Muhammad Sholeh",
-  "meta_keywords": [
-    "description",
-    "testing1"
-  ],
-  "meta_robots": [
-    "following",
-    "no-index"
-  ]
-}');
+INSERT INTO "cms-repository".cms_article OVERRIDING SYSTEM VALUE VALUES (2, 'Newest Article Updated', 'newest-article-updated', '<h1> This is new article </h1>', 3, '2022-12-19 23:20:15', '2022-12-28 15:22:34', '{"meta_title":"Title 3 Updated","meta_description":"This is Updated Description 3","meta_author":"Muhammad Sholeh","meta_keywords":["description updated","testing updated"],"meta_robots":["following","no-index"]}');
 INSERT INTO "cms-repository".cms_article OVERRIDING SYSTEM VALUE VALUES (3, 'My Article Title 2', 'my-article-slug-v2', '<p>This is the HTML content of my article 2.</p>', 3, '2022-12-19 23:20:35', '2022-12-19 23:20:15', '{
   "meta_title": "Title 2",
   "meta_description": "This is Description 2",
@@ -165,6 +154,8 @@ INSERT INTO "cms-repository".cms_article OVERRIDING SYSTEM VALUE VALUES (4, 'My 
     "no-index"
   ]
 }');
+INSERT INTO "cms-repository".cms_article OVERRIDING SYSTEM VALUE VALUES (21, 'Newest Article Updated v2', 'newest-article-updated-2', '<p> This is newest updated article </p>', 3, '2022-12-28 15:55:27', '2022-12-28 15:59:57', '{"meta_title":"Title 3 Updated","meta_description":"This is Updated Description 3","meta_author":"Muhammad Sholeh","meta_keywords":["description updated","testing updated"],"meta_robots":["following","no-index"]}');
+INSERT INTO "cms-repository".cms_article OVERRIDING SYSTEM VALUE VALUES (22, 'Newest Article', 'newest-article', '<p> This is newest article </p>', 1, '2022-12-29 14:30:12', '2022-12-29 14:30:12', '{"meta_title":"Title 3","meta_description":"This is Description 3","meta_author":"Muhammad Sholeh","meta_keywords":["description","testing3"],"meta_robots":["following","no-index"]}');
 
 
 --
@@ -183,6 +174,7 @@ INSERT INTO "cms-repository".cms_category OVERRIDING SYSTEM VALUE VALUES (7, 'Ca
 INSERT INTO "cms-repository".cms_category OVERRIDING SYSTEM VALUE VALUES (8, 'Category 8', 'category-8', '2022-12-19 23:46:18.330326', '2022-12-19 23:46:18.330326');
 INSERT INTO "cms-repository".cms_category OVERRIDING SYSTEM VALUE VALUES (9, 'Category 9', 'category-9', '2022-12-19 23:46:18.330326', '2022-12-19 23:46:18.330326');
 INSERT INTO "cms-repository".cms_category OVERRIDING SYSTEM VALUE VALUES (10, 'Category 10', 'category-10', '2022-12-19 23:46:18.330326', '2022-12-19 23:46:18.330326');
+INSERT INTO "cms-repository".cms_category OVERRIDING SYSTEM VALUE VALUES (12, 'Newest Category', 'newest-category', '2022-12-29 14:31:00', '2022-12-29 14:31:00');
 
 
 --
@@ -191,7 +183,7 @@ INSERT INTO "cms-repository".cms_category OVERRIDING SYSTEM VALUE VALUES (10, 'C
 -- Name: cms_article_id_seq; Type: SEQUENCE SET; Schema: cms-repository; Owner: postgres
 --
 
-SELECT pg_catalog.setval('"cms-repository".cms_article_id_seq', 4, true);
+SELECT pg_catalog.setval('"cms-repository".cms_article_id_seq', 23, true);
 
 
 --
@@ -200,7 +192,7 @@ SELECT pg_catalog.setval('"cms-repository".cms_article_id_seq', 4, true);
 -- Name: cms_category_id_seq; Type: SEQUENCE SET; Schema: cms-repository; Owner: postgres
 --
 
-SELECT pg_catalog.setval('"cms-repository".cms_category_id_seq', 10, true);
+SELECT pg_catalog.setval('"cms-repository".cms_category_id_seq', 12, true);
 
 
 --
@@ -230,7 +222,7 @@ ALTER TABLE ONLY "cms-repository".cms_article
     ADD CONSTRAINT slug UNIQUE (slug);
 
 
--- Completed on 2022-12-22 19:07:27 WIB
+-- Completed on 2022-12-30 18:46:26 WIB
 
 --
 -- PostgreSQL database dump complete

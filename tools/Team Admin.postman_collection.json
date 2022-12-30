@@ -1,0 +1,360 @@
+{
+	"info": {
+		"_postman_id": "14448432-bfe7-4ae5-9b1c-ee11782ea262",
+		"name": "Team Admin",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21912170"
+	},
+	"item": [
+		{
+			"name": "Get Articles",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "127.0.0.1:8800/admin/v1/articles",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8800",
+					"path": [
+						"admin",
+						"v1",
+						"articles"
+					],
+					"query": [
+						{
+							"key": "limit",
+							"value": null,
+							"disabled": true
+						},
+						{
+							"key": "offset",
+							"value": null,
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Article Details",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "127.0.0.1:8800/admin/v1/article?id=3",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8800",
+					"path": [
+						"admin",
+						"v1",
+						"article"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "3"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Categories",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "127.0.0.1:8800/admin/v1/categories",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8800",
+					"path": [
+						"admin",
+						"v1",
+						"categories"
+					],
+					"query": [
+						{
+							"key": "",
+							"value": "",
+							"disabled": true
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Category Details",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "127.0.0.1:8800/admin/v1/category?id=120",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8800",
+					"path": [
+						"admin",
+						"v1",
+						"category"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "120"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Insert Article",
+			"protocolProfileBehavior": {
+				"disabledSystemHeaders": {}
+			},
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "title",
+							"value": "Newest Article",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "127.0.0.1:8800/admin/v1/article",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8800",
+					"path": [
+						"admin",
+						"v1",
+						"article"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Insert Category",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "title",
+							"value": "Newest Category",
+							"type": "text"
+						},
+						{
+							"key": "slug",
+							"value": "newest-category",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "127.0.0.1:8800/admin/v1/category",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8800",
+					"path": [
+						"admin",
+						"v1",
+						"category"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Article",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"body": {
+					"mode": "formdata",
+					"formdata": [
+						{
+							"key": "id",
+							"value": "21",
+							"type": "text"
+						},
+						{
+							"key": "title",
+							"value": "Newest Article Updated v2",
+							"type": "text"
+						},
+						{
+							"key": "slug",
+							"value": "newest-article-updated-2",
+							"type": "text"
+						},
+						{
+							"key": "html_content",
+							"value": "<p> This is newest updated article </p>",
+							"type": "text"
+						},
+						{
+							"key": "category_id",
+							"value": "",
+							"type": "text"
+						},
+						{
+							"key": "metadata",
+							"value": "{\n  \"meta_title\": \"Title 3 Updated\",\n  \"meta_description\": \"This is Updated Description 3\",\n  \"meta_author\": \"Muhammad Sholeh\",\n  \"meta_keywords\": [\n    \"description updated\",\n    \"testing updated\"\n  ],\n  \"meta_robots\": [\n    \"following\",\n    \"no-index\"\n  ]\n}",
+							"type": "text"
+						}
+					]
+				},
+				"url": {
+					"raw": "127.0.0.1:8800/admin/v1/article",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8800",
+					"path": [
+						"admin",
+						"v1",
+						"article"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Update Category",
+			"request": {
+				"method": "PATCH",
+				"header": [],
+				"url": {
+					"raw": "127.0.0.1:8800/admin/v1/category?id&title&slug",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8800",
+					"path": [
+						"admin",
+						"v1",
+						"category"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": null
+						},
+						{
+							"key": "title",
+							"value": null
+						},
+						{
+							"key": "slug",
+							"value": null
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Article By ID",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "127.0.0.1:8800/admin/v1/article?id=999",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8800",
+					"path": [
+						"admin",
+						"v1",
+						"article"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "999"
+						}
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Category",
+			"request": {
+				"method": "DELETE",
+				"header": [],
+				"url": {
+					"raw": "127.0.0.1:8800/admin/v1/article?id=999",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "8800",
+					"path": [
+						"admin",
+						"v1",
+						"article"
+					],
+					"query": [
+						{
+							"key": "id",
+							"value": "999"
+						}
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
