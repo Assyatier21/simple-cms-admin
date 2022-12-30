@@ -7,7 +7,6 @@ import (
 	"context"
 	"database/sql"
 	"encoding/json"
-	"fmt"
 	"log"
 	"reflect"
 )
@@ -63,7 +62,7 @@ func (r *repository) GetArticleDetails(ctx context.Context, id int) (m.ResArticl
 		metadata     m.MetaData
 	)
 
-	err = r.db.QueryRow(database.GetArticleDetails, id).Scan(&article.Id, &article.Title, &article.Slug, &article.HtmlContent, &article.ResCategory.Id, &article.ResCategory.Title, &article.ResCategory.Slug, &article.CreatedAt, &article.UpdatedAt)
+	err = r.db.QueryRow(database.GetArticleDetails, id).Scan(&article.Id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return m.ResArticle{}, utils.ErrNotFound
@@ -111,7 +110,7 @@ func (r *repository) UpdateArticle(ctx context.Context, article m.Article) (m.Re
 		err             error
 		marshalMetadata []byte
 	)
-	fmt.Println(article.Id)
+
 	resArticle, err = r.GetArticleDetails(context.Background(), int(article.Id))
 	if err != nil {
 		log.Println("[UpdateArticle][GetArticleDetails] can't get article details, err:", err.Error())
@@ -144,11 +143,6 @@ func (r *repository) UpdateArticle(ctx context.Context, article m.Article) (m.Re
 
 	rowsAffected, _ := rows.RowsAffected()
 	if rowsAffected > 0 {
-		resArticle, err = r.GetArticleDetails(context.Background(), int(resArticle.Id))
-		if err != nil {
-			log.Println("[UpdateArticle][GetArticleDetailsv2] can't get article details response, err:", err.Error())
-			return m.ResArticle{}, err
-		}
 		return resArticle, nil
 	} else {
 		log.Println("[UpdateArticle] err:", utils.NoRowsAffected)
