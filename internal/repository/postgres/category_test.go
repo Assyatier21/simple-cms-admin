@@ -253,7 +253,9 @@ func Test_repository_InsertCategory(t *testing.T) {
 			},
 			wantErr: false,
 			mock: func() {
-				sqlMock.ExpectExec(`INSERT INTO cms_category`).WillReturnResult(sqlmock.NewResult(int64(1), int64(1)))
+				rows := sqlmock.NewRows([]string{"id", "title", "slug", "created_at", "updated_at"}).
+					AddRow(1, "category 1", "category-1", "2022-12-01T20:29:00Z", "2022-12-01T20:29:00Z")
+				sqlMock.ExpectQuery(regexp.QuoteMeta(`INSERT INTO cms_category`)).WillReturnRows(rows)
 			},
 		},
 		{
