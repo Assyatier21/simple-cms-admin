@@ -62,7 +62,7 @@ func (r *repository) GetArticleDetails(ctx context.Context, id int) (m.ResArticl
 		metadata     m.MetaData
 	)
 
-	err = r.db.QueryRow(database.GetArticleDetails, id).Scan(&article.Id)
+	err = r.db.QueryRow(database.GetArticleDetails, id).Scan(&article.Id, &article.Title, &article.Slug, &article.HtmlContent, &article.ResCategory.Id, &article.ResCategory.Title, &article.ResCategory.Slug, &article.CreatedAt, &article.UpdatedAt)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return m.ResArticle{}, utils.ErrNotFound
