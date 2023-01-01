@@ -3,6 +3,7 @@ package api
 import (
 	m "cms-admin/models"
 	"cms-admin/utils"
+	"fmt"
 	"log"
 	"net/http"
 	"strconv"
@@ -99,7 +100,7 @@ func (h *handler) UpdateCategory(ctx echo.Context) (err error) {
 		updatedCategory m.Category
 	)
 
-	_, err = strconv.Atoi(ctx.FormValue("id"))
+	updatedCategory.Id, err = strconv.Atoi(ctx.FormValue("id"))
 	if err != nil {
 		res := m.SetError(http.StatusBadRequest, "id must be an integer and can't be empty")
 		return ctx.JSON(http.StatusBadRequest, res)
@@ -107,6 +108,8 @@ func (h *handler) UpdateCategory(ctx echo.Context) (err error) {
 
 	if ctx.FormValue("title") == "" {
 		updatedCategory.Title = ""
+	} else {
+		updatedCategory.Title = ctx.FormValue("title")
 	}
 
 	if ctx.FormValue("slug") == "" {
@@ -114,10 +117,14 @@ func (h *handler) UpdateCategory(ctx echo.Context) (err error) {
 	} else if !utils.IsValidSlug(ctx.FormValue("slug")) {
 		res := m.SetError(http.StatusBadRequest, "slug format wrong")
 		return ctx.JSON(http.StatusBadRequest, res)
+	} else {
+		updatedCategory.Slug = ctx.FormValue("slug")
 	}
 
 	ctx.Bind(&updatedCategory)
 	utils.SetCategoryUpdatedTimeNow(&updatedCategory)
+
+	fmt.Println(updatedCategory)
 
 	category, err := h.repository.UpdateCategory(ctx.Request().Context(), updatedCategory)
 	if err != nil {
@@ -125,6 +132,10 @@ func (h *handler) UpdateCategory(ctx echo.Context) (err error) {
 		if err == utils.NoRowsAffected {
 			res := m.SetError(http.StatusOK, utils.NoRowsAffected.Error())
 			return ctx.JSON(http.StatusOK, res)
+		} else if err == utils.ErrNotFound {
+			res := m.SetError(http.StatusNotFound, utils.ErrNotFound.Error())
+			return ctx.JSON(http.StatusNotFound, res)
+
 		} else {
 			res := m.SetError(http.StatusInternalServerError, err.Error())
 			return ctx.JSON(http.StatusInternalServerError, res)

@@ -3,7 +3,6 @@ package utils
 import (
 	m "cms-admin/models"
 	"errors"
-	"fmt"
 	"log"
 	"regexp"
 	"time"
@@ -12,7 +11,8 @@ import (
 var (
 	ErrNotFound    = errors.New("data not found")
 	NoRowsAffected = errors.New("no rows affected")
-	TimeNow        = fmt.Sprintf("%d-%d-%d %d:%d:%d", time.Now().Year(), time.Now().Month(), time.Now().Day(), time.Now().Hour(), time.Now().Minute(), time.Now().Second())
+	jakartaLoc, _  = time.LoadLocation("Asia/Jakarta")
+	TimeNow        = time.Now().In(jakartaLoc).Format("2006-01-02T15:04:05Z")
 )
 
 func IsValidAlphabet(s string) bool {

@@ -135,6 +135,9 @@ func (r *repository) UpdateArticle(ctx context.Context, article m.Article) (m.Re
 		marshalMetadata, _ = json.Marshal(article.MetaData)
 	}
 
+	article.CreatedAt = resArticle.CreatedAt
+	article.UpdatedAt = utils.FormattedTime(article.UpdatedAt)
+
 	rows, err := r.db.Exec(database.UpdateArticle, &article.Title, &article.Slug, &article.HtmlContent, &article.CategoryID, marshalMetadata, &article.UpdatedAt, &article.Id)
 	if err != nil {
 		log.Println("[UpdateArticle] can't update article, err:", err.Error())

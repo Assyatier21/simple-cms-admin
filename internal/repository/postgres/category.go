@@ -72,6 +72,23 @@ func (r *repository) InsertCategory(ctx context.Context, category m.Category) (m
 	return category, nil
 }
 func (r *repository) UpdateCategory(ctx context.Context, category m.Category) (m.Category, error) {
+	resCategory, err := r.GetCategoryDetails(context.Background(), int(category.Id))
+	if err != nil {
+		log.Println("[UpdateCategory][GetCategoryDetails] can't get category details, err:", err.Error())
+		return m.Category{}, err
+	}
+
+	if category.Title == "" {
+		category.Title = resCategory.Title
+	}
+
+	if category.Slug == "" {
+		category.Slug = resCategory.Slug
+	}
+
+	category.CreatedAt = resCategory.CreatedAt
+	category.UpdatedAt = utils.FormattedTime(category.UpdatedAt)
+
 	rows, err := r.db.Exec(database.UpdateCategory, &category.Title, &category.Slug, &category.UpdatedAt, &category.Id)
 	if err != nil {
 		log.Println("[UpdateCategory] can't update category, err:", err.Error())
@@ -80,7 +97,6 @@ func (r *repository) UpdateCategory(ctx context.Context, category m.Category) (m
 
 	rowsAffected, _ := rows.RowsAffected()
 	if rowsAffected > 0 {
-		utils.FormatTimeResCategory(&category)
 		return category, nil
 	} else {
 		log.Println("[UpdateCategory], err:", utils.NoRowsAffected)

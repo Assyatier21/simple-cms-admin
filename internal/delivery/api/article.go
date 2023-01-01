@@ -166,7 +166,7 @@ func (h *handler) UpdateArticle(ctx echo.Context) (err error) {
 
 	if ctx.FormValue("category_id") == "" {
 		updatedArticle.CategoryID = 0
-	} else if !utils.IsValidNumeric(ctx.FormValue("category_id")) {
+	} else if _, err = strconv.Atoi(ctx.FormValue("category_id")); err != nil {
 		res := m.SetError(http.StatusBadRequest, "category_id must be an integer")
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
@@ -187,12 +187,14 @@ func (h *handler) UpdateArticle(ctx echo.Context) (err error) {
 
 	article, err := h.repository.UpdateArticle(ctx.Request().Context(), updatedArticle)
 	if err != nil {
+		log.Println("[Delivery][UpdateArticle] can't update article, err:", err.Error())
 		if err == utils.NoRowsAffected {
-			log.Println("[Delivery][UpdateArticle] can't update article, err:", err.Error())
 			res := m.SetError(http.StatusOK, utils.NoRowsAffected.Error())
 			return ctx.JSON(http.StatusOK, res)
+		} else if err == utils.ErrNotFound {
+			res := m.SetError(http.StatusNotFound, utils.ErrNotFound.Error())
+			return ctx.JSON(http.StatusNotFound, res)
 		} else {
-			log.Println("[Delivery][UpdateArticle] can't update article, err:", err.Error())
 			res := m.SetError(http.StatusInternalServerError, err.Error())
 			return ctx.JSON(http.StatusInternalServerError, res)
 		}
