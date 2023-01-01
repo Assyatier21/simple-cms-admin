@@ -5,8 +5,10 @@ import (
 	m "cms-admin/models"
 	"cms-admin/utils"
 	"errors"
+	"fmt"
 	"net/http"
 	"net/http/httptest"
+	"net/url"
 	"testing"
 
 	"github.com/go-playground/assert/v2"
@@ -347,9 +349,25 @@ func Test_handler_InsertArticle(t *testing.T) {
 
 	mockRepository := mock_repo.NewMockRepository(ctrl)
 
+	metadataString := `{
+		"meta_title":"Test Article",
+		"meta_description":"This is a test article",
+		"meta_author":"Test Author",
+		"meta_keywords":
+		[
+			"test",
+			"article"
+		],
+		"meta_robots":
+		[	
+			"index",
+			"follow"
+		]
+	}`
+
 	type args struct {
 		method string
-		path   string
+		path   func() string
 	}
 	type wants struct {
 		statusCode int
@@ -360,12 +378,109 @@ func Test_handler_InsertArticle(t *testing.T) {
 		wants wants
 		mock  func()
 	}{
-		{},
+		{
+			name: "Success",
+			args: args{
+				method: http.MethodPost,
+				path: func() string {
+					values := url.Values{}
+					values.Add("title", "title1")
+					values.Add("slug", "title-1")
+					values.Add("html_content", "<p>article1</p>")
+					values.Add("category_id", "1")
+					values.Add("metadata", metadataString)
+
+					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
+					return urlPath
+				},
+			},
+			wants: wants{
+				statusCode: http.StatusOK,
+			},
+			mock: func() {
+				mockRepository.EXPECT().InsertArticle(gomock.Any(), gomock.Any()).Return(m.ResArticle{
+					Id:          1,
+					Title:       "title1",
+					Slug:        "article-1",
+					HtmlContent: "<p>article1</p>",
+					ResCategory: m.ResCategory{
+						Id:    1,
+						Title: "category 1",
+						Slug:  "category-1",
+					},
+					CreatedAt: "2022-12-01 20:29:00",
+					UpdatedAt: "2022-12-01 20:29:00",
+				}, nil)
+			},
+		},
+		{
+			name: "error empty title",
+			args: args{
+				method: http.MethodPost,
+				path: func() string {
+					values := url.Values{}
+					values.Add("title", "")
+					values.Add("slug", "title-1")
+					values.Add("html_content", "<p>article1</p>")
+					values.Add("category_id", "1")
+					values.Add("metadata", metadataString)
+
+					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
+					return urlPath
+				},
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			mock: func() {},
+		},
+		{
+			name: "error empty slug",
+			args: args{
+				method: http.MethodPost,
+				path: func() string {
+					values := url.Values{}
+					values.Add("title", "new title")
+					values.Add("slug", "")
+					values.Add("html_content", "<p>article1</p>")
+					values.Add("category_id", "1")
+					values.Add("metadata", metadataString)
+
+					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
+					return urlPath
+				},
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			mock: func() {},
+		},
+		{
+			name: "error empty slug",
+			args: args{
+				method: http.MethodPost,
+				path: func() string {
+					values := url.Values{}
+					values.Add("title", "new title")
+					values.Add("slug", "new-slug")
+					values.Add("html_content", "<p>article1</p>")
+					values.Add("category_id", "1")
+					values.Add("metadata", metadataString)
+
+					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
+					return urlPath
+				},
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			mock: func() {},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
 			e := echo.New()
-			req := httptest.NewRequest(tt.args.method, tt.args.path, nil)
+			req := httptest.NewRequest(tt.args.method, tt.args.path(), nil)
 			rec := httptest.NewRecorder()
 			c := e.NewContext(req, rec)
 
@@ -383,7 +498,6 @@ func Test_handler_InsertArticle(t *testing.T) {
 		})
 	}
 }
-
 func Test_handler_DeleteArticle(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
