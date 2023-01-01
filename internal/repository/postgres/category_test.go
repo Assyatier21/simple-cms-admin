@@ -335,6 +335,63 @@ func Test_repository_UpdateCategory(t *testing.T) {
 			},
 			wantErr: false,
 			mock: func() {
+				rows := sqlmock.NewRows([]string{"id", "title", "slug", "created_at", "updated_at"}).
+					AddRow(1, "category 1", "category-1", "2022-12-01T20:29:00Z", "2022-12-01T20:29:00Z")
+				sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM cms_category WHERE id = $1`)).WillReturnRows(rows)
+				sqlMock.ExpectExec("UPDATE cms_category").WillReturnResult(sqlmock.NewResult(1, 1))
+			},
+		},
+		{
+			name: "success with empty title",
+			args: args{
+				ctx: ctx,
+				category: m.Category{
+					Id:        1,
+					Title:     "",
+					Slug:      "new-category-1",
+					CreatedAt: "2022-12-01T20:29:00Z",
+					UpdatedAt: "2022-12-01T20:29:00Z",
+				},
+			},
+			want: m.Category{
+				Id:        1,
+				Title:     "new category 1",
+				Slug:      "new-category-1",
+				CreatedAt: "2022-12-01 20:29:00",
+				UpdatedAt: "2022-12-01 20:29:00",
+			},
+			wantErr: false,
+			mock: func() {
+				rows := sqlmock.NewRows([]string{"id", "title", "slug", "created_at", "updated_at"}).
+					AddRow(1, "new category 1", "category-1", "2022-12-01T20:29:00Z", "2022-12-01T20:29:00Z")
+				sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM cms_category WHERE id = $1`)).WillReturnRows(rows)
+				sqlMock.ExpectExec("UPDATE cms_category").WillReturnResult(sqlmock.NewResult(1, 1))
+			},
+		},
+		{
+			name: "success with empty slug",
+			args: args{
+				ctx: ctx,
+				category: m.Category{
+					Id:        1,
+					Title:     "new category 1",
+					Slug:      "",
+					CreatedAt: "2022-12-01T20:29:00Z",
+					UpdatedAt: "2022-12-01T20:29:00Z",
+				},
+			},
+			want: m.Category{
+				Id:        1,
+				Title:     "new category 1",
+				Slug:      "category-1",
+				CreatedAt: "2022-12-01 20:29:00",
+				UpdatedAt: "2022-12-01 20:29:00",
+			},
+			wantErr: false,
+			mock: func() {
+				rows := sqlmock.NewRows([]string{"id", "title", "slug", "created_at", "updated_at"}).
+					AddRow(1, "new category 1", "category-1", "2022-12-01T20:29:00Z", "2022-12-01T20:29:00Z")
+				sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM cms_category WHERE id = $1`)).WillReturnRows(rows)
 				sqlMock.ExpectExec("UPDATE cms_category").WillReturnResult(sqlmock.NewResult(1, 1))
 			},
 		},
@@ -353,6 +410,9 @@ func Test_repository_UpdateCategory(t *testing.T) {
 			want:    m.Category{},
 			wantErr: true,
 			mock: func() {
+				rows := sqlmock.NewRows([]string{"id", "title", "slug", "created_at", "updated_at"}).
+					AddRow(1, "category 1", "category-1", "2022-12-01T20:29:00Z", "2022-12-01T20:29:00Z")
+				sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM cms_category WHERE id = $1`)).WillReturnRows(rows)
 				sqlMock.ExpectExec("UPDATE cms_category").WillReturnResult(sqlmock.NewResult(1, 0))
 			},
 		},
@@ -371,6 +431,9 @@ func Test_repository_UpdateCategory(t *testing.T) {
 			want:    m.Category{},
 			wantErr: true,
 			mock: func() {
+				rows := sqlmock.NewRows([]string{"id", "title", "slug", "created_at", "updated_at"}).
+					AddRow(1, "category 1", "category-1", "2022-12-01T20:29:00Z", "2022-12-01T20:29:00Z")
+				sqlMock.ExpectQuery(regexp.QuoteMeta(`SELECT * FROM cms_category WHERE id = $1`)).WillReturnRows(rows)
 				sqlMock.ExpectExec("UPDATE cms_category").WillReturnError(errors.New("query erro"))
 			},
 		},
