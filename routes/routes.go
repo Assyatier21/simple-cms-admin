@@ -2,6 +2,7 @@ package routes
 
 import (
 	"cms-admin/internal/delivery/api"
+	"cms-admin/utils"
 	"net/http"
 
 	"github.com/labstack/echo/v4"
@@ -13,17 +14,17 @@ func GetRoutes(handler api.Handler) *echo.Echo {
 	useMiddlewares(e)
 
 	g := e.Group("/admin/v1")
-	g.GET("/articles", handler.GetArticles)
-	g.GET("/article", handler.GetArticleDetails)
-	g.POST("/article", handler.InsertArticle)
-	g.PATCH("/article", handler.UpdateArticle)
-	g.DELETE("/article", handler.DeleteArticle)
+	g.GET(utils.PathArticles, handler.GetArticles)
+	g.GET(utils.PathArticle, handler.GetArticleDetails)
+	g.POST(utils.PathArticle, handler.InsertArticle)
+	g.PATCH(utils.PathArticle, handler.UpdateArticle)
+	g.DELETE(utils.PathArticle, handler.DeleteArticle)
 
-	g.GET("/categories", handler.GetCategoryTree)
-	g.GET("/category", handler.GetCategoryDetails)
-	g.POST("/category", handler.InsertCategory)
-	g.PATCH("/category", handler.UpdateCategory)
-	g.DELETE("/category", handler.DeleteCategory)
+	g.GET(utils.PathCategories, handler.GetCategoryTree)
+	g.GET(utils.PathCategory, handler.GetCategoryDetails)
+	g.POST(utils.PathCategory, handler.InsertCategory)
+	g.PATCH(utils.PathCategory, handler.UpdateCategory)
+	g.DELETE(utils.PathCategory, handler.DeleteCategory)
 
 	return e
 }

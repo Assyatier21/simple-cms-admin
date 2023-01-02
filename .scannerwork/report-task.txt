@@ -1,0 +1,6 @@
+projectKey=Simple-CMS-Admin
+serverUrl=http://localhost:9000
+serverVersion=9.8.0.63668
+dashboardUrl=http://localhost:9000/dashboard?id=Simple-CMS-Admin
+ceTaskId=AYVydSnbIo9WEVHZo5Lg
+ceTaskUrl=http://localhost:9000/api/ce/task?id=AYVydSnbIo9WEVHZo5Lg

@@ -55,7 +55,7 @@ The API has the following endpoints:
 - `/v1/categories`: get list of categories
 - `/v1/category`: insert, update, delete and get details of category (method: POST, PATCH, DELETE, and GET)
 
-We can test the endpoint using the collection located in : `simple-cms-admin/tools` (not updated yet).
+We can test the endpoint using the collection located in : `simple-cms-admin/tools`.
 
 ### Testing
 
