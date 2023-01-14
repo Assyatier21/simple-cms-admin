@@ -42,7 +42,7 @@ func (h *handler) GetCategoryDetails(ctx echo.Context) (err error) {
 
 	id, err = strconv.Atoi(ctx.FormValue("id"))
 	if err != nil {
-		res := m.SetError(http.StatusBadRequest, "id must be an integer and can't be empty")
+		res := m.SetError(http.StatusBadRequest, utils.ErrorIdNotNumberStr)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
@@ -102,7 +102,7 @@ func (h *handler) UpdateCategory(ctx echo.Context) (err error) {
 
 	updatedCategory.Id, err = strconv.Atoi(ctx.FormValue("id"))
 	if err != nil {
-		res := m.SetError(http.StatusBadRequest, "id must be an integer and can't be empty")
+		res := m.SetError(http.StatusBadRequest, utils.ErrorIdNotNumberStr)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
@@ -155,7 +155,7 @@ func (h *handler) DeleteCategory(ctx echo.Context) (err error) {
 
 	id, err = strconv.Atoi(ctx.FormValue("id"))
 	if err != nil {
-		res := m.SetError(http.StatusBadRequest, "id must be an integer and can't be empty")
+		res := m.SetError(http.StatusBadRequest, utils.ErrorIdNotNumberStr)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 

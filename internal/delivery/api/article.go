@@ -63,7 +63,7 @@ func (h *handler) GetArticleDetails(ctx echo.Context) (err error) {
 
 	id, err = strconv.Atoi(ctx.FormValue("id"))
 	if err != nil {
-		res := m.SetError(http.StatusBadRequest, "id must be an integer and can't be empty")
+		res := m.SetError(http.StatusBadRequest, utils.ErrorIdNotNumberStr)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
@@ -145,7 +145,7 @@ func (h *handler) UpdateArticle(ctx echo.Context) (err error) {
 
 	_, err = strconv.Atoi(ctx.FormValue("id"))
 	if err != nil {
-		res := m.SetError(http.StatusBadRequest, "id must be an integer and can't be empty")
+		res := m.SetError(http.StatusBadRequest, utils.ErrorIdNotNumberStr)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
@@ -188,10 +188,7 @@ func (h *handler) UpdateArticle(ctx echo.Context) (err error) {
 	article, err := h.repository.UpdateArticle(ctx.Request().Context(), updatedArticle)
 	if err != nil {
 		log.Println("[Delivery][UpdateArticle] can't update article, err:", err.Error())
-		if err == utils.NoRowsAffected {
-			res := m.SetError(http.StatusOK, utils.NoRowsAffected.Error())
-			return ctx.JSON(http.StatusOK, res)
-		} else if err == utils.ErrNotFound {
+		if err == utils.ErrNotFound {
 			res := m.SetError(http.StatusNotFound, utils.ErrNotFound.Error())
 			return ctx.JSON(http.StatusNotFound, res)
 		} else {
@@ -213,7 +210,7 @@ func (h *handler) DeleteArticle(ctx echo.Context) (err error) {
 
 	id, err = strconv.Atoi(ctx.FormValue("id"))
 	if err != nil {
-		res := m.SetError(http.StatusBadRequest, "id must be an integer and can't be empty")
+		res := m.SetError(http.StatusBadRequest, utils.ErrorIdNotNumberStr)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 

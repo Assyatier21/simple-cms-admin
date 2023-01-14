@@ -9,14 +9,15 @@ import (
 )
 
 var (
-	PathArticles   = "/articles"
-	PathArticle    = "/article"
-	PathCategories = "/categories"
-	PathCategory   = "/category"
-	ErrNotFound    = errors.New("data not found")
-	NoRowsAffected = errors.New("no rows affected")
-	jakartaLoc, _  = time.LoadLocation("Asia/Jakarta")
-	TimeNow        = time.Now().In(jakartaLoc).Format("2006-01-02T15:04:05Z")
+	PathArticles        = "/articles"
+	PathArticle         = "/article"
+	PathCategories      = "/categories"
+	PathCategory        = "/category"
+	ErrNotFound         = errors.New("data not found")
+	NoRowsAffected      = errors.New("no rows affected")
+	ErrorIdNotNumberStr = "id must be an integer and can't be empty"
+	jakartaLoc, _       = time.LoadLocation("Asia/Jakarta")
+	TimeNow             = time.Now().In(jakartaLoc).Format("2006-01-02T15:04:05Z")
 )
 
 func IsValidAlphabet(s string) bool {

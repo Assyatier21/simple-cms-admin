@@ -966,30 +966,6 @@ func Test_handler_UpdateArticle(t *testing.T) {
 			mock: func() {},
 		},
 		{
-			name: "error no rows affected",
-			args: args{
-				method: http.MethodPost,
-				path: func() string {
-					values := url.Values{}
-					values.Add("id", "1")
-					values.Add("title", "new title")
-					values.Add("slug", "new-slug")
-					values.Add("html_content", "<p>This is article content</p>")
-					values.Add("category_id", "1")
-					values.Add("metadata", metadataString)
-
-					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
-					return urlPath
-				},
-			},
-			wants: wants{
-				statusCode: http.StatusOK,
-			},
-			mock: func() {
-				mockRepository.EXPECT().UpdateArticle(gomock.Any(), gomock.Any()).Return(m.ResArticle{}, utils.NoRowsAffected)
-			},
-		},
-		{
 			name: "error data not found",
 			args: args{
 				method: http.MethodPost,
