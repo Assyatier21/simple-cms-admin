@@ -42,7 +42,7 @@ func (h *handler) GetCategoryDetails(ctx echo.Context) (err error) {
 
 	id, err = strconv.Atoi(ctx.FormValue("id"))
 	if err != nil {
-		res := m.SetError(http.StatusBadRequest, utils.ErrorIdNotNumberStr)
+		res := m.SetError(http.StatusBadRequest, utils.ErrorFormatIDStr)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
@@ -70,12 +70,12 @@ func (h *handler) InsertCategory(ctx echo.Context) (err error) {
 	)
 
 	if ctx.FormValue("title") == "" {
-		res := m.SetError(http.StatusBadRequest, "title can't be empty")
+		res := m.SetError(http.StatusBadRequest, utils.ErrorTitleEmptyStr)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
 	if ctx.FormValue("slug") == "" || !utils.IsValidSlug(ctx.FormValue("slug")) {
-		res := m.SetError(http.StatusBadRequest, "slug format is wrong")
+		res := m.SetError(http.StatusBadRequest, utils.ErrorFormatSlugStr)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
@@ -102,7 +102,7 @@ func (h *handler) UpdateCategory(ctx echo.Context) (err error) {
 
 	updatedCategory.Id, err = strconv.Atoi(ctx.FormValue("id"))
 	if err != nil {
-		res := m.SetError(http.StatusBadRequest, utils.ErrorIdNotNumberStr)
+		res := m.SetError(http.StatusBadRequest, utils.ErrorFormatIDStr)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
@@ -115,7 +115,7 @@ func (h *handler) UpdateCategory(ctx echo.Context) (err error) {
 	if ctx.FormValue("slug") == "" {
 		updatedCategory.Slug = ""
 	} else if !utils.IsValidSlug(ctx.FormValue("slug")) {
-		res := m.SetError(http.StatusBadRequest, "slug format wrong")
+		res := m.SetError(http.StatusBadRequest, utils.ErrorFormatSlugStr)
 		return ctx.JSON(http.StatusBadRequest, res)
 	} else {
 		updatedCategory.Slug = ctx.FormValue("slug")
@@ -155,7 +155,7 @@ func (h *handler) DeleteCategory(ctx echo.Context) (err error) {
 
 	id, err = strconv.Atoi(ctx.FormValue("id"))
 	if err != nil {
-		res := m.SetError(http.StatusBadRequest, utils.ErrorIdNotNumberStr)
+		res := m.SetError(http.StatusBadRequest, utils.ErrorFormatIDStr)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
