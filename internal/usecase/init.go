@@ -1,6 +1,10 @@
 package usecase
 
-import "github.com/labstack/echo/v4"
+import (
+	"cms-admin/internal/repository/postgres"
+
+	"github.com/labstack/echo/v4"
+)
 
 type Usecase interface {
 	GetCategoryTree(ctx echo.Context) ([]interface{}, error)
@@ -11,11 +15,11 @@ type Usecase interface {
 }
 
 type handler struct {
-	usecase Usecase
+	repository postgres.Repository
 }
 
-func New(usecase Usecase) Usecase {
+func New(repository postgres.Repository) handler {
 	return &handler{
-		usecase: usecase,
+		repository: repository,
 	}
 }

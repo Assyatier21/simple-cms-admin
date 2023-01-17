@@ -13,25 +13,16 @@ import (
 
 func (h *handler) GetCategoryTree(ctx echo.Context) (err error) {
 	var (
-		datas []m.Category
+		categories []interface{}
 	)
 
-	datas, err = h.repository.GetCategoryTree(ctx.Request().Context())
+	categories, err = h.usecase.GetCategoryTree(ctx)
 	if err != nil {
-		if err == utils.ErrNotFound {
-			res := m.SetResponse(http.StatusOK, utils.ErrNotFound.Error(), []interface{}{})
-			return ctx.JSON(http.StatusOK, res)
-		} else {
-			log.Println("[Delivery][GetCategoryTree] can't get list of categories, err:", err.Error())
-			res := m.SetError(http.StatusInternalServerError, "failed to get list of categories")
-			return ctx.JSON(http.StatusInternalServerError, res)
-		}
+		log.Println("[Delivery][GetCategoryTree] can't get list of categories, err:", err.Error())
+		res := m.SetError(http.StatusInternalServerError, "failed to get list of categories")
+		return ctx.JSON(http.StatusInternalServerError, res)
 	}
 
-	categories := make([]interface{}, len(datas))
-	for i, v := range datas {
-		categories[i] = v
-	}
 	res := m.SetResponse(http.StatusOK, "success", categories)
 	return ctx.JSON(http.StatusOK, res)
 }
@@ -173,3 +164,28 @@ func (h *handler) DeleteCategory(ctx echo.Context) (err error) {
 
 	return ctx.JSON(http.StatusOK, map[string]string{"message": "OK"})
 }
+
+// func (h *handler) GetCategoryTree(ctx echo.Context) (err error) {
+// 	var (
+// 		datas []m.Category
+// 	)
+
+// 	datas, err = h.repository.GetCategoryTree(ctx.Request().Context())
+// 	if err != nil {
+// 		if err == utils.ErrNotFound {
+// 			res := m.SetResponse(http.StatusOK, utils.ErrNotFound.Error(), []interface{}{})
+// 			return ctx.JSON(http.StatusOK, res)
+// 		} else {
+// 			log.Println("[Delivery][GetCategoryTree] can't get list of categories, err:", err.Error())
+// 			res := m.SetError(http.StatusInternalServerError, "failed to get list of categories")
+// 			return ctx.JSON(http.StatusInternalServerError, res)
+// 		}
+// 	}
+
+// 	categories := make([]interface{}, len(datas))
+// 	for i, v := range datas {
+// 		categories[i] = v
+// 	}
+// 	res := m.SetResponse(http.StatusOK, "success", categories)
+// 	return ctx.JSON(http.StatusOK, res)
+// }

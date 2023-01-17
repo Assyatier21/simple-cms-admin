@@ -1,7 +1,7 @@
 package api
 
 import (
-	"cms-admin/internal/repository/postgres"
+	"cms-admin/internal/usecase"
 
 	"github.com/labstack/echo/v4"
 )
@@ -23,11 +23,11 @@ type Handler interface {
 }
 
 type handler struct {
-	repository postgres.Repository
+	usecase usecase.Usecase
 }
 
-func New(repository postgres.Repository) Handler {
+func New(usecase usecase.Usecase) handler {
 	return &handler{
-		repository: repository,
+		usecase: usecase,
 	}
 }
