@@ -9,17 +9,11 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func GetRoutes(handler api.Handler) *echo.Echo {
+func GetRoutes(handler api.DeliveryHandler) *echo.Echo {
 	e := echo.New()
 	useMiddlewares(e)
 
 	g := e.Group("/admin/v1")
-	g.GET(utils.PathArticles, handler.GetArticles)
-	g.GET(utils.PathArticle, handler.GetArticleDetails)
-	g.POST(utils.PathArticle, handler.InsertArticle)
-	g.PATCH(utils.PathArticle, handler.UpdateArticle)
-	g.DELETE(utils.PathArticle, handler.DeleteArticle)
-
 	g.GET(utils.PathCategories, handler.GetCategoryTree)
 	g.GET(utils.PathCategory, handler.GetCategoryDetails)
 	g.POST(utils.PathCategory, handler.InsertCategory)
