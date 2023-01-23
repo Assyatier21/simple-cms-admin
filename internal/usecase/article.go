@@ -15,7 +15,7 @@ func (u *usecase) GetArticles(ctx echo.Context, limit int, offset int) ([]interf
 		articles []interface{}
 	)
 
-	resData, err := u.repository.GetArticles(ctx.Request().Context())
+	resData, err := u.repository.GetArticles(ctx.Request().Context(), limit, offset)
 	if err != nil {
 		log.Println("[Usecase][GetArticles] can't get list of articles, err:", err.Error())
 		return articles, err
@@ -54,6 +54,8 @@ func (u *usecase) InsertArticle(ctx echo.Context, title string, slug string, htm
 		Slug:        slug,
 		HtmlContent: html_content,
 		CategoryID:  category_id,
+		CreatedAt:   utils.TimeNow,
+		UpdatedAt:   utils.TimeNow,
 	}
 
 	err := json.Unmarshal([]byte(metadata), &articleData.MetaData)
@@ -109,7 +111,7 @@ func (u *usecase) UpdateArticle(ctx echo.Context, id int, title string, slug str
 		Id:          id,
 		Title:       resArticleData.Title,
 		Slug:        resArticleData.Slug,
-		HtmlContent: resArticleData.Slug,
+		HtmlContent: resArticleData.HtmlContent,
 		CategoryID:  resArticleData.ResCategory.Id,
 		MetaData:    resArticleData.MetaData,
 		CreatedAt:   resArticleData.CreatedAt,

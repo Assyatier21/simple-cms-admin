@@ -44,10 +44,11 @@ func (u *usecase) GetCategoryDetails(ctx echo.Context, id int) ([]interface{}, e
 }
 func (u *usecase) InsertCategory(ctx echo.Context, title string, slug string) ([]interface{}, error) {
 	var (
-		category []interface{}
+		category     []interface{}
+		categoryData m.Category
 	)
 
-	categoryData := m.Category{
+	categoryData = m.Category{
 		Title:     title,
 		Slug:      slug,
 		CreatedAt: utils.TimeNow,

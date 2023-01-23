@@ -100,8 +100,8 @@ func (h *handler) InsertArticle(ctx echo.Context) (err error) {
 	}
 
 	metadata = ctx.FormValue("metadata")
-	if metadata == "" || utils.IsValidMetadata(metadata) {
-		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_EMPTY_METADATA)
+	if metadata == "" {
+		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_EMPTY_METADATA)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
@@ -151,12 +151,6 @@ func (h *handler) UpdateArticle(ctx echo.Context) (err error) {
 	}
 
 	metadata = ctx.FormValue("metadata")
-	if metadata != "" {
-		if !utils.IsValidSlug(metadata) {
-			res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_METADATA)
-			return ctx.JSON(http.StatusBadRequest, res)
-		}
-	}
 
 	article, err := h.usecase.UpdateArticle(ctx, id, title, slug, html_content, category_id, metadata)
 	if err != nil {

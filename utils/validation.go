@@ -21,8 +21,3 @@ func IsValidSlug(s string) bool {
 	regex, _ := regexp.Compile(`^[a-z0-9-]+$`)
 	return regex.MatchString(s)
 }
-
-func IsValidMetadata(s string) bool {
-	regex, _ := regexp.Compile(`/^\s*{\s*"meta_title"\s*:\s*"[^"]+",\s*"meta_description"\s*:\s*"[^"]+",\s*"meta_author"\s*:\s*"[^"]+",\s*"meta_keywords"\s*:\s*\[[^\]]*\],\s*"meta_robots"\s*:\s*\[[^\]]*\]\s*}\s*$/gm`)
-	return regex.MatchString(s)
-}

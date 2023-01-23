@@ -7,7 +7,7 @@ import (
 )
 
 type RepositoryHandler interface {
-	GetArticles(ctx context.Context) ([]m.ResArticle, error)
+	GetArticles(ctx context.Context, limit int, offset int) ([]m.ResArticle, error)
 	GetArticleDetails(ctx context.Context, id int) (m.ResArticle, error)
 	InsertArticle(ctx context.Context, article m.Article) (m.ResArticle, error)
 	UpdateArticle(ctx context.Context, article m.Article) (m.ResArticle, error)
