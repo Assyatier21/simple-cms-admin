@@ -7,6 +7,12 @@ import (
 )
 
 type RepositoryHandler interface {
+	GetArticles(ctx context.Context) ([]m.ResArticle, error)
+	GetArticleDetails(ctx context.Context, id int) (m.ResArticle, error)
+	InsertArticle(ctx context.Context, article m.Article) (m.ResArticle, error)
+	UpdateArticle(ctx context.Context, article m.Article) (m.ResArticle, error)
+	DeleteArticle(ctx context.Context, id int) error
+
 	GetCategoryTree(ctx context.Context) ([]m.Category, error)
 	GetCategoryDetails(ctx context.Context, id int) (m.Category, error)
 	InsertCategory(ctx context.Context, category m.Category) (m.Category, error)
