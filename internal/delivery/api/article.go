@@ -4,11 +4,13 @@ import (
 	m "cms-admin/models"
 	msg "cms-admin/models/lib"
 	"cms-admin/utils"
+	"database/sql"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/lib/pq"
 )
 
 func (h *handler) GetArticles(ctx echo.Context) (err error) {
@@ -58,6 +60,10 @@ func (h *handler) GetArticleDetails(ctx echo.Context) (err error) {
 
 	article, err := h.usecase.GetArticleDetails(ctx, id)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "no article found", []interface{}{})
+			return ctx.JSON(http.StatusOK, res)
+		}
 		log.Println("[Delivery][GetArticleDetails] can't get article details, err:", err.Error())
 		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, err.Error())
 		return ctx.JSON(http.StatusInternalServerError, res)
@@ -107,6 +113,12 @@ func (h *handler) InsertArticle(ctx echo.Context) (err error) {
 
 	article, err := h.usecase.InsertArticle(ctx, title, slug, html_content, category_id, metadata)
 	if err != nil {
+		if pqErr, ok := err.(*pq.Error); ok {
+			if pqErr.Code == "23505" {
+				res := m.SetError(http.StatusConflict, utils.STATUS_FAILED, "slug has been used in another article")
+				return ctx.JSON(http.StatusOK, res)
+			}
+		}
 		log.Println("[Delivery][InsertArticle] can't insert article, err:", err.Error())
 		res := m.SetError(http.StatusInternalServerError, utils.STATUS_FAILED, err.Error())
 		return ctx.JSON(http.StatusInternalServerError, res)
@@ -154,6 +166,16 @@ func (h *handler) UpdateArticle(ctx echo.Context) (err error) {
 
 	article, err := h.usecase.UpdateArticle(ctx, id, title, slug, html_content, category_id, metadata)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "no article updated", []interface{}{})
+			return ctx.JSON(http.StatusOK, res)
+		}
+		if pqErr, ok := err.(*pq.Error); ok {
+			if pqErr.Code == "23505" {
+				res := m.SetError(http.StatusConflict, utils.STATUS_FAILED, "slug has been used in another article")
+				return ctx.JSON(http.StatusOK, res)
+			}
+		}
 		log.Println("[Delivery][UpdateArticle] can't update article, err:", err.Error())
 		res := m.SetError(http.StatusInternalServerError, utils.STATUS_FAILED, err.Error())
 		return ctx.JSON(http.StatusInternalServerError, res)
@@ -175,6 +197,10 @@ func (h *handler) DeleteArticle(ctx echo.Context) (err error) {
 
 	err = h.usecase.DeleteArticle(ctx, id)
 	if err != nil {
+		if err == msg.ERROR_NO_ROWS_AFFECTED {
+			res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "no article deleted", nil)
+			return ctx.JSON(http.StatusOK, res)
+		}
 		log.Println("[Delivery][DeleteArticle] can't delete article, err:", err.Error())
 		res := m.SetError(http.StatusInternalServerError, utils.STATUS_FAILED, err.Error())
 		return ctx.JSON(http.StatusInternalServerError, res)

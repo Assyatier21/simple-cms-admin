@@ -26,4 +26,5 @@ var (
 
 	ERROR_NOT_FOUND        = errors.New("data not found")
 	ERROR_NO_ROWS_AFFECTED = errors.New("no rows affected")
+	ERROR_NO_ROWS_RESULT   = errors.New("no rows in result set")
 )

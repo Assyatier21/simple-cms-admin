@@ -66,7 +66,7 @@ func (u *usecase) InsertArticle(ctx echo.Context, title string, slug string, htm
 
 	resData, err := u.repository.InsertArticle(ctx.Request().Context(), articleData)
 	if err != nil {
-		log.Println("[Delivery][InsertArticle] can't insert category, err:", err.Error())
+		log.Println("[Usecase][InsertArticle] can't insert category, err:", err.Error())
 		return article, err
 	}
 

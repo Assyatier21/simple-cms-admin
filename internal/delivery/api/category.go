@@ -4,11 +4,13 @@ import (
 	m "cms-admin/models"
 	msg "cms-admin/models/lib"
 	"cms-admin/utils"
+	"database/sql"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/lib/pq"
 )
 
 func (h *handler) GetCategoryTree(ctx echo.Context) (err error) {
@@ -35,6 +37,10 @@ func (h *handler) GetCategoryDetails(ctx echo.Context) (err error) {
 
 	category, err := h.usecase.GetCategoryDetails(ctx, id)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "no category found", []interface{}{})
+			return ctx.JSON(http.StatusOK, res)
+		}
 		log.Println("[Delivery][GetCategoryDetails] can't get category details, err:", err.Error())
 		res := m.SetError(http.StatusInternalServerError, utils.STATUS_FAILED, err.Error())
 		return ctx.JSON(http.StatusInternalServerError, res)
@@ -63,6 +69,12 @@ func (h *handler) InsertCategory(ctx echo.Context) (err error) {
 
 	category, err := h.usecase.InsertCategory(ctx, title, slug)
 	if err != nil {
+		if pqErr, ok := err.(*pq.Error); ok {
+			if pqErr.Code == "23505" {
+				res := m.SetError(http.StatusConflict, utils.STATUS_FAILED, "slug has been used in another category")
+				return ctx.JSON(http.StatusOK, res)
+			}
+		}
 		log.Println("[Delivery][InsertCategory] can't insert category, err:", err.Error())
 		res := m.SetError(http.StatusInternalServerError, utils.STATUS_FAILED, err.Error())
 		return ctx.JSON(http.StatusInternalServerError, res)
@@ -94,6 +106,16 @@ func (h *handler) UpdateCategory(ctx echo.Context) (err error) {
 
 	category, err := h.usecase.UpdateCategory(ctx, id, title, slug)
 	if err != nil {
+		if err == sql.ErrNoRows {
+			res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "no category updated", []interface{}{})
+			return ctx.JSON(http.StatusOK, res)
+		}
+		if pqErr, ok := err.(*pq.Error); ok {
+			if pqErr.Code == "23505" {
+				res := m.SetError(http.StatusConflict, utils.STATUS_FAILED, "slug has been used in another category")
+				return ctx.JSON(http.StatusOK, res)
+			}
+		}
 		log.Println("[Delivery][UpdateCategory] can't update category, err:", err.Error())
 		res := m.SetError(http.StatusInternalServerError, utils.STATUS_FAILED, err.Error())
 		return ctx.JSON(http.StatusInternalServerError, res)
@@ -115,6 +137,10 @@ func (h *handler) DeleteCategory(ctx echo.Context) (err error) {
 
 	err = h.usecase.DeleteCategory(ctx, id)
 	if err != nil {
+		if err == msg.ERROR_NO_ROWS_AFFECTED {
+			res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "no category deleted", nil)
+			return ctx.JSON(http.StatusOK, res)
+		}
 		log.Println("[Delivery][DeleteCategory] can't delete category, err:", err.Error())
 		res := m.SetError(http.StatusInternalServerError, utils.STATUS_FAILED, err.Error())
 		return ctx.JSON(http.StatusInternalServerError, res)
