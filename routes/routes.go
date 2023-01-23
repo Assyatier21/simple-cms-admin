@@ -14,11 +14,11 @@ func GetRoutes(handler api.DeliveryHandler) *echo.Echo {
 	useMiddlewares(e)
 
 	g := e.Group("/admin/v1")
-	g.GET(utils.PathCategories, handler.GetCategoryTree)
-	g.GET(utils.PathCategory, handler.GetCategoryDetails)
-	g.POST(utils.PathCategory, handler.InsertCategory)
-	g.PATCH(utils.PathCategory, handler.UpdateCategory)
-	g.DELETE(utils.PathCategory, handler.DeleteCategory)
+	g.GET(utils.PATH_CATEGORIES, handler.GetCategoryTree)
+	g.GET(utils.PATH_CATEGORY, handler.GetCategoryDetails)
+	g.POST(utils.PATH_CATEGORY, handler.InsertCategory)
+	g.PATCH(utils.PATH_CATEGORY, handler.UpdateCategory)
+	g.DELETE(utils.PATH_CATEGORY, handler.DeleteCategory)
 
 	return e
 }

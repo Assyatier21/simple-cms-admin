@@ -87,7 +87,7 @@ func (h *handler) UpdateCategory(ctx echo.Context) (err error) {
 	title = ctx.FormValue("title")
 
 	slug = ctx.FormValue("slug")
-	if !utils.IsValidSlug(slug) {
+	if slug != "" && !utils.IsValidSlug(slug) {
 		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_SLUG)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}

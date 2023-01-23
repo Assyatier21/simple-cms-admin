@@ -17,9 +17,8 @@ func (h *handler) GetArticles(ctx echo.Context) (err error) {
 		offset int
 	)
 
-	if ctx.FormValue("limit") == "" {
-		limit = 100
-	} else {
+	limit = 100
+	if ctx.FormValue("limit") != "" {
 		limit, err = strconv.Atoi(ctx.FormValue("limit"))
 		if err != nil {
 			res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_ID)
@@ -27,9 +26,8 @@ func (h *handler) GetArticles(ctx echo.Context) (err error) {
 		}
 	}
 
-	if ctx.FormValue("offset") == "" {
-		offset = 0
-	} else {
+	offset = 0
+	if ctx.FormValue("offset") != "" {
 		offset, err = strconv.Atoi(ctx.FormValue("offset"))
 		if err != nil {
 			res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_OFFSET)
@@ -136,7 +134,7 @@ func (h *handler) UpdateArticle(ctx echo.Context) (err error) {
 	title = ctx.FormValue("title")
 
 	slug = ctx.FormValue("slug")
-	if !utils.IsValidSlug(slug) {
+	if slug != "" && !utils.IsValidSlug(slug) {
 		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_SLUG)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
