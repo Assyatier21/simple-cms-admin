@@ -3,6 +3,7 @@ module cms-admin
 go 1.19
 
 require (
+	github.com/golang/mock v1.6.0
 	github.com/labstack/echo/v4 v4.9.1
 	github.com/lib/pq v1.10.7
 )
