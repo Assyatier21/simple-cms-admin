@@ -24,7 +24,7 @@ cd simple-cms-admin
 go mod tidy
 ```
 
-- Create `config` folder in root path, then create a file `connection.go` in that folder with the following contents:
+- Create `config` folder in root path, then create a file `connection.go` in that folder containing this following code:
 
 ```
 package config
