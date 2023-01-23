@@ -2,6 +2,7 @@ package api
 
 import (
 	m "cms-admin/models"
+	msg "cms-admin/models/lib"
 	"cms-admin/utils"
 	"log"
 	"net/http"
@@ -28,7 +29,7 @@ func (h *handler) GetCategoryDetails(ctx echo.Context) (err error) {
 
 	id, err = strconv.Atoi(ctx.FormValue("id"))
 	if err != nil {
-		res := m.SetError(http.StatusBadRequest, utils.ErrorFormatIDStr)
+		res := m.SetError(http.StatusBadRequest, msg.ERROR_FORMAT_EMPTY_ID)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
@@ -48,17 +49,17 @@ func (h *handler) InsertCategory(ctx echo.Context) (err error) {
 		slug  string
 	)
 
-	if ctx.FormValue("title") == "" {
-		res := m.SetError(http.StatusBadRequest, utils.ErrorTitleEmptyStr)
-		return ctx.JSON(http.StatusBadRequest, res)
-	}
 	title = ctx.FormValue("title")
-
-	if ctx.FormValue("slug") == "" || !utils.IsValidSlug(ctx.FormValue("slug")) {
-		res := m.SetError(http.StatusBadRequest, utils.ErrorFormatSlugStr)
+	if title == "" {
+		res := m.SetError(http.StatusBadRequest, msg.ERROR_EMPTY_TITLE)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
+
 	slug = ctx.FormValue("slug")
+	if slug == "" || !utils.IsValidSlug(slug) {
+		res := m.SetError(http.StatusBadRequest, msg.ERROR_FORMAT_EMPTY_SLUG)
+		return ctx.JSON(http.StatusBadRequest, res)
+	}
 
 	category, err := h.usecase.InsertCategory(ctx, title, slug)
 	if err != nil {
@@ -79,15 +80,15 @@ func (h *handler) UpdateCategory(ctx echo.Context) (err error) {
 
 	id, err = strconv.Atoi(ctx.FormValue("id"))
 	if err != nil {
-		res := m.SetError(http.StatusBadRequest, utils.ErrorFormatIDStr)
+		res := m.SetError(http.StatusBadRequest, msg.ERROR_FORMAT_EMPTY_ID)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
 	title = ctx.FormValue("title")
-	slug = ctx.FormValue("slug")
 
+	slug = ctx.FormValue("slug")
 	if !utils.IsValidSlug(slug) {
-		res := m.SetError(http.StatusBadRequest, utils.ErrorFormatSlugStr)
+		res := m.SetError(http.StatusBadRequest, msg.ERROR_FORMAT_SLUG)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
@@ -108,7 +109,7 @@ func (h *handler) DeleteCategory(ctx echo.Context) (err error) {
 
 	id, err = strconv.Atoi(ctx.FormValue("id"))
 	if err != nil {
-		res := m.SetError(http.StatusBadRequest, utils.ErrorFormatIDStr)
+		res := m.SetError(http.StatusBadRequest, msg.ERROR_FORMAT_EMPTY_ID)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 

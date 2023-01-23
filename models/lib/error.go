@@ -1,4 +1,4 @@
-package utils
+package models
 
 var (
 	ERROR_FORMAT_ID          = "id must be an integer"
