@@ -1,5 +1,7 @@
 package models
 
+import "errors"
+
 var (
 	ERROR_FORMAT_ID          = "id must be an integer"
 	ERROR_FORMAT_LIMIT       = "limit must be an integer"
@@ -21,4 +23,7 @@ var (
 	ERROR_FORMAT_EMPTY_SLUG        = "incorrect slug format or slug can't be empty"
 	ERROR_FORMAT_EMPTY_CATEGORY_ID = "incorrect category_id format or category_id can't be empty"
 	ERROR_FORMAT_EMPTY_METADATA    = "incorrect metadata format or metadata can't be empty"
+
+	ERROR_NOT_FOUND        = errors.New("data not found")
+	ERROR_NO_ROWS_AFFECTED = errors.New("no rows affected")
 )

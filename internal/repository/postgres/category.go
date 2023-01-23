@@ -3,7 +3,8 @@ package postgres
 import (
 	database "cms-admin/database/queries"
 	m "cms-admin/models"
-	"cms-admin/utils"
+	msg "cms-admin/models/lib"
+
 	"context"
 	"database/sql"
 	"log"
@@ -83,7 +84,7 @@ func (r *repository) DeleteCategory(ctx context.Context, id int) error {
 
 	rowsAffected, _ := rows.RowsAffected()
 	if rowsAffected == 0 {
-		return utils.NoRowsAffected
+		return msg.ERROR_NO_ROWS_AFFECTED
 	}
 
 	return nil
