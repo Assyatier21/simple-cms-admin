@@ -1,6 +1,6 @@
 # Simple CMS Admin
 
-Welcome to the API documentation for the simple CMS Service. This API allows you to get an article and category as admin. This service using echo framework as well.
+Welcome to the Simple CMS Admin Service. An open-source Content Management System based on the echo framework. This service allows you to manage articles and categories as an admin.
 
 ## Getting Started
 
@@ -14,14 +14,14 @@ Welcome to the API documentation for the simple CMS Service. This API allows you
 - Clone the git repository:
 
 ```
-git clone https://github.com/Assyatier21/simple-cms-admin.git
-cd simple-cms-admin
+$ git clone https://github.com/Assyatier21/simple-cms-admin.git
+$ cd simple-cms-admin
 ```
 
 - Install Dependencies
 
 ```
-go mod tidy
+$ go mod tidy
 ```
 
 - Create `config` folder in root path, then create a file `connection.go` in that folder containing this following code:
@@ -40,13 +40,19 @@ const (
 )
 ```
 
+alternatively, we can just run this following command using makefile:
+
+```
+$ make all
+```
+
 ### Running
 
 ```
-go run cmd/main.go
+$ go run cmd/main.go
 ```
 
-### API Endpoints Documentation
+### Features
 
 The API has the following endpoints:
 
@@ -58,6 +64,8 @@ The API has the following endpoints:
 We can test the endpoint using the collection located in : `simple-cms-admin/tools`.
 
 ### Testing
+
+###### note: unit tests has not been implemented in this version
 
 ```
 go test -v -coverprofile coverage.out ./...
