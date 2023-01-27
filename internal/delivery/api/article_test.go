@@ -3,6 +3,7 @@ package api
 import (
 	mock_usecase "cms-admin/mock/usecase"
 	m "cms-admin/models"
+	msg "cms-admin/models/lib"
 	"database/sql"
 	"errors"
 	"fmt"
@@ -574,6 +575,339 @@ func Test_handler_InsertArticle(t *testing.T) {
 
 			if err := h.InsertArticle(c); err != nil {
 				t.Errorf("handler.InsertArticle() error = %v", err)
+			}
+
+			assert.Equal(t, tt.wants.statusCode, rec.Code)
+		})
+	}
+}
+func Test_handler_UpdateArticle(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockUsecase := mock_usecase.NewMockUsecaseHandler(ctrl)
+	metadataString := `{
+		"meta_title":"Test Article",
+		"meta_description":"This is a test article",
+		"meta_author":"Test Author",
+		"meta_keywords":
+		[
+			"test",
+			"article"
+		],
+		"meta_robots":
+		[	
+			"index",
+			"follow"
+		]
+	}`
+
+	type args struct {
+		method string
+		path   func() string
+	}
+	type wants struct {
+		statusCode int
+	}
+	tests := []struct {
+		name  string
+		args  args
+		wants wants
+		mock  func()
+	}{
+		{
+			name: "Success",
+			args: args{
+				method: http.MethodPatch,
+				path: func() string {
+					values := url.Values{}
+					values.Add("id", "1")
+					values.Add("title", "title 1")
+					values.Add("slug", "article-1")
+					values.Add("html_content", "<p> this is article 1</p>")
+					values.Add("category_id", "1")
+					values.Add("metadata", metadataString)
+
+					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
+					return urlPath
+				},
+			},
+			wants: wants{
+				statusCode: http.StatusOK,
+			},
+			mock: func() {
+				data := m.ResArticle{
+					Id:          1,
+					Title:       "title 1",
+					Slug:        "article-1",
+					HtmlContent: "<p> this is article 1</p>",
+					ResCategory: m.ResCategory{
+						Id:    1,
+						Title: "catgegory 1",
+						Slug:  "category-1",
+					},
+					CreatedAt: "2022-12-01 20:29:00",
+					UpdatedAt: "2022-12-01 20:29:00",
+				}
+				var article []interface{}
+				article = append(article, data)
+
+				mockUsecase.EXPECT().UpdateArticle(gomock.Any(), 1, "title 1", "article-1", "<p> this is article 1</p>", 1, metadataString).Return(article, nil)
+			},
+		},
+		{
+			name: "Error id not integer",
+			args: args{
+				method: http.MethodPatch,
+				path: func() string {
+					values := url.Values{}
+					values.Add("id", "not_number")
+					values.Add("title", "title 1")
+					values.Add("slug", "article-1")
+					values.Add("html_content", "<p> this is article 1</p>")
+					values.Add("category_id", "1")
+					values.Add("metadata", metadataString)
+
+					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
+					return urlPath
+				},
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			mock: func() {},
+		},
+		{
+			name: "Error invalid slug",
+			args: args{
+				method: http.MethodPatch,
+				path: func() string {
+					values := url.Values{}
+					values.Add("id", "1")
+					values.Add("title", "title 1")
+					values.Add("slug", "article - 1")
+					values.Add("html_content", "<p> this is article 1</p>")
+					values.Add("category_id", "1")
+					values.Add("metadata", metadataString)
+
+					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
+					return urlPath
+				},
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			mock: func() {},
+		},
+		{
+			name: "Error category_id not integer",
+			args: args{
+				method: http.MethodPatch,
+				path: func() string {
+					values := url.Values{}
+					values.Add("id", "1")
+					values.Add("title", "title 1")
+					values.Add("slug", "article-1")
+					values.Add("html_content", "<p> this is article 1</p>")
+					values.Add("category_id", "not_number")
+					values.Add("metadata", metadataString)
+
+					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
+					return urlPath
+				},
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			mock: func() {},
+		},
+		{
+			name: "Error sql no rows affected",
+			args: args{
+				method: http.MethodPatch,
+				path: func() string {
+					values := url.Values{}
+					values.Add("id", "1")
+					values.Add("title", "title 1")
+					values.Add("slug", "article-1")
+					values.Add("html_content", "<p> this is article 1</p>")
+					values.Add("category_id", "1")
+					values.Add("metadata", metadataString)
+
+					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
+					return urlPath
+				},
+			},
+			wants: wants{
+				statusCode: http.StatusOK,
+			},
+			mock: func() {
+				data := m.ResArticle{
+					Id:          1,
+					Title:       "title 1",
+					Slug:        "article-1",
+					HtmlContent: "<p> this is article 1</p>",
+					ResCategory: m.ResCategory{
+						Id:    1,
+						Title: "catgegory 1",
+						Slug:  "category-1",
+					},
+					CreatedAt: "2022-12-01 20:29:00",
+					UpdatedAt: "2022-12-01 20:29:00",
+				}
+				var article []interface{}
+				article = append(article, data)
+
+				mockUsecase.EXPECT().UpdateArticle(gomock.Any(), 1, "title 1", "article-1", "<p> this is article 1</p>", 1, metadataString).Return(article, sql.ErrNoRows)
+			},
+		},
+		{
+			name: "Error repository",
+			args: args{
+				method: http.MethodPatch,
+				path: func() string {
+					values := url.Values{}
+					values.Add("id", "1")
+					values.Add("title", "title 1")
+					values.Add("slug", "article-1")
+					values.Add("html_content", "<p> this is article 1</p>")
+					values.Add("category_id", "1")
+					values.Add("metadata", metadataString)
+
+					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
+					return urlPath
+				},
+			},
+			wants: wants{
+				statusCode: http.StatusOK,
+			},
+			mock: func() {
+				data := m.ResArticle{
+					Id:          1,
+					Title:       "title 1",
+					Slug:        "article-1",
+					HtmlContent: "<p> this is article 1</p>",
+					ResCategory: m.ResCategory{
+						Id:    1,
+						Title: "catgegory 1",
+						Slug:  "category-1",
+					},
+					CreatedAt: "2022-12-01 20:29:00",
+					UpdatedAt: "2022-12-01 20:29:00",
+				}
+				var article []interface{}
+				article = append(article, data)
+
+				mockUsecase.EXPECT().UpdateArticle(gomock.Any(), 1, "title 1", "article-1", "<p> this is article 1</p>", 1, metadataString).Return(article, errors.New("repository error"))
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := echo.New()
+			req := httptest.NewRequest(tt.args.method, tt.args.path(), nil)
+			rec := httptest.NewRecorder()
+			c := e.NewContext(req, rec)
+
+			tt.mock()
+
+			h := &handler{
+				usecase: mockUsecase,
+			}
+
+			if err := h.UpdateArticle(c); err != nil {
+				t.Errorf("handler.UpdateArticle() error = %v", err)
+			}
+
+			assert.Equal(t, tt.wants.statusCode, rec.Code)
+		})
+	}
+}
+func Test_handler_DeleteArticle(t *testing.T) {
+	ctrl := gomock.NewController(t)
+	defer ctrl.Finish()
+
+	mockUsecase := mock_usecase.NewMockUsecaseHandler(ctrl)
+
+	type args struct {
+		method string
+		path   string
+	}
+	type wants struct {
+		statusCode int
+	}
+	tests := []struct {
+		name  string
+		args  args
+		wants wants
+		mock  func()
+	}{
+		{
+			name: "success",
+			args: args{
+				method: http.MethodDelete,
+				path:   "/article?id=1",
+			},
+			wants: wants{
+				statusCode: http.StatusOK,
+			},
+			mock: func() {
+				mockUsecase.EXPECT().DeleteArticle(gomock.Any(), 1).Return(nil)
+			},
+		},
+		{
+			name: "error id not number",
+			args: args{
+				method: http.MethodDelete,
+				path:   "/article?id=not_number",
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			mock: func() {},
+		},
+		{
+			name: "no rows affected",
+			args: args{
+				method: http.MethodDelete,
+				path:   "/article?id=1",
+			},
+			wants: wants{
+				statusCode: http.StatusOK,
+			},
+			mock: func() {
+				mockUsecase.EXPECT().DeleteArticle(gomock.Any(), 1).Return(msg.ERROR_NO_ROWS_AFFECTED)
+			},
+		},
+		{
+			name: "repository error",
+			args: args{
+				method: http.MethodDelete,
+				path:   "/article?id=1",
+			},
+			wants: wants{
+				statusCode: http.StatusInternalServerError,
+			},
+			mock: func() {
+				mockUsecase.EXPECT().DeleteArticle(gomock.Any(), 1).Return(errors.New("repository error"))
+			},
+		},
+	}
+	for _, tt := range tests {
+		t.Run(tt.name, func(t *testing.T) {
+			e := echo.New()
+			req := httptest.NewRequest(tt.args.method, tt.args.path, nil)
+			rec := httptest.NewRecorder()
+			c := e.NewContext(req, rec)
+
+			tt.mock()
+
+			h := &handler{
+				usecase: mockUsecase,
+			}
+
+			if err := h.DeleteArticle(c); err != nil {
+				t.Errorf("handler.DeleteArticle() error = %v", err)
 			}
 
 			assert.Equal(t, tt.wants.statusCode, rec.Code)
