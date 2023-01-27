@@ -12,9 +12,9 @@ import (
 func main() {
 	db := db.Init()
 
-	repository := postgres.New(db)
-	usecase := usecase.New(repository)
-	delivery := api.New(usecase)
+	repository := postgres.NewRepository(db)
+	usecase := usecase.NewUsecase(repository)
+	delivery := api.NewHandler(usecase)
 	echo := routes.GetRoutes(delivery)
 
 	host := fmt.Sprintf("%s:%s", "127.0.0.1", "8800")

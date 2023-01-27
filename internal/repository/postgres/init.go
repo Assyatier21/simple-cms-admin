@@ -24,7 +24,7 @@ type repository struct {
 	db *sql.DB
 }
 
-func New(db *sql.DB) RepositoryHandler {
+func NewRepository(db *sql.DB) RepositoryHandler {
 	return &repository{
 		db: db,
 	}

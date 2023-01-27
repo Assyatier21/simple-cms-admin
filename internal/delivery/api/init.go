@@ -24,7 +24,7 @@ type handler struct {
 	usecase usecase.UsecaseHandler
 }
 
-func New(usecase usecase.UsecaseHandler) DeliveryHandler {
+func NewHandler(usecase usecase.UsecaseHandler) DeliveryHandler {
 	return &handler{
 		usecase: usecase,
 	}

@@ -24,7 +24,7 @@ type usecase struct {
 	repository postgres.RepositoryHandler
 }
 
-func New(repository postgres.RepositoryHandler) UsecaseHandler {
+func NewUsecase(repository postgres.RepositoryHandler) UsecaseHandler {
 	return &usecase{
 		repository: repository,
 	}

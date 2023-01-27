@@ -9,6 +9,7 @@ require (
 )
 
 require (
+	github.com/go-playground/assert v1.2.1 // indirect
 	github.com/golang-jwt/jwt v3.2.2+incompatible // indirect
 	github.com/labstack/gommon v0.4.0 // indirect
 	github.com/mattn/go-colorable v0.1.11 // indirect
