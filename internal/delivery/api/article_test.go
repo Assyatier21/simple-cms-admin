@@ -430,6 +430,134 @@ func Test_handler_InsertArticle(t *testing.T) {
 				mockUsecase.EXPECT().InsertArticle(gomock.Any(), "title 1", "article-1", "<p> this is article 1</p>", 1, metadataString).Return(article, nil)
 			},
 		},
+		{
+			name: "error empty title",
+			args: args{
+				method: http.MethodPost,
+				path: func() string {
+					values := url.Values{}
+					values.Add("title", "")
+					values.Add("slug", "article-1")
+					values.Add("html_content", "<p> this is article 1</p>")
+					values.Add("category_id", "1")
+					values.Add("metadata", metadataString)
+
+					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
+					return urlPath
+				},
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			mock: func() {},
+		},
+		{
+			name: "error empty slug",
+			args: args{
+				method: http.MethodPost,
+				path: func() string {
+					values := url.Values{}
+					values.Add("title", "title")
+					values.Add("slug", "")
+					values.Add("html_content", "<p> this is article 1</p>")
+					values.Add("category_id", "1")
+					values.Add("metadata", metadataString)
+
+					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
+					return urlPath
+				},
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			mock: func() {},
+		},
+		{
+			name: "error empty html_content",
+			args: args{
+				method: http.MethodPost,
+				path: func() string {
+					values := url.Values{}
+					values.Add("title", "title")
+					values.Add("slug", "article-1")
+					values.Add("html_content", "")
+					values.Add("category_id", "1")
+					values.Add("metadata", metadataString)
+
+					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
+					return urlPath
+				},
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			mock: func() {},
+		},
+		{
+			name: "error empty category_id",
+			args: args{
+				method: http.MethodPost,
+				path: func() string {
+					values := url.Values{}
+					values.Add("title", "title")
+					values.Add("slug", "article-1")
+					values.Add("html_content", "<p> this is article 1</p>")
+					values.Add("category_id", "")
+					values.Add("metadata", metadataString)
+
+					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
+					return urlPath
+				},
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			mock: func() {},
+		},
+		{
+			name: "error empty metadata",
+			args: args{
+				method: http.MethodPost,
+				path: func() string {
+					values := url.Values{}
+					values.Add("title", "title")
+					values.Add("slug", "article-1")
+					values.Add("html_content", "<p> this is article 1</p>")
+					values.Add("category_id", "1")
+					values.Add("metadata", "")
+
+					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
+					return urlPath
+				},
+			},
+			wants: wants{
+				statusCode: http.StatusBadRequest,
+			},
+			mock: func() {},
+		},
+		{
+			name: "error repository",
+			args: args{
+				method: http.MethodPost,
+				path: func() string {
+					values := url.Values{}
+					values.Add("title", "title 1")
+					values.Add("slug", "article-1")
+					values.Add("html_content", "<p> this is article 1</p>")
+					values.Add("category_id", "1")
+					values.Add("metadata", metadataString)
+
+					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
+					return urlPath
+				},
+			},
+			wants: wants{
+				statusCode: http.StatusInternalServerError,
+			},
+			mock: func() {
+				mockUsecase.EXPECT().InsertArticle(gomock.Any(), "title 1", "article-1", "<p> this is article 1</p>", 1, metadataString).Return(nil, errors.New("error repository"))
+			},
+		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {

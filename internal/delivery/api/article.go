@@ -115,7 +115,7 @@ func (h *handler) InsertArticle(ctx echo.Context) (err error) {
 	if err != nil {
 		if pqErr, ok := err.(*pq.Error); ok {
 			if pqErr.Code == "23505" {
-				res := m.SetError(http.StatusConflict, utils.STATUS_FAILED, "slug has been used in another article")
+				res := m.SetError(http.StatusConflict, utils.STATUS_FAILED, pqErr.Error())
 				return ctx.JSON(http.StatusOK, res)
 			}
 		}
