@@ -3,19 +3,18 @@ package usecase
 import (
 	m "cms-admin/models"
 	"cms-admin/utils"
+	"context"
 	"encoding/json"
 
 	"log"
-
-	"github.com/labstack/echo/v4"
 )
 
-func (u *usecase) GetArticles(ctx echo.Context, limit int, offset int) ([]interface{}, error) {
+func (u *usecase) GetArticles(ctx context.Context, limit int, offset int) ([]interface{}, error) {
 	var (
 		articles []interface{}
 	)
 
-	resData, err := u.repository.GetArticles(ctx.Request().Context(), limit, offset)
+	resData, err := u.repository.GetArticles(ctx, limit, offset)
 	if err != nil {
 		log.Println("[Usecase][GetArticles] can't get list of articles, err:", err.Error())
 		return articles, err
@@ -29,11 +28,11 @@ func (u *usecase) GetArticles(ctx echo.Context, limit int, offset int) ([]interf
 
 	return articles, nil
 }
-func (u *usecase) GetArticleDetails(ctx echo.Context, id int) ([]interface{}, error) {
+func (u *usecase) GetArticleDetails(ctx context.Context, id int) ([]interface{}, error) {
 	var (
 		article []interface{}
 	)
-	resData, err := u.repository.GetArticleDetails(ctx.Request().Context(), id)
+	resData, err := u.repository.GetArticleDetails(ctx, id)
 	if err != nil {
 		log.Println("[Usecase][GetArticleDetails] can't get article details, err:", err.Error())
 		return article, err
@@ -43,7 +42,7 @@ func (u *usecase) GetArticleDetails(ctx echo.Context, id int) ([]interface{}, er
 	article = append(article, resData)
 	return article, nil
 }
-func (u *usecase) InsertArticle(ctx echo.Context, title string, slug string, html_content string, category_id int, metadata string) ([]interface{}, error) {
+func (u *usecase) InsertArticle(ctx context.Context, title string, slug string, html_content string, category_id int, metadata string) ([]interface{}, error) {
 	var (
 		article     []interface{}
 		articleData m.Article
@@ -64,7 +63,7 @@ func (u *usecase) InsertArticle(ctx echo.Context, title string, slug string, htm
 		return article, nil
 	}
 
-	resData, err := u.repository.InsertArticle(ctx.Request().Context(), articleData)
+	resData, err := u.repository.InsertArticle(ctx, articleData)
 	if err != nil {
 		log.Println("[Usecase][InsertArticle] can't insert category, err:", err.Error())
 		return article, err
@@ -75,14 +74,14 @@ func (u *usecase) InsertArticle(ctx echo.Context, title string, slug string, htm
 	article = append(article, resData)
 	return article, nil
 }
-func (u *usecase) UpdateArticle(ctx echo.Context, id int, title string, slug string, html_content string, category_id int, metadata string) ([]interface{}, error) {
+func (u *usecase) UpdateArticle(ctx context.Context, id int, title string, slug string, html_content string, category_id int, metadata string) ([]interface{}, error) {
 	var (
 		article        []interface{}
 		resArticleData m.ResArticle
 		articleData    m.Article
 	)
 
-	resArticleData, _ = u.repository.GetArticleDetails(ctx.Request().Context(), id)
+	resArticleData, _ = u.repository.GetArticleDetails(ctx, id)
 	if title != "" {
 		resArticleData.Title = title
 	}
@@ -119,7 +118,7 @@ func (u *usecase) UpdateArticle(ctx echo.Context, id int, title string, slug str
 
 	articleData.UpdatedAt = utils.FormattedTime(utils.TimeNow)
 
-	resArticleData, err := u.repository.UpdateArticle(ctx.Request().Context(), articleData)
+	resArticleData, err := u.repository.UpdateArticle(ctx, articleData)
 	if err != nil {
 		log.Println("[Usecase][UpdateArticle] can't update article, err:", err.Error())
 		return article, err
@@ -131,8 +130,8 @@ func (u *usecase) UpdateArticle(ctx echo.Context, id int, title string, slug str
 	article = append(article, resArticleData)
 	return article, nil
 }
-func (u *usecase) DeleteArticle(ctx echo.Context, id int) error {
-	err := u.repository.DeleteArticle(ctx.Request().Context(), id)
+func (u *usecase) DeleteArticle(ctx context.Context, id int) error {
+	err := u.repository.DeleteArticle(ctx, id)
 	if err != nil {
 		log.Println("[Usecase][DeleteArticle] can't delete article, err:", err.Error())
 		return err

@@ -8,7 +8,7 @@ import (
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	v4 "github.com/labstack/echo/v4"
+	echo "github.com/labstack/echo/v4"
 )
 
 // MockDeliveryHandler is a mock of DeliveryHandler interface.
@@ -35,7 +35,7 @@ func (m *MockDeliveryHandler) EXPECT() *MockDeliveryHandlerMockRecorder {
 }
 
 // DeleteArticle mocks base method.
-func (m *MockDeliveryHandler) DeleteArticle(ctx v4.Context) error {
+func (m *MockDeliveryHandler) DeleteArticle(ctx echo.Context) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteArticle", ctx)
 	ret0, _ := ret[0].(error)
@@ -49,7 +49,7 @@ func (mr *MockDeliveryHandlerMockRecorder) DeleteArticle(ctx interface{}) *gomoc
 }
 
 // DeleteCategory mocks base method.
-func (m *MockDeliveryHandler) DeleteCategory(ctx v4.Context) error {
+func (m *MockDeliveryHandler) DeleteCategory(ctx echo.Context) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteCategory", ctx)
 	ret0, _ := ret[0].(error)
@@ -63,7 +63,7 @@ func (mr *MockDeliveryHandlerMockRecorder) DeleteCategory(ctx interface{}) *gomo
 }
 
 // GetArticleDetails mocks base method.
-func (m *MockDeliveryHandler) GetArticleDetails(ctx v4.Context) error {
+func (m *MockDeliveryHandler) GetArticleDetails(ctx echo.Context) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetArticleDetails", ctx)
 	ret0, _ := ret[0].(error)
@@ -77,7 +77,7 @@ func (mr *MockDeliveryHandlerMockRecorder) GetArticleDetails(ctx interface{}) *g
 }
 
 // GetArticles mocks base method.
-func (m *MockDeliveryHandler) GetArticles(ctx v4.Context) error {
+func (m *MockDeliveryHandler) GetArticles(ctx echo.Context) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetArticles", ctx)
 	ret0, _ := ret[0].(error)
@@ -91,7 +91,7 @@ func (mr *MockDeliveryHandlerMockRecorder) GetArticles(ctx interface{}) *gomock.
 }
 
 // GetCategoryDetails mocks base method.
-func (m *MockDeliveryHandler) GetCategoryDetails(ctx v4.Context) error {
+func (m *MockDeliveryHandler) GetCategoryDetails(ctx echo.Context) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetCategoryDetails", ctx)
 	ret0, _ := ret[0].(error)
@@ -105,7 +105,7 @@ func (mr *MockDeliveryHandlerMockRecorder) GetCategoryDetails(ctx interface{}) *
 }
 
 // GetCategoryTree mocks base method.
-func (m *MockDeliveryHandler) GetCategoryTree(ctx v4.Context) error {
+func (m *MockDeliveryHandler) GetCategoryTree(ctx echo.Context) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetCategoryTree", ctx)
 	ret0, _ := ret[0].(error)
@@ -119,7 +119,7 @@ func (mr *MockDeliveryHandlerMockRecorder) GetCategoryTree(ctx interface{}) *gom
 }
 
 // InsertArticle mocks base method.
-func (m *MockDeliveryHandler) InsertArticle(ctx v4.Context) error {
+func (m *MockDeliveryHandler) InsertArticle(ctx echo.Context) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "InsertArticle", ctx)
 	ret0, _ := ret[0].(error)
@@ -133,7 +133,7 @@ func (mr *MockDeliveryHandlerMockRecorder) InsertArticle(ctx interface{}) *gomoc
 }
 
 // InsertCategory mocks base method.
-func (m *MockDeliveryHandler) InsertCategory(ctx v4.Context) error {
+func (m *MockDeliveryHandler) InsertCategory(ctx echo.Context) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "InsertCategory", ctx)
 	ret0, _ := ret[0].(error)
@@ -147,7 +147,7 @@ func (mr *MockDeliveryHandlerMockRecorder) InsertCategory(ctx interface{}) *gomo
 }
 
 // UpdateArticle mocks base method.
-func (m *MockDeliveryHandler) UpdateArticle(ctx v4.Context) error {
+func (m *MockDeliveryHandler) UpdateArticle(ctx echo.Context) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateArticle", ctx)
 	ret0, _ := ret[0].(error)
@@ -161,7 +161,7 @@ func (mr *MockDeliveryHandlerMockRecorder) UpdateArticle(ctx interface{}) *gomoc
 }
 
 // UpdateCategory mocks base method.
-func (m *MockDeliveryHandler) UpdateCategory(ctx v4.Context) error {
+func (m *MockDeliveryHandler) UpdateCategory(ctx echo.Context) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateCategory", ctx)
 	ret0, _ := ret[0].(error)

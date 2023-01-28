@@ -5,10 +5,10 @@
 package mock_usecase
 
 import (
+	context "context"
 	reflect "reflect"
 
 	gomock "github.com/golang/mock/gomock"
-	v4 "github.com/labstack/echo/v4"
 )
 
 // MockUsecaseHandler is a mock of UsecaseHandler interface.
@@ -35,7 +35,7 @@ func (m *MockUsecaseHandler) EXPECT() *MockUsecaseHandlerMockRecorder {
 }
 
 // DeleteArticle mocks base method.
-func (m *MockUsecaseHandler) DeleteArticle(ctx v4.Context, id int) error {
+func (m *MockUsecaseHandler) DeleteArticle(ctx context.Context, id int) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteArticle", ctx, id)
 	ret0, _ := ret[0].(error)
@@ -49,7 +49,7 @@ func (mr *MockUsecaseHandlerMockRecorder) DeleteArticle(ctx, id interface{}) *go
 }
 
 // DeleteCategory mocks base method.
-func (m *MockUsecaseHandler) DeleteCategory(ctx v4.Context, id int) error {
+func (m *MockUsecaseHandler) DeleteCategory(ctx context.Context, id int) error {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "DeleteCategory", ctx, id)
 	ret0, _ := ret[0].(error)
@@ -63,7 +63,7 @@ func (mr *MockUsecaseHandlerMockRecorder) DeleteCategory(ctx, id interface{}) *g
 }
 
 // GetArticleDetails mocks base method.
-func (m *MockUsecaseHandler) GetArticleDetails(ctx v4.Context, id int) ([]interface{}, error) {
+func (m *MockUsecaseHandler) GetArticleDetails(ctx context.Context, id int) ([]interface{}, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetArticleDetails", ctx, id)
 	ret0, _ := ret[0].([]interface{})
@@ -78,7 +78,7 @@ func (mr *MockUsecaseHandlerMockRecorder) GetArticleDetails(ctx, id interface{})
 }
 
 // GetArticles mocks base method.
-func (m *MockUsecaseHandler) GetArticles(ctx v4.Context, limit, offset int) ([]interface{}, error) {
+func (m *MockUsecaseHandler) GetArticles(ctx context.Context, limit, offset int) ([]interface{}, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetArticles", ctx, limit, offset)
 	ret0, _ := ret[0].([]interface{})
@@ -93,7 +93,7 @@ func (mr *MockUsecaseHandlerMockRecorder) GetArticles(ctx, limit, offset interfa
 }
 
 // GetCategoryDetails mocks base method.
-func (m *MockUsecaseHandler) GetCategoryDetails(ctx v4.Context, id int) ([]interface{}, error) {
+func (m *MockUsecaseHandler) GetCategoryDetails(ctx context.Context, id int) ([]interface{}, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetCategoryDetails", ctx, id)
 	ret0, _ := ret[0].([]interface{})
@@ -108,7 +108,7 @@ func (mr *MockUsecaseHandlerMockRecorder) GetCategoryDetails(ctx, id interface{}
 }
 
 // GetCategoryTree mocks base method.
-func (m *MockUsecaseHandler) GetCategoryTree(ctx v4.Context) ([]interface{}, error) {
+func (m *MockUsecaseHandler) GetCategoryTree(ctx context.Context) ([]interface{}, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "GetCategoryTree", ctx)
 	ret0, _ := ret[0].([]interface{})
@@ -123,7 +123,7 @@ func (mr *MockUsecaseHandlerMockRecorder) GetCategoryTree(ctx interface{}) *gomo
 }
 
 // InsertArticle mocks base method.
-func (m *MockUsecaseHandler) InsertArticle(ctx v4.Context, title, slug, html_content string, category_id int, metadata string) ([]interface{}, error) {
+func (m *MockUsecaseHandler) InsertArticle(ctx context.Context, title, slug, html_content string, category_id int, metadata string) ([]interface{}, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "InsertArticle", ctx, title, slug, html_content, category_id, metadata)
 	ret0, _ := ret[0].([]interface{})
@@ -138,7 +138,7 @@ func (mr *MockUsecaseHandlerMockRecorder) InsertArticle(ctx, title, slug, html_c
 }
 
 // InsertCategory mocks base method.
-func (m *MockUsecaseHandler) InsertCategory(ctx v4.Context, title, slug string) ([]interface{}, error) {
+func (m *MockUsecaseHandler) InsertCategory(ctx context.Context, title, slug string) ([]interface{}, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "InsertCategory", ctx, title, slug)
 	ret0, _ := ret[0].([]interface{})
@@ -153,7 +153,7 @@ func (mr *MockUsecaseHandlerMockRecorder) InsertCategory(ctx, title, slug interf
 }
 
 // UpdateArticle mocks base method.
-func (m *MockUsecaseHandler) UpdateArticle(ctx v4.Context, id int, title, slug, html_content string, category_id int, metadata string) ([]interface{}, error) {
+func (m *MockUsecaseHandler) UpdateArticle(ctx context.Context, id int, title, slug, html_content string, category_id int, metadata string) ([]interface{}, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateArticle", ctx, id, title, slug, html_content, category_id, metadata)
 	ret0, _ := ret[0].([]interface{})
@@ -168,7 +168,7 @@ func (mr *MockUsecaseHandlerMockRecorder) UpdateArticle(ctx, id, title, slug, ht
 }
 
 // UpdateCategory mocks base method.
-func (m *MockUsecaseHandler) UpdateCategory(ctx v4.Context, id int, title, slug string) ([]interface{}, error) {
+func (m *MockUsecaseHandler) UpdateCategory(ctx context.Context, id int, title, slug string) ([]interface{}, error) {
 	m.ctrl.T.Helper()
 	ret := m.ctrl.Call(m, "UpdateCategory", ctx, id, title, slug)
 	ret0, _ := ret[0].([]interface{})

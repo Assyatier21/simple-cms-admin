@@ -3,17 +3,16 @@ package usecase
 import (
 	m "cms-admin/models"
 	"cms-admin/utils"
+	"context"
 	"log"
-
-	"github.com/labstack/echo/v4"
 )
 
-func (u *usecase) GetCategoryTree(ctx echo.Context) ([]interface{}, error) {
+func (u *usecase) GetCategoryTree(ctx context.Context) ([]interface{}, error) {
 	var (
 		categories []interface{}
 	)
 
-	resData, err := u.repository.GetCategoryTree(ctx.Request().Context())
+	resData, err := u.repository.GetCategoryTree(ctx)
 	if err != nil {
 		log.Println("[Usecase][GetCategoryTree] can't get list of categories, err:", err.Error())
 		return categories, err
@@ -27,12 +26,12 @@ func (u *usecase) GetCategoryTree(ctx echo.Context) ([]interface{}, error) {
 
 	return categories, nil
 }
-func (u *usecase) GetCategoryDetails(ctx echo.Context, id int) ([]interface{}, error) {
+func (u *usecase) GetCategoryDetails(ctx context.Context, id int) ([]interface{}, error) {
 	var (
 		category []interface{}
 	)
 
-	resData, err := u.repository.GetCategoryDetails(ctx.Request().Context(), id)
+	resData, err := u.repository.GetCategoryDetails(ctx, id)
 	if err != nil {
 		log.Println("[Usecase][GetCategoryDetails] can't get category details, err:", err.Error())
 		return category, err
@@ -42,7 +41,7 @@ func (u *usecase) GetCategoryDetails(ctx echo.Context, id int) ([]interface{}, e
 	category = append(category, resData)
 	return category, nil
 }
-func (u *usecase) InsertCategory(ctx echo.Context, title string, slug string) ([]interface{}, error) {
+func (u *usecase) InsertCategory(ctx context.Context, title string, slug string) ([]interface{}, error) {
 	var (
 		category     []interface{}
 		categoryData m.Category
@@ -55,7 +54,7 @@ func (u *usecase) InsertCategory(ctx echo.Context, title string, slug string) ([
 		UpdatedAt: utils.TimeNow,
 	}
 
-	resData, err := u.repository.InsertCategory(ctx.Request().Context(), categoryData)
+	resData, err := u.repository.InsertCategory(ctx, categoryData)
 	if err != nil {
 		log.Println("[Usecase][InsertCategory] can't insert category, err:", err.Error())
 		return category, err
@@ -65,12 +64,12 @@ func (u *usecase) InsertCategory(ctx echo.Context, title string, slug string) ([
 	category = append(category, resData)
 	return category, nil
 }
-func (u *usecase) UpdateCategory(ctx echo.Context, id int, title string, slug string) ([]interface{}, error) {
+func (u *usecase) UpdateCategory(ctx context.Context, id int, title string, slug string) ([]interface{}, error) {
 	var (
 		category []interface{}
 	)
 
-	categoryData, _ := u.repository.GetCategoryDetails(ctx.Request().Context(), id)
+	categoryData, _ := u.repository.GetCategoryDetails(ctx, id)
 
 	if title != "" {
 		categoryData.Title = title
@@ -82,7 +81,7 @@ func (u *usecase) UpdateCategory(ctx echo.Context, id int, title string, slug st
 	categoryData.CreatedAt = utils.FormattedTime(categoryData.CreatedAt)
 	categoryData.UpdatedAt = utils.FormattedTime(utils.TimeNow)
 
-	categoryData, err := u.repository.UpdateCategory(ctx.Request().Context(), categoryData)
+	categoryData, err := u.repository.UpdateCategory(ctx, categoryData)
 	if err != nil {
 		log.Println("[Usecase][UpdateCategory] can't update category, err:", err.Error())
 		return category, err
@@ -91,8 +90,8 @@ func (u *usecase) UpdateCategory(ctx echo.Context, id int, title string, slug st
 	category = append(category, categoryData)
 	return category, nil
 }
-func (u *usecase) DeleteCategory(ctx echo.Context, id int) error {
-	err := u.repository.DeleteCategory(ctx.Request().Context(), id)
+func (u *usecase) DeleteCategory(ctx context.Context, id int) error {
+	err := u.repository.DeleteCategory(ctx, id)
 	if err != nil {
 		log.Println("[Usecase][DeleteCategory] can't delete category, err:", err.Error())
 		return err

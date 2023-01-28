@@ -14,7 +14,7 @@ import (
 )
 
 func (h *handler) GetCategoryTree(ctx echo.Context) (err error) {
-	categories, err := h.usecase.GetCategoryTree(ctx)
+	categories, err := h.usecase.GetCategoryTree(ctx.Request().Context())
 	if err != nil {
 		log.Println("[Delivery][GetCategoryTree] can't get list of categories, err:", err.Error())
 		res := m.SetError(http.StatusInternalServerError, utils.STATUS_FAILED, err.Error())
@@ -35,7 +35,7 @@ func (h *handler) GetCategoryDetails(ctx echo.Context) (err error) {
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
-	category, err := h.usecase.GetCategoryDetails(ctx, id)
+	category, err := h.usecase.GetCategoryDetails(ctx.Request().Context(), id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "no category found", []interface{}{})
@@ -67,7 +67,7 @@ func (h *handler) InsertCategory(ctx echo.Context) (err error) {
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
-	category, err := h.usecase.InsertCategory(ctx, title, slug)
+	category, err := h.usecase.InsertCategory(ctx.Request().Context(), title, slug)
 	if err != nil {
 		if pqErr, ok := err.(*pq.Error); ok {
 			if pqErr.Code == "23505" {
@@ -104,7 +104,7 @@ func (h *handler) UpdateCategory(ctx echo.Context) (err error) {
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
-	category, err := h.usecase.UpdateCategory(ctx, id, title, slug)
+	category, err := h.usecase.UpdateCategory(ctx.Request().Context(), id, title, slug)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "no category updated", []interface{}{})
@@ -135,7 +135,7 @@ func (h *handler) DeleteCategory(ctx echo.Context) (err error) {
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
-	err = h.usecase.DeleteCategory(ctx, id)
+	err = h.usecase.DeleteCategory(ctx.Request().Context(), id)
 	if err != nil {
 		if err == msg.ERROR_NO_ROWS_AFFECTED {
 			res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "no category deleted", nil)

@@ -37,7 +37,7 @@ func (h *handler) GetArticles(ctx echo.Context) (err error) {
 		}
 	}
 
-	articles, err := h.usecase.GetArticles(ctx, limit, offset)
+	articles, err := h.usecase.GetArticles(ctx.Request().Context(), limit, offset)
 	if err != nil {
 		log.Println("[Delivery][GetArticles] can't get list of articles, err:", err.Error())
 		res := m.SetError(http.StatusInternalServerError, utils.STATUS_FAILED, err.Error())
@@ -58,7 +58,7 @@ func (h *handler) GetArticleDetails(ctx echo.Context) (err error) {
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
-	article, err := h.usecase.GetArticleDetails(ctx, id)
+	article, err := h.usecase.GetArticleDetails(ctx.Request().Context(), id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "no article found", []interface{}{})
@@ -111,7 +111,7 @@ func (h *handler) InsertArticle(ctx echo.Context) (err error) {
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
-	article, err := h.usecase.InsertArticle(ctx, title, slug, html_content, category_id, metadata)
+	article, err := h.usecase.InsertArticle(ctx.Request().Context(), title, slug, html_content, category_id, metadata)
 	if err != nil {
 		if pqErr, ok := err.(*pq.Error); ok {
 			if pqErr.Code == "23505" {
@@ -164,7 +164,7 @@ func (h *handler) UpdateArticle(ctx echo.Context) (err error) {
 
 	metadata = ctx.FormValue("metadata")
 
-	article, err := h.usecase.UpdateArticle(ctx, id, title, slug, html_content, category_id, metadata)
+	article, err := h.usecase.UpdateArticle(ctx.Request().Context(), id, title, slug, html_content, category_id, metadata)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "no article updated", []interface{}{})
@@ -195,7 +195,7 @@ func (h *handler) DeleteArticle(ctx echo.Context) (err error) {
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
-	err = h.usecase.DeleteArticle(ctx, id)
+	err = h.usecase.DeleteArticle(ctx.Request().Context(), id)
 	if err != nil {
 		if err == msg.ERROR_NO_ROWS_AFFECTED {
 			res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "no article deleted", nil)
