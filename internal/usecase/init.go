@@ -8,8 +8,8 @@ import (
 type UsecaseHandler interface {
 	GetArticles(ctx context.Context, limit int, offset int) ([]interface{}, error)
 	GetArticleDetails(ctx context.Context, id int) ([]interface{}, error)
-	InsertArticle(ctx context.Context, title string, slug string, html_content string, category_id int, metadata string) ([]interface{}, error)
-	UpdateArticle(ctx context.Context, id int, title string, slug string, html_content string, category_id int, metadata string) ([]interface{}, error)
+	InsertArticle(ctx context.Context, title string, slug string, htmlcontent string, categoryid int, metadata string) ([]interface{}, error)
+	UpdateArticle(ctx context.Context, id int, title string, slug string, htmlcontent string, categoryid int, metadata string) ([]interface{}, error)
 	DeleteArticle(ctx context.Context, id int) error
 
 	GetCategoryTree(ctx context.Context) ([]interface{}, error)

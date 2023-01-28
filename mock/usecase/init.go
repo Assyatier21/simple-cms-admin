@@ -123,18 +123,18 @@ func (mr *MockUsecaseHandlerMockRecorder) GetCategoryTree(ctx interface{}) *gomo
 }
 
 // InsertArticle mocks base method.
-func (m *MockUsecaseHandler) InsertArticle(ctx context.Context, title, slug, html_content string, category_id int, metadata string) ([]interface{}, error) {
+func (m *MockUsecaseHandler) InsertArticle(ctx context.Context, title, slug, htmlcontent string, categoryid int, metadata string) ([]interface{}, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "InsertArticle", ctx, title, slug, html_content, category_id, metadata)
+	ret := m.ctrl.Call(m, "InsertArticle", ctx, title, slug, htmlcontent, categoryid, metadata)
 	ret0, _ := ret[0].([]interface{})
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // InsertArticle indicates an expected call of InsertArticle.
-func (mr *MockUsecaseHandlerMockRecorder) InsertArticle(ctx, title, slug, html_content, category_id, metadata interface{}) *gomock.Call {
+func (mr *MockUsecaseHandlerMockRecorder) InsertArticle(ctx, title, slug, htmlcontent, categoryid, metadata interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertArticle", reflect.TypeOf((*MockUsecaseHandler)(nil).InsertArticle), ctx, title, slug, html_content, category_id, metadata)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertArticle", reflect.TypeOf((*MockUsecaseHandler)(nil).InsertArticle), ctx, title, slug, htmlcontent, categoryid, metadata)
 }
 
 // InsertCategory mocks base method.
@@ -153,18 +153,18 @@ func (mr *MockUsecaseHandlerMockRecorder) InsertCategory(ctx, title, slug interf
 }
 
 // UpdateArticle mocks base method.
-func (m *MockUsecaseHandler) UpdateArticle(ctx context.Context, id int, title, slug, html_content string, category_id int, metadata string) ([]interface{}, error) {
+func (m *MockUsecaseHandler) UpdateArticle(ctx context.Context, id int, title, slug, htmlcontent string, categoryid int, metadata string) ([]interface{}, error) {
 	m.ctrl.T.Helper()
-	ret := m.ctrl.Call(m, "UpdateArticle", ctx, id, title, slug, html_content, category_id, metadata)
+	ret := m.ctrl.Call(m, "UpdateArticle", ctx, id, title, slug, htmlcontent, categoryid, metadata)
 	ret0, _ := ret[0].([]interface{})
 	ret1, _ := ret[1].(error)
 	return ret0, ret1
 }
 
 // UpdateArticle indicates an expected call of UpdateArticle.
-func (mr *MockUsecaseHandlerMockRecorder) UpdateArticle(ctx, id, title, slug, html_content, category_id, metadata interface{}) *gomock.Call {
+func (mr *MockUsecaseHandlerMockRecorder) UpdateArticle(ctx, id, title, slug, htmlcontent, categoryid, metadata interface{}) *gomock.Call {
 	mr.mock.ctrl.T.Helper()
-	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateArticle", reflect.TypeOf((*MockUsecaseHandler)(nil).UpdateArticle), ctx, id, title, slug, html_content, category_id, metadata)
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "UpdateArticle", reflect.TypeOf((*MockUsecaseHandler)(nil).UpdateArticle), ctx, id, title, slug, htmlcontent, categoryid, metadata)
 }
 
 // UpdateCategory mocks base method.

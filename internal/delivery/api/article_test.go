@@ -400,8 +400,8 @@ func Test_handler_InsertArticle(t *testing.T) {
 					values := url.Values{}
 					values.Add("title", "title 1")
 					values.Add("slug", "article-1")
-					values.Add("html_content", "<p> this is article 1</p>")
-					values.Add("category_id", "1")
+					values.Add("htmlcontent", "<p> this is article 1</p>")
+					values.Add("categoryid", "1")
 					values.Add("metadata", metadataString)
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
@@ -439,8 +439,8 @@ func Test_handler_InsertArticle(t *testing.T) {
 					values := url.Values{}
 					values.Add("title", "")
 					values.Add("slug", "article-1")
-					values.Add("html_content", "<p> this is article 1</p>")
-					values.Add("category_id", "1")
+					values.Add("htmlcontent", "<p> this is article 1</p>")
+					values.Add("categoryid", "1")
 					values.Add("metadata", metadataString)
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
@@ -460,8 +460,8 @@ func Test_handler_InsertArticle(t *testing.T) {
 					values := url.Values{}
 					values.Add("title", "title")
 					values.Add("slug", "")
-					values.Add("html_content", "<p> this is article 1</p>")
-					values.Add("category_id", "1")
+					values.Add("htmlcontent", "<p> this is article 1</p>")
+					values.Add("categoryid", "1")
 					values.Add("metadata", metadataString)
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
@@ -474,15 +474,15 @@ func Test_handler_InsertArticle(t *testing.T) {
 			mock: func() {},
 		},
 		{
-			name: "error empty html_content",
+			name: "error empty htmlcontent",
 			args: args{
 				method: http.MethodPost,
 				path: func() string {
 					values := url.Values{}
 					values.Add("title", "title")
 					values.Add("slug", "article-1")
-					values.Add("html_content", "")
-					values.Add("category_id", "1")
+					values.Add("htmlcontent", "")
+					values.Add("categoryid", "1")
 					values.Add("metadata", metadataString)
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
@@ -495,15 +495,15 @@ func Test_handler_InsertArticle(t *testing.T) {
 			mock: func() {},
 		},
 		{
-			name: "error empty category_id",
+			name: "error empty categoryid",
 			args: args{
 				method: http.MethodPost,
 				path: func() string {
 					values := url.Values{}
 					values.Add("title", "title")
 					values.Add("slug", "article-1")
-					values.Add("html_content", "<p> this is article 1</p>")
-					values.Add("category_id", "")
+					values.Add("htmlcontent", "<p> this is article 1</p>")
+					values.Add("categoryid", "")
 					values.Add("metadata", metadataString)
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
@@ -523,8 +523,8 @@ func Test_handler_InsertArticle(t *testing.T) {
 					values := url.Values{}
 					values.Add("title", "title")
 					values.Add("slug", "article-1")
-					values.Add("html_content", "<p> this is article 1</p>")
-					values.Add("category_id", "1")
+					values.Add("htmlcontent", "<p> this is article 1</p>")
+					values.Add("categoryid", "1")
 					values.Add("metadata", "")
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
@@ -544,8 +544,8 @@ func Test_handler_InsertArticle(t *testing.T) {
 					values := url.Values{}
 					values.Add("title", "title 1")
 					values.Add("slug", "article-1")
-					values.Add("html_content", "<p> this is article 1</p>")
-					values.Add("category_id", "1")
+					values.Add("htmlcontent", "<p> this is article 1</p>")
+					values.Add("categoryid", "1")
 					values.Add("metadata", metadataString)
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
@@ -624,8 +624,8 @@ func Test_handler_UpdateArticle(t *testing.T) {
 					values.Add("id", "1")
 					values.Add("title", "title 1")
 					values.Add("slug", "article-1")
-					values.Add("html_content", "<p> this is article 1</p>")
-					values.Add("category_id", "1")
+					values.Add("htmlcontent", "<p> this is article 1</p>")
+					values.Add("categoryid", "1")
 					values.Add("metadata", metadataString)
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
@@ -664,8 +664,8 @@ func Test_handler_UpdateArticle(t *testing.T) {
 					values.Add("id", "not_number")
 					values.Add("title", "title 1")
 					values.Add("slug", "article-1")
-					values.Add("html_content", "<p> this is article 1</p>")
-					values.Add("category_id", "1")
+					values.Add("htmlcontent", "<p> this is article 1</p>")
+					values.Add("categoryid", "1")
 					values.Add("metadata", metadataString)
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
@@ -686,8 +686,8 @@ func Test_handler_UpdateArticle(t *testing.T) {
 					values.Add("id", "1")
 					values.Add("title", "title 1")
 					values.Add("slug", "article - 1")
-					values.Add("html_content", "<p> this is article 1</p>")
-					values.Add("category_id", "1")
+					values.Add("htmlcontent", "<p> this is article 1</p>")
+					values.Add("categoryid", "1")
 					values.Add("metadata", metadataString)
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
@@ -700,7 +700,7 @@ func Test_handler_UpdateArticle(t *testing.T) {
 			mock: func() {},
 		},
 		{
-			name: "Error category_id not integer",
+			name: "Error categoryid not integer",
 			args: args{
 				method: http.MethodPatch,
 				path: func() string {
@@ -708,8 +708,8 @@ func Test_handler_UpdateArticle(t *testing.T) {
 					values.Add("id", "1")
 					values.Add("title", "title 1")
 					values.Add("slug", "article-1")
-					values.Add("html_content", "<p> this is article 1</p>")
-					values.Add("category_id", "not_number")
+					values.Add("htmlcontent", "<p> this is article 1</p>")
+					values.Add("categoryid", "not_number")
 					values.Add("metadata", metadataString)
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
@@ -730,8 +730,8 @@ func Test_handler_UpdateArticle(t *testing.T) {
 					values.Add("id", "1")
 					values.Add("title", "title 1")
 					values.Add("slug", "article-1")
-					values.Add("html_content", "<p> this is article 1</p>")
-					values.Add("category_id", "1")
+					values.Add("htmlcontent", "<p> this is article 1</p>")
+					values.Add("categoryid", "1")
 					values.Add("metadata", metadataString)
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
@@ -770,8 +770,8 @@ func Test_handler_UpdateArticle(t *testing.T) {
 					values.Add("id", "1")
 					values.Add("title", "title 1")
 					values.Add("slug", "article-1")
-					values.Add("html_content", "<p> this is article 1</p>")
-					values.Add("category_id", "1")
+					values.Add("htmlcontent", "<p> this is article 1</p>")
+					values.Add("categoryid", "1")
 					values.Add("metadata", metadataString)
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())

@@ -74,11 +74,11 @@ func (h *handler) GetArticleDetails(ctx echo.Context) (err error) {
 }
 func (h *handler) InsertArticle(ctx echo.Context) (err error) {
 	var (
-		title        string
-		slug         string
-		html_content string
-		category_id  int
-		metadata     string
+		title       string
+		slug        string
+		htmlcontent string
+		categoryid  int
+		metadata    string
 	)
 
 	title = ctx.FormValue("title")
@@ -93,15 +93,15 @@ func (h *handler) InsertArticle(ctx echo.Context) (err error) {
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
-	html_content = ctx.FormValue("html_content")
-	if html_content == "" {
-		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_EMPTY_HTML_CONTENT)
+	htmlcontent = ctx.FormValue("htmlcontent")
+	if htmlcontent == "" {
+		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_EMPTY_htmlcontent)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
-	category_id, err = strconv.Atoi(ctx.FormValue("category_id"))
+	categoryid, err = strconv.Atoi(ctx.FormValue("categoryid"))
 	if err != nil {
-		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_EMPTY_CATEGORY_ID)
+		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_EMPTY_categoryid)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
@@ -111,7 +111,7 @@ func (h *handler) InsertArticle(ctx echo.Context) (err error) {
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
-	article, err := h.usecase.InsertArticle(ctx.Request().Context(), title, slug, html_content, category_id, metadata)
+	article, err := h.usecase.InsertArticle(ctx.Request().Context(), title, slug, htmlcontent, categoryid, metadata)
 	if err != nil {
 		if pqErr, ok := err.(*pq.Error); ok {
 			if pqErr.Code == "23505" {
@@ -129,12 +129,12 @@ func (h *handler) InsertArticle(ctx echo.Context) (err error) {
 }
 func (h *handler) UpdateArticle(ctx echo.Context) (err error) {
 	var (
-		id           int
-		title        string
-		slug         string
-		html_content string
-		category_id  int
-		metadata     string
+		id          int
+		title       string
+		slug        string
+		htmlcontent string
+		categoryid  int
+		metadata    string
 	)
 
 	id, err = strconv.Atoi(ctx.FormValue("id"))
@@ -151,20 +151,20 @@ func (h *handler) UpdateArticle(ctx echo.Context) (err error) {
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
-	html_content = ctx.FormValue("html_content")
+	htmlcontent = ctx.FormValue("htmlcontent")
 
-	category_id = 0
-	if ctx.FormValue("category_id") != "" {
-		category_id, err = strconv.Atoi(ctx.FormValue("category_id"))
+	categoryid = 0
+	if ctx.FormValue("categoryid") != "" {
+		categoryid, err = strconv.Atoi(ctx.FormValue("categoryid"))
 		if err != nil {
-			res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_CATEGORY_ID)
+			res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_categoryid)
 			return ctx.JSON(http.StatusBadRequest, res)
 		}
 	}
 
 	metadata = ctx.FormValue("metadata")
 
-	article, err := h.usecase.UpdateArticle(ctx.Request().Context(), id, title, slug, html_content, category_id, metadata)
+	article, err := h.usecase.UpdateArticle(ctx.Request().Context(), id, title, slug, htmlcontent, categoryid, metadata)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "no article updated", []interface{}{})

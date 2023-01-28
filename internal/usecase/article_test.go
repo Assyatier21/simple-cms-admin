@@ -307,12 +307,12 @@ func Test_usecase_InsertArticle(t *testing.T) {
 	}`
 
 	type args struct {
-		ctx          context.Context
-		title        string
-		slug         string
-		html_content string
-		category_id  int
-		metadata     string
+		ctx         context.Context
+		title       string
+		slug        string
+		htmlcontent string
+		categoryid  int
+		metadata    string
 	}
 	tests := []struct {
 		name    string
@@ -324,12 +324,12 @@ func Test_usecase_InsertArticle(t *testing.T) {
 		{
 			name: "success",
 			args: args{
-				ctx:          ctx,
-				title:        "title 1",
-				slug:         "article-1",
-				html_content: "<p> this is article 1</p>",
-				category_id:  1,
-				metadata:     metadataString,
+				ctx:         ctx,
+				title:       "title 1",
+				slug:        "article-1",
+				htmlcontent: "<p> this is article 1</p>",
+				categoryid:  1,
+				metadata:    metadataString,
 			},
 			want: func() []interface{} {
 				data := m.ResArticle{
@@ -406,12 +406,12 @@ func Test_usecase_InsertArticle(t *testing.T) {
 		{
 			name: "repository error",
 			args: args{
-				ctx:          ctx,
-				title:        "title 1",
-				slug:         "article-1",
-				html_content: "<p> this is article 1</p>",
-				category_id:  1,
-				metadata:     metadataString,
+				ctx:         ctx,
+				title:       "title 1",
+				slug:        "article-1",
+				htmlcontent: "<p> this is article 1</p>",
+				categoryid:  1,
+				metadata:    metadataString,
 			},
 			want: func() []interface{} {
 				return nil
@@ -464,7 +464,7 @@ func Test_usecase_InsertArticle(t *testing.T) {
 				repository: mockRepository,
 			}
 
-			got, err := u.InsertArticle(tt.args.ctx, tt.args.title, tt.args.slug, tt.args.html_content, tt.args.category_id, tt.args.metadata)
+			got, err := u.InsertArticle(tt.args.ctx, tt.args.title, tt.args.slug, tt.args.htmlcontent, tt.args.categoryid, tt.args.metadata)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("usecase.InsertArticle() error = %v, wantErr %v", err, tt.wantErr)
 				return
@@ -499,13 +499,13 @@ func Test_usecase_UpdateArticle(t *testing.T) {
 	}`
 
 	type args struct {
-		ctx          context.Context
-		id           int
-		title        string
-		slug         string
-		html_content string
-		category_id  int
-		metadata     string
+		ctx         context.Context
+		id          int
+		title       string
+		slug        string
+		htmlcontent string
+		categoryid  int
+		metadata    string
 	}
 	tests := []struct {
 		name    string
@@ -517,13 +517,13 @@ func Test_usecase_UpdateArticle(t *testing.T) {
 		{
 			name: "success",
 			args: args{
-				ctx:          ctx,
-				id:           1,
-				title:        "title 1",
-				slug:         "article-1",
-				html_content: "<p> this is article 1</p>",
-				category_id:  1,
-				metadata:     metadataString,
+				ctx:         ctx,
+				id:          1,
+				title:       "title 1",
+				slug:        "article-1",
+				htmlcontent: "<p> this is article 1</p>",
+				categoryid:  1,
+				metadata:    metadataString,
 			},
 			want: func() []interface{} {
 				data := m.ResArticle{
@@ -604,13 +604,13 @@ func Test_usecase_UpdateArticle(t *testing.T) {
 		{
 			name: "repository error",
 			args: args{
-				ctx:          ctx,
-				id:           1,
-				title:        "title 1",
-				slug:         "article-1",
-				html_content: "<p> this is article 1</p>",
-				category_id:  1,
-				metadata:     metadataString,
+				ctx:         ctx,
+				id:          1,
+				title:       "title 1",
+				slug:        "article-1",
+				htmlcontent: "<p> this is article 1</p>",
+				categoryid:  1,
+				metadata:    metadataString,
 			},
 			want: func() []interface{} {
 				var articles []interface{}
@@ -668,7 +668,7 @@ func Test_usecase_UpdateArticle(t *testing.T) {
 				repository: mockRepository,
 			}
 
-			got, err := u.UpdateArticle(tt.args.ctx, tt.args.id, tt.args.title, tt.args.slug, tt.args.html_content, tt.args.category_id, tt.args.metadata)
+			got, err := u.UpdateArticle(tt.args.ctx, tt.args.id, tt.args.title, tt.args.slug, tt.args.htmlcontent, tt.args.categoryid, tt.args.metadata)
 			if (err != nil) != tt.wantErr {
 				t.Errorf("usecase.UpdateArticle() error = %v, wantErr %v", err, tt.wantErr)
 				return

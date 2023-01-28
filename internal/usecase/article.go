@@ -42,7 +42,7 @@ func (u *usecase) GetArticleDetails(ctx context.Context, id int) ([]interface{},
 	article = append(article, resData)
 	return article, nil
 }
-func (u *usecase) InsertArticle(ctx context.Context, title string, slug string, html_content string, category_id int, metadata string) ([]interface{}, error) {
+func (u *usecase) InsertArticle(ctx context.Context, title string, slug string, htmlcontent string, categoryid int, metadata string) ([]interface{}, error) {
 	var (
 		article     []interface{}
 		articleData m.Article
@@ -51,8 +51,8 @@ func (u *usecase) InsertArticle(ctx context.Context, title string, slug string, 
 	articleData = m.Article{
 		Title:       title,
 		Slug:        slug,
-		HtmlContent: html_content,
-		CategoryID:  category_id,
+		HtmlContent: htmlcontent,
+		CategoryID:  categoryid,
 		CreatedAt:   utils.TimeNow,
 		UpdatedAt:   utils.TimeNow,
 	}
@@ -74,7 +74,7 @@ func (u *usecase) InsertArticle(ctx context.Context, title string, slug string, 
 	article = append(article, resData)
 	return article, nil
 }
-func (u *usecase) UpdateArticle(ctx context.Context, id int, title string, slug string, html_content string, category_id int, metadata string) ([]interface{}, error) {
+func (u *usecase) UpdateArticle(ctx context.Context, id int, title string, slug string, htmlcontent string, categoryid int, metadata string) ([]interface{}, error) {
 	var (
 		article        []interface{}
 		resArticleData m.ResArticle
@@ -90,12 +90,12 @@ func (u *usecase) UpdateArticle(ctx context.Context, id int, title string, slug 
 		resArticleData.Slug = slug
 	}
 
-	if html_content != "" {
-		resArticleData.HtmlContent = html_content
+	if htmlcontent != "" {
+		resArticleData.HtmlContent = htmlcontent
 	}
 
-	if category_id != 0 {
-		resArticleData.ResCategory.Id = category_id
+	if categoryid != 0 {
+		resArticleData.ResCategory.Id = categoryid
 	}
 
 	if metadata != "" {
