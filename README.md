@@ -1,6 +1,6 @@
 # Simple CMS Admin
 
-Welcome to the Simple CMS Admin Service. An open-source Content Management System based on the echo framework. This service allows you to manage articles and categories as an admin.
+Welcome to the Simple CMS Admin Service. An open-source Content Management System based on the echo framework. This service allows you to manage articles and categories as an admin. This service has implemented clean architecture principles, a practical software architecture solution from Robert C. Martin (known as Uncle Bob).
 
 ## Getting Started
 
@@ -61,14 +61,12 @@ The API has the following endpoints:
 - `/v1/categories`: get list of categories
 - `/v1/category`: insert, update, delete and get details of category (method: POST, PATCH, DELETE, and GET)
 
-We can test the endpoint using the collection located in : `simple-cms-admin/tools`.
+We can test the endpoint using the postman collection in `simple-cms-admin/tools`.
 
 ### Testing
 
-###### note: unit tests has not been implemented in this version
-
 ```
-go test -v -coverprofile coverage.out ./...
+$ go test -v -coverprofile coverage.out ./...
 ```
 
 ## Install Local Sonarqube
