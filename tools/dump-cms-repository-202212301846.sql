@@ -65,8 +65,8 @@ CREATE TABLE "cms-repository".cms_article (
     id integer NOT NULL,
     title character varying NOT NULL,
     slug character varying NOT NULL,
-    html_content character varying NOT NULL,
-    category_id integer NOT NULL,
+    htmlcontent character varying NOT NULL,
+    categoryid integer NOT NULL,
     created_at timestamp without time zone NOT NULL,
     updated_at timestamp without time zone DEFAULT now() NOT NULL,
     metadata json
@@ -108,11 +108,11 @@ ALTER TABLE "cms-repository".cms_category OWNER TO postgres;
 
 --
 -- TOC entry 211 (class 1259 OID 16451)
--- Name: cms_category_id_seq; Type: SEQUENCE; Schema: cms-repository; Owner: postgres
+-- Name: cms_categoryid_seq; Type: SEQUENCE; Schema: cms-repository; Owner: postgres
 --
 
 ALTER TABLE "cms-repository".cms_category ALTER COLUMN id ADD GENERATED ALWAYS AS IDENTITY (
-    SEQUENCE NAME "cms-repository".cms_category_id_seq
+    SEQUENCE NAME "cms-repository".cms_categoryid_seq
     START WITH 1
     INCREMENT BY 1
     NO MINVALUE
@@ -189,10 +189,10 @@ SELECT pg_catalog.setval('"cms-repository".cms_article_id_seq', 23, true);
 --
 -- TOC entry 3607 (class 0 OID 0)
 -- Dependencies: 211
--- Name: cms_category_id_seq; Type: SEQUENCE SET; Schema: cms-repository; Owner: postgres
+-- Name: cms_categoryid_seq; Type: SEQUENCE SET; Schema: cms-repository; Owner: postgres
 --
 
-SELECT pg_catalog.setval('"cms-repository".cms_category_id_seq', 12, true);
+SELECT pg_catalog.setval('"cms-repository".cms_categoryid_seq', 12, true);
 
 
 --

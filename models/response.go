@@ -1,16 +1,17 @@
 package models
 
 type Response struct {
-	Status  int           `json:"status"`
+	Code    int           `json:"code"`
+	Status  string        `json:"status"`
 	Message string        `json:"message"`
 	Data    []interface{} `json:"data"`
 }
 
-func SetResponse(Status int, Message string, Data []interface{}) (res Response) {
-	res = Response{
-		Status:  Status,
-		Message: Message,
-		Data:    Data,
+func SetResponse(code int, status string, message string, data []interface{}) Response {
+	return Response{
+		Code:    code,
+		Status:  status,
+		Message: message,
+		Data:    data,
 	}
-	return
 }

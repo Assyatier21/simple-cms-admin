@@ -8,7 +8,7 @@ import (
 	"github.com/golang/mock/gomock"
 )
 
-func TestNew(t *testing.T) {
+func TestNewRepository(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
@@ -30,8 +30,8 @@ func TestNew(t *testing.T) {
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := New(tt.args.db)
-			_, ok := got.(Repository)
+			got := NewRepository(tt.args.db)
+			_, ok := got.(RepositoryHandler)
 			if !ok {
 				t.Errorf("Not Repository interface")
 			}

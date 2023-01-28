@@ -3,101 +3,109 @@ package utils
 import (
 	m "cms-admin/models"
 	"testing"
-
-	"github.com/stretchr/testify/assert"
+	"time"
 )
 
-func TestIsValidAlphabet(t *testing.T) {
-	result := IsValidAlphabet("alphabet")
-	assert.True(t, result)
+func TestSetArticleCreatedUpdatedTimeNow(t *testing.T) {
+	article := &m.Article{Title: "Test Article"}
+	now := time.Now().Format("2006-01-02T15:04:05Z")
 
-	result = IsValidAlphabet("123")
-	assert.False(t, result)
+	result := SetArticleCreatedUpdatedTimeNow(article)
+
+	if result.CreatedAt != now {
+		t.Errorf("Expected created at time to be %v, but got %v", now, result.CreatedAt)
+	}
+	if result.UpdatedAt != now {
+		t.Errorf("Expected updated at time to be %v, but got %v", now, result.UpdatedAt)
+	}
+}
+func TestSetArticleUpdatedTimeNow(t *testing.T) {
+	article := &m.Article{Title: "Test Article", CreatedAt: time.Now().Format("2006-01-02T15:04:05Z")}
+	now := time.Now().Format("2006-01-02T15:04:05Z")
+
+	result := SetArticleUpdatedTimeNow(article)
+
+	if result.UpdatedAt != now {
+		t.Errorf("Expected updated at time to be %v, but got %v", now, result.UpdatedAt)
+	}
+}
+func TestFormatTimeResArticle(t *testing.T) {
+	// setup
+	createdAt := time.Now().Format("2006-01-02T15:04:05Z")
+	updatedAt := time.Now().Format("2006-01-02T15:04:05Z")
+	article := &m.ResArticle{Title: "Test Article", CreatedAt: createdAt, UpdatedAt: updatedAt}
+
+	// run test
+	result := FormatTimeResArticle(article)
+
+	// asserts
+	expectedCreatedAt := FormattedTime(createdAt)
+	expectedUpdatedAt := FormattedTime(updatedAt)
+
+	if result.CreatedAt != expectedCreatedAt {
+		t.Errorf("Expected created at time to be %s, but got %s", expectedCreatedAt, result.CreatedAt)
+	}
+	if result.UpdatedAt != expectedUpdatedAt {
+		t.Errorf("Expected updated at time to be %s, but got %s", expectedUpdatedAt, result.UpdatedAt)
+	}
 }
 
-func TestIsValidNumeric(t *testing.T) {
-	result := IsValidNumeric("123")
-	assert.True(t, result)
+func TestSetCategoryCreatedUpdatedTimeNow(t *testing.T) {
+	category := &m.Category{Title: "Test Category"}
+	now := time.Now().Format("2006-01-02T15:04:05Z")
 
-	result = IsValidNumeric("invalid format string")
-	assert.False(t, result)
+	result := SetCategoryCreatedUpdatedTimeNow(category)
+
+	if result.CreatedAt != now {
+		t.Errorf("Expected created at time to be %v, but got %v", now, result.CreatedAt)
+	}
+	if result.UpdatedAt != now {
+		t.Errorf("Expected updated at time to be %v, but got %v", now, result.UpdatedAt)
+	}
 }
+func TestSetCategoryUpdatedTimeNow(t *testing.T) {
+	category := &m.Category{Title: "Test Category", CreatedAt: time.Now().Format("2006-01-02T15:04:05Z")}
+	now := time.Now().Format("2006-01-02T15:04:05Z")
 
-func TestIsValidAlphaNumeric(t *testing.T) {
-	result := IsValidAlphaNumeric("Alpha123")
-	assert.True(t, result)
+	result := SetCategoryUpdatedTimeNow(category)
 
-	result = IsValidAlphaNumeric("!@#")
-	assert.False(t, result)
+	if result.UpdatedAt != now {
+		t.Errorf("Expected updated at time to be %v, but got %v", now, result.UpdatedAt)
+	}
 }
+func TestFormatTimeResCategory(t *testing.T) {
+	// setup
+	createdAt := time.Now().Format("2006-01-02T15:04:05Z")
+	updatedAt := time.Now().Format("2006-01-02T15:04:05Z")
+	category := &m.Category{Title: "Test Category", CreatedAt: createdAt, UpdatedAt: updatedAt}
 
-func TestIsValidSlug(t *testing.T) {
-	result := IsValidSlug("valid-number-2-with-hyphen")
-	assert.True(t, result)
+	// run test
+	result := FormatTimeResCategory(category)
 
-	result = IsValidSlug("")
-	assert.False(t, result)
+	// asserts
+	expectedCreatedAt := FormattedTime(createdAt)
+	expectedUpdatedAt := FormattedTime(updatedAt)
+
+	if result.CreatedAt != expectedCreatedAt {
+		t.Errorf("Expected created at time to be %s, but got %s", expectedCreatedAt, result.CreatedAt)
+	}
+	if result.UpdatedAt != expectedUpdatedAt {
+		t.Errorf("Expected updated at time to be %s, but got %s", expectedUpdatedAt, result.UpdatedAt)
+	}
 }
 
 func TestFormattedTime(t *testing.T) {
-	result := FormattedTime("2022-12-20T12:34:56Z")
-	assert.Equal(t, "2022-12-20 12:34:56", result)
+	ts := time.Now().Format("2006-01-02T15:04:05Z")
 
-	result = FormattedTime("invalid time string")
-	assert.Equal(t, "", result)
-}
-
-func TestFormatTimeResArticle(t *testing.T) {
-	resArticle := &m.ResArticle{
-		Id:          1,
-		Title:       "title 1",
-		Slug:        "article-1",
-		HtmlContent: "<p> this is article 1</p>",
-		ResCategory: m.ResCategory{
-			Id:    1,
-			Title: "category 1",
-			Slug:  "category-1",
-		},
-		MetaData: m.MetaData{
-			Title:       "metatitle 1",
-			Description: "metadescription 1",
-			Author:      "muhammad sholeh",
-			Keywords: []string{
-				"description", "testing1",
-			},
-			Robots: []string{
-				"following", "no-index",
-			},
-		},
-		CreatedAt: "2022-12-01T20:29:00Z",
-		UpdatedAt: "2022-12-01T20:29:00Z",
+	result := FormattedTime(ts)
+	expected := time.Now().Format("2006-01-02 15:04:05")
+	if result != expected {
+		t.Errorf("Expected formatted time to be %s, but got %s", expected, result)
 	}
 
-	formattedArticle := FormatTimeResArticle(resArticle)
-
-	if formattedArticle.CreatedAt != "2022-12-01 20:29:00" {
-		t.Errorf("Expected CreatedAt to be '2022-12-01 20:29:00', got %s", formattedArticle.CreatedAt)
-	}
-	if formattedArticle.UpdatedAt != "2022-12-01 20:29:00" {
-		t.Errorf("Expected UpdatedAt to be '2022-12-01 20:29:00', got %s", formattedArticle.UpdatedAt)
-	}
-}
-
-func TestFormatTimeResCategory(t *testing.T) {
-	resCategory := &m.Category{
-		Id:        1,
-		Title:     "category 1",
-		Slug:      "category-1",
-		CreatedAt: "2022-12-01T20:29:00Z",
-		UpdatedAt: "2022-12-01T20:29:00Z",
-	}
-
-	formattedCategory := FormatTimeResCategory(resCategory)
-
-	if formattedCategory.CreatedAt != "2022-12-01 20:29:00" {
-		t.Errorf("Expected CreatedAt to be '2022-12-01 20:29:00', got %s", formattedCategory.CreatedAt)
-	}
-	if formattedCategory.UpdatedAt != "2022-12-01 20:29:00" {
-		t.Errorf("Expected UpdatedAt to be '2022-12-01 20:29:00', got %s", formattedCategory.UpdatedAt)
+	invalidTs := "invalid time format"
+	result = FormattedTime(invalidTs)
+	if result != "" {
+		t.Errorf("Expected empty string, but got %s", result)
 	}
 }

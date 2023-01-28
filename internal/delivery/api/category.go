@@ -2,37 +2,26 @@ package api
 
 import (
 	m "cms-admin/models"
+	msg "cms-admin/models/lib"
 	"cms-admin/utils"
-	"fmt"
+	"database/sql"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/lib/pq"
 )
 
 func (h *handler) GetCategoryTree(ctx echo.Context) (err error) {
-	var (
-		datas []m.Category
-	)
-
-	datas, err = h.repository.GetCategoryTree(ctx.Request().Context())
+	categories, err := h.usecase.GetCategoryTree(ctx.Request().Context())
 	if err != nil {
-		if err == utils.ErrNotFound {
-			res := m.SetResponse(http.StatusOK, utils.ErrNotFound.Error(), []interface{}{})
-			return ctx.JSON(http.StatusOK, res)
-		} else {
-			log.Println("[Delivery][GetCategoryTree] can't get list of categories, err:", err.Error())
-			res := m.SetError(http.StatusInternalServerError, "failed to get list of categories")
-			return ctx.JSON(http.StatusInternalServerError, res)
-		}
+		log.Println("[Delivery][GetCategoryTree] can't get list of categories, err:", err.Error())
+		res := m.SetError(http.StatusInternalServerError, utils.STATUS_FAILED, err.Error())
+		return ctx.JSON(http.StatusInternalServerError, res)
 	}
 
-	categories := make([]interface{}, len(datas))
-	for i, v := range datas {
-		categories[i] = v
-	}
-	res := m.SetResponse(http.StatusOK, "success", categories)
+	res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "list of categories returned successfully", categories)
 	return ctx.JSON(http.StatusOK, res)
 }
 func (h *handler) GetCategoryDetails(ctx echo.Context) (err error) {
@@ -42,110 +31,97 @@ func (h *handler) GetCategoryDetails(ctx echo.Context) (err error) {
 
 	id, err = strconv.Atoi(ctx.FormValue("id"))
 	if err != nil {
-		res := m.SetError(http.StatusBadRequest, utils.ErrorFormatIDStr)
+		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_EMPTY_ID)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
-	category, err := h.repository.GetCategoryDetails(ctx.Request().Context(), id)
+	category, err := h.usecase.GetCategoryDetails(ctx.Request().Context(), id)
 	if err != nil {
-		if err == utils.ErrNotFound {
-			res := m.SetResponse(http.StatusOK, utils.ErrNotFound.Error(), []interface{}{})
+		if err == sql.ErrNoRows {
+			res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "no category found", []interface{}{})
 			return ctx.JSON(http.StatusOK, res)
-		} else {
-			log.Println("[Delivery][GetCategoryDetails] can't get category details, err:", err.Error())
-			res := m.SetError(http.StatusInternalServerError, "failed to get category details")
-			return ctx.JSON(http.StatusInternalServerError, res)
 		}
+		log.Println("[Delivery][GetCategoryDetails] can't get category details, err:", err.Error())
+		res := m.SetError(http.StatusInternalServerError, utils.STATUS_FAILED, err.Error())
+		return ctx.JSON(http.StatusInternalServerError, res)
 	}
 
-	var data []interface{}
-	data = append(data, category)
-
-	res := m.SetResponse(http.StatusOK, "success", data)
+	res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "category details returned successfully", category)
 	return ctx.JSON(http.StatusOK, res)
 }
 func (h *handler) InsertCategory(ctx echo.Context) (err error) {
 	var (
-		returnCategory m.Category
+		title string
+		slug  string
 	)
 
-	if ctx.FormValue("title") == "" {
-		res := m.SetError(http.StatusBadRequest, utils.ErrorTitleEmptyStr)
+	title = ctx.FormValue("title")
+	if title == "" {
+		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_EMPTY_TITLE)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
-	if ctx.FormValue("slug") == "" || !utils.IsValidSlug(ctx.FormValue("slug")) {
-		res := m.SetError(http.StatusBadRequest, utils.ErrorFormatSlugStr)
+	slug = ctx.FormValue("slug")
+	if slug == "" || !utils.IsValidSlug(slug) {
+		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_EMPTY_SLUG)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
-	ctx.Bind(&returnCategory)
-	utils.SetCategoryCreatedUpdatedTimeNow(&returnCategory)
-
-	category, err := h.repository.InsertCategory(ctx.Request().Context(), returnCategory)
+	category, err := h.usecase.InsertCategory(ctx.Request().Context(), title, slug)
 	if err != nil {
+		if pqErr, ok := err.(*pq.Error); ok {
+			if pqErr.Code == "23505" {
+				res := m.SetError(http.StatusConflict, utils.STATUS_FAILED, "slug has been used in another category")
+				return ctx.JSON(http.StatusOK, res)
+			}
+		}
 		log.Println("[Delivery][InsertCategory] can't insert category, err:", err.Error())
-		res := m.SetError(http.StatusInternalServerError, err.Error())
+		res := m.SetError(http.StatusInternalServerError, utils.STATUS_FAILED, err.Error())
 		return ctx.JSON(http.StatusInternalServerError, res)
 	}
 
-	var data []interface{}
-	data = append(data, category)
-
-	res := m.SetResponse(http.StatusOK, "success", data)
+	res := m.SetResponse(http.StatusCreated, utils.STATUS_SUCCESS, "category created successfully", category)
 	return ctx.JSON(http.StatusOK, res)
 }
 func (h *handler) UpdateCategory(ctx echo.Context) (err error) {
 	var (
-		updatedCategory m.Category
+		id    int
+		title string
+		slug  string
 	)
 
-	updatedCategory.Id, err = strconv.Atoi(ctx.FormValue("id"))
+	id, err = strconv.Atoi(ctx.FormValue("id"))
 	if err != nil {
-		res := m.SetError(http.StatusBadRequest, utils.ErrorFormatIDStr)
+		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_EMPTY_ID)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
-	if ctx.FormValue("title") == "" {
-		updatedCategory.Title = ""
-	} else {
-		updatedCategory.Title = ctx.FormValue("title")
-	}
+	title = ctx.FormValue("title")
 
-	if ctx.FormValue("slug") == "" {
-		updatedCategory.Slug = ""
-	} else if !utils.IsValidSlug(ctx.FormValue("slug")) {
-		res := m.SetError(http.StatusBadRequest, utils.ErrorFormatSlugStr)
+	slug = ctx.FormValue("slug")
+	if slug != "" && !utils.IsValidSlug(slug) {
+		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_SLUG)
 		return ctx.JSON(http.StatusBadRequest, res)
-	} else {
-		updatedCategory.Slug = ctx.FormValue("slug")
 	}
 
-	ctx.Bind(&updatedCategory)
-	utils.SetCategoryUpdatedTimeNow(&updatedCategory)
-
-	fmt.Println(updatedCategory)
-
-	category, err := h.repository.UpdateCategory(ctx.Request().Context(), updatedCategory)
+	category, err := h.usecase.UpdateCategory(ctx.Request().Context(), id, title, slug)
 	if err != nil {
-		log.Println("[Delivery][UpdateCategory] can't update category, err:", err.Error())
-		if err == utils.NoRowsAffected {
-			res := m.SetError(http.StatusOK, utils.NoRowsAffected.Error())
+		if err == sql.ErrNoRows {
+			res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "no category updated", []interface{}{})
 			return ctx.JSON(http.StatusOK, res)
-		} else if err == utils.ErrNotFound {
-			res := m.SetError(http.StatusNotFound, utils.ErrNotFound.Error())
-			return ctx.JSON(http.StatusNotFound, res)
-
-		} else {
-			res := m.SetError(http.StatusInternalServerError, err.Error())
-			return ctx.JSON(http.StatusInternalServerError, res)
 		}
+		if pqErr, ok := err.(*pq.Error); ok {
+			if pqErr.Code == "23505" {
+				res := m.SetError(http.StatusConflict, utils.STATUS_FAILED, "slug has been used in another category")
+				return ctx.JSON(http.StatusOK, res)
+			}
+		}
+		log.Println("[Delivery][UpdateCategory] can't update category, err:", err.Error())
+		res := m.SetError(http.StatusInternalServerError, utils.STATUS_FAILED, err.Error())
+		return ctx.JSON(http.StatusInternalServerError, res)
 	}
 
-	var data []interface{}
-	data = append(data, category)
-
-	res := m.SetResponse(http.StatusOK, "success", data)
+	res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "category updated successfully", category)
 	return ctx.JSON(http.StatusOK, res)
 }
 func (h *handler) DeleteCategory(ctx echo.Context) (err error) {
@@ -155,21 +131,22 @@ func (h *handler) DeleteCategory(ctx echo.Context) (err error) {
 
 	id, err = strconv.Atoi(ctx.FormValue("id"))
 	if err != nil {
-		res := m.SetError(http.StatusBadRequest, utils.ErrorFormatIDStr)
+		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_EMPTY_ID)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
-	err = h.repository.DeleteCategory(ctx.Request().Context(), id)
+	err = h.usecase.DeleteCategory(ctx.Request().Context(), id)
 	if err != nil {
-		log.Println("[Delivery][DeleteCategory] can't delete category, err:", err.Error())
-		if err == utils.NoRowsAffected {
-			res := m.SetError(http.StatusOK, utils.NoRowsAffected.Error())
+		if err == msg.ERROR_NO_ROWS_AFFECTED {
+			res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "no category deleted", nil)
 			return ctx.JSON(http.StatusOK, res)
-		} else {
-			res := m.SetError(http.StatusInternalServerError, err.Error())
-			return ctx.JSON(http.StatusInternalServerError, res)
 		}
+		log.Println("[Delivery][DeleteCategory] can't delete category, err:", err.Error())
+		res := m.SetError(http.StatusInternalServerError, utils.STATUS_FAILED, err.Error())
+		return ctx.JSON(http.StatusInternalServerError, res)
+
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]string{"message": "OK"})
+	res := m.SetResponse(http.StatusNoContent, utils.STATUS_SUCCESS, "category deleted successfully", []interface{}{})
+	return ctx.JSON(http.StatusOK, res)
 }

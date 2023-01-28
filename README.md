@@ -1,6 +1,6 @@
 # Simple CMS Admin
 
-Welcome to the API documentation for the simple CMS Service. This API allows you to get an article and category as admin. This service using echo framework as well.
+Welcome to the Simple CMS Admin Service. An open-source Content Management System based on the echo framework. This service allows you to manage articles and categories as an admin. This service has implemented clean architecture principles, a practical software architecture solution from Robert C. Martin (known as Uncle Bob).
 
 ## Getting Started
 
@@ -14,17 +14,17 @@ Welcome to the API documentation for the simple CMS Service. This API allows you
 - Clone the git repository:
 
 ```
-git clone https://github.com/Assyatier21/simple-cms-admin.git
-cd simple-cms-admin
+$ git clone https://github.com/Assyatier21/simple-cms-admin.git
+$ cd simple-cms-admin
 ```
 
 - Install Dependencies
 
 ```
-go mod tidy
+$ go mod tidy
 ```
 
-- Create `config` folder in root path, then create a file `connection.go` in that folder with the following contents:
+- Create `config` folder in root path, then create a file `connection.go` in that folder containing this following code:
 
 ```
 package config
@@ -40,13 +40,19 @@ const (
 )
 ```
 
+alternatively, we can just run this following command using makefile:
+
+```
+$ make all
+```
+
 ### Running
 
 ```
-go run cmd/main.go
+$ go run cmd/main.go
 ```
 
-### API Endpoints Documentation
+### Features
 
 The API has the following endpoints:
 
@@ -55,12 +61,12 @@ The API has the following endpoints:
 - `/v1/categories`: get list of categories
 - `/v1/category`: insert, update, delete and get details of category (method: POST, PATCH, DELETE, and GET)
 
-We can test the endpoint using the collection located in : `simple-cms-admin/tools`.
+We can test the endpoint using the postman collection in `simple-cms-admin/tools`.
 
 ### Testing
 
 ```
-go test -v -coverprofile coverage.out ./...
+$ go test -v -coverprofile coverage.out ./...
 ```
 
 ## Install Local Sonarqube

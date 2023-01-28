@@ -3,83 +3,71 @@ package postgres
 import (
 	database "cms-admin/database/queries"
 	m "cms-admin/models"
-	"cms-admin/utils"
+	msg "cms-admin/models/lib"
 	"context"
 	"database/sql"
 	"encoding/json"
 	"log"
-	"reflect"
 )
 
 func (r *repository) GetArticles(ctx context.Context, limit int, offset int) ([]m.ResArticle, error) {
 	var (
-		articles     []m.ResArticle
-		metadata     m.MetaData
-		rows         *sql.Rows
-		tempMetaData []byte
-		err          error
+		articles []m.ResArticle
+		rows     *sql.Rows
+		err      error
 	)
-
 	rows, err = r.db.Query(database.GetArticles, limit, offset)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return nil, utils.ErrNotFound
-		} else {
-			log.Println("[GetArticles] can't get list of articles, err:", err.Error())
-			return nil, err
-		}
+		log.Println("[Repository][GetArticles] can't get list of articles, err:", err.Error())
+		return nil, err
 	}
 
 	for rows.Next() {
-		var temp = m.ResArticle{}
+		var (
+			temp         m.ResArticle
+			byteMetadata []byte
+		)
+
 		if err := rows.Scan(&temp.Id, &temp.Title, &temp.Slug, &temp.HtmlContent, &temp.ResCategory.Id, &temp.ResCategory.Title, &temp.ResCategory.Slug, &temp.CreatedAt, &temp.UpdatedAt); err != nil {
-			log.Println("[GetArticles] failed to scan article, err :", err.Error())
+			log.Println("[Repository][GetArticles] failed to scan article, err :", err.Error())
 			return nil, err
 		}
 
-		err = r.db.QueryRow(database.GetMetaData, temp.Id).Scan(&tempMetaData)
+		err = r.db.QueryRow(database.GetMetaData, temp.Id).Scan(&byteMetadata)
 		if err != nil {
-			log.Println("[GetArticleDetails] failed to scan metadata, err :", err.Error())
+			log.Println("[Repository][GetArticles] failed to scan metadata, err :", err.Error())
 			return nil, err
 		}
-		utils.FormatTimeResArticle(&temp)
-		json.Unmarshal(tempMetaData, &metadata)
-		temp.MetaData = metadata
+
+		json.Unmarshal(byteMetadata, &temp.MetaData)
 		articles = append(articles, temp)
 	}
 
-	if len(articles) > 0 {
-		return articles, nil
-	} else {
+	if len(articles) == 0 {
 		return []m.ResArticle{}, nil
 	}
+
+	return articles, nil
 }
 func (r *repository) GetArticleDetails(ctx context.Context, id int) (m.ResArticle, error) {
 	var (
 		article      m.ResArticle
 		err          error
-		tempMetaData []byte
-		metadata     m.MetaData
+		byteMetadata []byte
 	)
 
 	err = r.db.QueryRow(database.GetArticleDetails, id).Scan(&article.Id, &article.Title, &article.Slug, &article.HtmlContent, &article.ResCategory.Id, &article.ResCategory.Title, &article.ResCategory.Slug, &article.CreatedAt, &article.UpdatedAt)
 	if err != nil {
-		if err == sql.ErrNoRows {
-			return m.ResArticle{}, utils.ErrNotFound
-		} else {
-			log.Println("[GetArticleDetails] failed to scan article, err:", err.Error())
-			return m.ResArticle{}, err
-		}
-	}
-
-	err = r.db.QueryRow(database.GetMetaData, article.Id).Scan(&tempMetaData)
-	if err != nil {
-		log.Println("[GetArticleDetails] failed to scan metadata, err :", err.Error())
+		log.Println("[Repository][GetArticleDetails] failed to scan article, err:", err.Error())
 		return m.ResArticle{}, err
 	}
-	utils.FormatTimeResArticle(&article)
-	json.Unmarshal(tempMetaData, &metadata)
-	article.MetaData = metadata
+
+	err = r.db.QueryRow(database.GetMetaData, article.Id).Scan(&byteMetadata)
+	if err != nil {
+		log.Println("[Repository][GetArticleDetails] failed to scan metadata, err :", err.Error())
+		return m.ResArticle{}, err
+	}
+	json.Unmarshal(byteMetadata, &article.MetaData)
 
 	return article, nil
 }
@@ -87,18 +75,24 @@ func (r *repository) InsertArticle(ctx context.Context, article m.Article) (m.Re
 	var (
 		lastId     int
 		resArticle m.ResArticle
+		err        error
 	)
 
-	marshalMetadata, _ := json.Marshal(article.MetaData)
-	err := r.db.QueryRow(database.InsertArticle, article.Title, article.Slug, article.HtmlContent, article.CategoryID, marshalMetadata, article.CreatedAt, article.UpdatedAt).Scan(&lastId)
+	marshalled_metadata, err := json.Marshal(article.MetaData)
 	if err != nil {
-		log.Println("[InsertArticle] can't insert article, err:", err.Error())
+		log.Println("[Repository][InsertArticle] can't insert article, err:", err.Error())
+		return m.ResArticle{}, err
+	}
+
+	err = r.db.QueryRow(database.InsertArticle, article.Title, article.Slug, article.HtmlContent, article.CategoryID, marshalled_metadata, article.CreatedAt, article.UpdatedAt).Scan(&lastId)
+	if err != nil {
+		log.Println("[Repository][InsertArticle] can't insert article, err:", err.Error())
 		return m.ResArticle{}, err
 	}
 
 	resArticle, err = r.GetArticleDetails(context.Background(), lastId)
 	if err != nil {
-		log.Println("[InsertArticle][GetArticleDetails] can't get article details response, err:", err.Error())
+		log.Println("[Repository][InsertArticle] can't get article details response, err:", err.Error())
 		return m.ResArticle{}, err
 	}
 
@@ -106,63 +100,47 @@ func (r *repository) InsertArticle(ctx context.Context, article m.Article) (m.Re
 }
 func (r *repository) UpdateArticle(ctx context.Context, article m.Article) (m.ResArticle, error) {
 	var (
-		resArticle      m.ResArticle
-		err             error
-		marshalMetadata []byte
+		resArticle m.ResArticle
+		rows       sql.Result
+		err        error
 	)
 
-	resArticle, err = r.GetArticleDetails(context.Background(), int(article.Id))
+	marshalled_metadata, err := json.Marshal(article.MetaData)
 	if err != nil {
-		log.Println("[UpdateArticle][GetArticleDetails] can't get article details, err:", err.Error())
+		log.Println("[Repository][UpdateArticle] can't update article, err:", err.Error())
 		return m.ResArticle{}, err
 	}
 
-	if article.Title == "" {
-		article.Title = resArticle.Title
-	}
-	if article.Slug == "" {
-		article.Slug = resArticle.Slug
-	}
-	if article.HtmlContent == "" {
-		article.HtmlContent = resArticle.HtmlContent
-	}
-	if article.CategoryID == 0 {
-		article.CategoryID = resArticle.ResCategory.Id
-	}
-	if reflect.DeepEqual(article.MetaData, m.MetaData{}) {
-		article.MetaData = resArticle.MetaData
-	} else {
-		marshalMetadata, _ = json.Marshal(article.MetaData)
-	}
-
-	article.CreatedAt = resArticle.CreatedAt
-	article.UpdatedAt = utils.FormattedTime(article.UpdatedAt)
-
-	rows, err := r.db.Exec(database.UpdateArticle, &article.Title, &article.Slug, &article.HtmlContent, &article.CategoryID, marshalMetadata, &article.UpdatedAt, &article.Id)
+	rows, err = r.db.Exec(database.UpdateArticle, &article.Title, &article.Slug, &article.HtmlContent, &article.CategoryID, marshalled_metadata, &article.UpdatedAt, &article.Id)
 	if err != nil {
-		log.Println("[UpdateArticle] can't update article, err:", err.Error())
+		log.Println("[Repository][UpdateArticle] can't update article, err:", err.Error())
+		return m.ResArticle{}, err
+	}
+
+	resArticle, err = r.GetArticleDetails(context.Background(), article.Id)
+	if err != nil {
+		log.Println("[Repository][UpdateArticle] can't get article details response, err:", err.Error())
 		return m.ResArticle{}, err
 	}
 
 	rowsAffected, _ := rows.RowsAffected()
-	if rowsAffected > 0 {
-		return resArticle, nil
-	} else {
-		log.Println("[UpdateArticle] err:", utils.NoRowsAffected)
-		return m.ResArticle{}, utils.NoRowsAffected
+	if rowsAffected == 0 {
+		return m.ResArticle{}, nil
 	}
+
+	return resArticle, nil
 }
 func (r *repository) DeleteArticle(ctx context.Context, id int) error {
 	rows, err := r.db.Exec(database.DeleteArticle, id)
 	if err != nil {
-		log.Println("[DeleteArticle] can't delete article, err:", err.Error())
+		log.Println("[Repository][DeleteArticle] can't delete article, err:", err.Error())
 		return err
 	}
 
 	rowsAffected, _ := rows.RowsAffected()
-	if rowsAffected > 0 {
-		return nil
-	} else {
-		return utils.NoRowsAffected
+	if rowsAffected == 0 {
+		return msg.ERROR_NO_ROWS_AFFECTED
 	}
+
+	return nil
 }

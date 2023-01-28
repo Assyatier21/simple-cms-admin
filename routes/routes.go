@@ -9,22 +9,22 @@ import (
 	"github.com/labstack/echo/v4/middleware"
 )
 
-func GetRoutes(handler api.Handler) *echo.Echo {
+func GetRoutes(handler api.DeliveryHandler) *echo.Echo {
 	e := echo.New()
 	useMiddlewares(e)
 
 	g := e.Group("/admin/v1")
-	g.GET(utils.PathArticles, handler.GetArticles)
-	g.GET(utils.PathArticle, handler.GetArticleDetails)
-	g.POST(utils.PathArticle, handler.InsertArticle)
-	g.PATCH(utils.PathArticle, handler.UpdateArticle)
-	g.DELETE(utils.PathArticle, handler.DeleteArticle)
+	g.GET(utils.PATH_ARTICLES, handler.GetArticles)
+	g.GET(utils.PATH_ARTICLE, handler.GetArticleDetails)
+	g.POST(utils.PATH_ARTICLE, handler.InsertArticle)
+	g.PATCH(utils.PATH_ARTICLE, handler.UpdateArticle)
+	g.DELETE(utils.PATH_ARTICLE, handler.DeleteArticle)
 
-	g.GET(utils.PathCategories, handler.GetCategoryTree)
-	g.GET(utils.PathCategory, handler.GetCategoryDetails)
-	g.POST(utils.PathCategory, handler.InsertCategory)
-	g.PATCH(utils.PathCategory, handler.UpdateCategory)
-	g.DELETE(utils.PathCategory, handler.DeleteCategory)
+	g.GET(utils.PATH_CATEGORIES, handler.GetCategoryTree)
+	g.GET(utils.PATH_CATEGORY, handler.GetCategoryDetails)
+	g.POST(utils.PATH_CATEGORY, handler.InsertCategory)
+	g.PATCH(utils.PATH_CATEGORY, handler.UpdateCategory)
+	g.DELETE(utils.PATH_CATEGORY, handler.DeleteCategory)
 
 	return e
 }

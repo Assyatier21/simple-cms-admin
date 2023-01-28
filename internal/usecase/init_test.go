@@ -1,21 +1,21 @@
-package api
+package usecase
 
 import (
-	"cms-admin/internal/usecase"
-	mock_usecase "cms-admin/mock/usecase"
+	"cms-admin/internal/repository/postgres"
+	mock_repository "cms-admin/mock/repository/postgres"
 	"testing"
 
 	"github.com/golang/mock/gomock"
 )
 
-func TestNewHandler(t *testing.T) {
+func TestNewUsecase(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockUsecase := mock_usecase.NewMockUsecaseHandler(ctrl)
+	mockRepository := mock_repository.NewMockRepositoryHandler(ctrl)
 
 	type args struct {
-		usecase usecase.UsecaseHandler
+		repository postgres.RepositoryHandler
 	}
 	tests := []struct {
 		name string
@@ -24,14 +24,14 @@ func TestNewHandler(t *testing.T) {
 		{
 			name: "Success",
 			args: args{
-				usecase: mockUsecase,
+				repository: mockRepository,
 			},
 		},
 	}
 	for _, tt := range tests {
 		t.Run(tt.name, func(t *testing.T) {
-			got := NewHandler(tt.args.usecase)
-			_, ok := got.(DeliveryHandler)
+			got := NewUsecase(tt.args.repository)
+			_, ok := got.(UsecaseHandler)
 			if !ok {
 				t.Errorf("Not Delivery Handler interface")
 			}

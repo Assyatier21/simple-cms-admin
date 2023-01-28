@@ -1,9 +1,10 @@
 package api
 
 import (
-	mock_repo "cms-admin/mock/repository/postgres"
+	mock_usecase "cms-admin/mock/usecase"
 	m "cms-admin/models"
-	"cms-admin/utils"
+	msg "cms-admin/models/lib"
+	"database/sql"
 	"errors"
 	"fmt"
 	"net/http"
@@ -11,7 +12,7 @@ import (
 	"net/url"
 	"testing"
 
-	"github.com/go-playground/assert/v2"
+	"github.com/go-playground/assert"
 	"github.com/golang/mock/gomock"
 	"github.com/labstack/echo/v4"
 )
@@ -20,7 +21,7 @@ func Test_handler_GetArticles(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockRepository := mock_repo.NewMockRepository(ctrl)
+	mockUsecase := mock_usecase.NewMockUsecaseHandler(ctrl)
 
 	type args struct {
 		method string
@@ -45,39 +46,43 @@ func Test_handler_GetArticles(t *testing.T) {
 				statusCode: http.StatusOK,
 			},
 			mock: func() {
-				mockRepository.EXPECT().GetArticles(gomock.Any(), 100, 0).Return(
-					[]m.ResArticle{
-						{
-							Id:          1,
-							Title:       "title 1",
-							Slug:        "article-1",
-							HtmlContent: "<p> this is article 1</p>",
-							ResCategory: m.ResCategory{
-								Id:    1,
-								Title: "category 1",
-								Slug:  "category-1",
-							},
-							CreatedAt: "2022-12-01 20:29:00",
-							UpdatedAt: "2022-12-01 20:29:00",
+				data := []m.ResArticle{
+					{
+						Id:          1,
+						Title:       "title 1",
+						Slug:        "article-1",
+						HtmlContent: "<p> this is article 1</p>",
+						ResCategory: m.ResCategory{
+							Id:    1,
+							Title: "catgegory 1",
+							Slug:  "category-1",
 						},
-						{
-							Id:          2,
-							Title:       "title 2",
-							Slug:        "article-2",
-							HtmlContent: "<p> this is article 2</p>",
-							ResCategory: m.ResCategory{
-								Id:    2,
-								Title: "category 2",
-								Slug:  "category-2",
-							},
-							CreatedAt: "2022-12-01 20:29:00",
-							UpdatedAt: "2022-12-01 20:29:00",
+						CreatedAt: "2022-12-01 20:29:00",
+						UpdatedAt: "2022-12-01 20:29:00",
+					},
+					{
+						Id:          2,
+						Title:       "title 2",
+						Slug:        "article-2",
+						HtmlContent: "<p> this is article 2</p>",
+						ResCategory: m.ResCategory{
+							Id:    2,
+							Title: "catgegory 2",
+							Slug:  "category-2",
 						},
-					}, nil)
+						CreatedAt: "2022-12-01 20:29:00",
+						UpdatedAt: "2022-12-01 20:29:00",
+					},
+				}
+				var articles []interface{}
+				for _, v := range data {
+					articles = append(articles, v)
+				}
+				mockUsecase.EXPECT().GetArticles(gomock.Any(), 100, 0).Return(articles, nil)
 			},
 		},
 		{
-			name: "success with defined limit",
+			name: "success defined limit",
 			args: args{
 				method: http.MethodGet,
 				path:   "/articles?limit=5",
@@ -86,83 +91,91 @@ func Test_handler_GetArticles(t *testing.T) {
 				statusCode: http.StatusOK,
 			},
 			mock: func() {
-				mockRepository.EXPECT().GetArticles(gomock.Any(), 5, 0).Return(
-					[]m.ResArticle{
-						{
-							Id:          1,
-							Title:       "title 1",
-							Slug:        "article-1",
-							HtmlContent: "<p> this is article 1</p>",
-							ResCategory: m.ResCategory{
-								Id:    1,
-								Title: "category 1",
-								Slug:  "category-1",
-							},
-							CreatedAt: "2022-12-01 20:29:00",
-							UpdatedAt: "2022-12-01 20:29:00",
+				data := []m.ResArticle{
+					{
+						Id:          1,
+						Title:       "title 1",
+						Slug:        "article-1",
+						HtmlContent: "<p> this is article 1</p>",
+						ResCategory: m.ResCategory{
+							Id:    1,
+							Title: "catgegory 1",
+							Slug:  "category-1",
 						},
-						{
-							Id:          2,
-							Title:       "title 2",
-							Slug:        "article-2",
-							HtmlContent: "<p> this is article 2</p>",
-							ResCategory: m.ResCategory{
-								Id:    2,
-								Title: "category 2",
-								Slug:  "category-2",
-							},
-							CreatedAt: "2022-12-01 20:29:00",
-							UpdatedAt: "2022-12-01 20:29:00",
+						CreatedAt: "2022-12-01 20:29:00",
+						UpdatedAt: "2022-12-01 20:29:00",
+					},
+					{
+						Id:          2,
+						Title:       "title 2",
+						Slug:        "article-2",
+						HtmlContent: "<p> this is article 2</p>",
+						ResCategory: m.ResCategory{
+							Id:    2,
+							Title: "catgegory 2",
+							Slug:  "category-2",
 						},
-					}, nil)
+						CreatedAt: "2022-12-01 20:29:00",
+						UpdatedAt: "2022-12-01 20:29:00",
+					},
+				}
+				var articles []interface{}
+				for _, v := range data {
+					articles = append(articles, v)
+				}
+				mockUsecase.EXPECT().GetArticles(gomock.Any(), 5, 0).Return(articles, nil)
 			},
 		},
 		{
-			name: "success with defined offset",
+			name: "success defined offset",
 			args: args{
 				method: http.MethodGet,
-				path:   "/articles?limit=5&offset=0",
+				path:   "/articles?offset=0",
 			},
 			wants: wants{
 				statusCode: http.StatusOK,
 			},
 			mock: func() {
-				mockRepository.EXPECT().GetArticles(gomock.Any(), 5, 0).Return(
-					[]m.ResArticle{
-						{
-							Id:          1,
-							Title:       "title 1",
-							Slug:        "article-1",
-							HtmlContent: "<p> this is article 1</p>",
-							ResCategory: m.ResCategory{
-								Id:    1,
-								Title: "category 1",
-								Slug:  "category-1",
-							},
-							CreatedAt: "2022-12-01 20:29:00",
-							UpdatedAt: "2022-12-01 20:29:00",
+				data := []m.ResArticle{
+					{
+						Id:          1,
+						Title:       "title 1",
+						Slug:        "article-1",
+						HtmlContent: "<p> this is article 1</p>",
+						ResCategory: m.ResCategory{
+							Id:    1,
+							Title: "catgegory 1",
+							Slug:  "category-1",
 						},
-						{
-							Id:          2,
-							Title:       "title 2",
-							Slug:        "article-2",
-							HtmlContent: "<p> this is article 2</p>",
-							ResCategory: m.ResCategory{
-								Id:    2,
-								Title: "category 2",
-								Slug:  "category-2",
-							},
-							CreatedAt: "2022-12-01 20:29:00",
-							UpdatedAt: "2022-12-01 20:29:00",
+						CreatedAt: "2022-12-01 20:29:00",
+						UpdatedAt: "2022-12-01 20:29:00",
+					},
+					{
+						Id:          2,
+						Title:       "title 2",
+						Slug:        "article-2",
+						HtmlContent: "<p> this is article 2</p>",
+						ResCategory: m.ResCategory{
+							Id:    2,
+							Title: "catgegory 2",
+							Slug:  "category-2",
 						},
-					}, nil)
+						CreatedAt: "2022-12-01 20:29:00",
+						UpdatedAt: "2022-12-01 20:29:00",
+					},
+				}
+				var articles []interface{}
+				for _, v := range data {
+					articles = append(articles, v)
+				}
+				mockUsecase.EXPECT().GetArticles(gomock.Any(), 100, 0).Return(articles, nil)
 			},
 		},
 		{
 			name: "error limit not an integer",
 			args: args{
 				method: http.MethodGet,
-				path:   "/articles?limit=not_integer&offset=0",
+				path:   "/articles?limit=not_integer",
 			},
 			wants: wants{
 				statusCode: http.StatusBadRequest,
@@ -181,20 +194,7 @@ func Test_handler_GetArticles(t *testing.T) {
 			mock: func() {},
 		},
 		{
-			name: "error no data found",
-			args: args{
-				method: http.MethodGet,
-				path:   "/articles?limit=5&offset=0",
-			},
-			wants: wants{
-				statusCode: http.StatusOK,
-			},
-			mock: func() {
-				mockRepository.EXPECT().GetArticles(gomock.Any(), 5, 0).Return([]m.ResArticle{}, utils.ErrNotFound)
-			},
-		},
-		{
-			name: "error repository",
+			name: "error usecase",
 			args: args{
 				method: http.MethodGet,
 				path:   "/articles?limit=5&offset=0",
@@ -203,7 +203,7 @@ func Test_handler_GetArticles(t *testing.T) {
 				statusCode: http.StatusInternalServerError,
 			},
 			mock: func() {
-				mockRepository.EXPECT().GetArticles(gomock.Any(), 5, 0).Return(nil, errors.New("repository error"))
+				mockUsecase.EXPECT().GetArticles(gomock.Any(), 5, 0).Return(nil, errors.New("usecase error"))
 			},
 		},
 	}
@@ -217,7 +217,7 @@ func Test_handler_GetArticles(t *testing.T) {
 			tt.mock()
 
 			h := &handler{
-				repository: mockRepository,
+				usecase: mockUsecase,
 			}
 
 			if err := h.GetArticles(c); err != nil {
@@ -232,7 +232,7 @@ func Test_handler_GetArticleDetails(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockRepository := mock_repo.NewMockRepository(ctrl)
+	mockUsecase := mock_usecase.NewMockUsecaseHandler(ctrl)
 
 	type args struct {
 		method string
@@ -257,19 +257,26 @@ func Test_handler_GetArticleDetails(t *testing.T) {
 				statusCode: http.StatusOK,
 			},
 			mock: func() {
-				mockRepository.EXPECT().GetArticleDetails(gomock.Any(), 1).Return(m.ResArticle{
-					Id:          1,
-					Title:       "title 1",
-					Slug:        "article-1",
-					HtmlContent: "<p> this is article 1</p>",
-					ResCategory: m.ResCategory{
-						Id:    1,
-						Title: "category 1",
-						Slug:  "category-1",
+				data := []m.ResArticle{
+					{
+						Id:          1,
+						Title:       "title 1",
+						Slug:        "article-1",
+						HtmlContent: "<p> this is article 1</p>",
+						ResCategory: m.ResCategory{
+							Id:    1,
+							Title: "catgegory 1",
+							Slug:  "category-1",
+						},
+						CreatedAt: "2022-12-01 20:29:00",
+						UpdatedAt: "2022-12-01 20:29:00",
 					},
-					CreatedAt: "2022-12-01 20:29:00",
-					UpdatedAt: "2022-12-01 20:29:00",
-				}, nil)
+				}
+				var article []interface{}
+				for _, v := range data {
+					article = append(article, v)
+				}
+				mockUsecase.EXPECT().GetArticleDetails(gomock.Any(), 1).Return(article, nil)
 			},
 		},
 		{
@@ -293,11 +300,12 @@ func Test_handler_GetArticleDetails(t *testing.T) {
 				statusCode: http.StatusOK,
 			},
 			mock: func() {
-				mockRepository.EXPECT().GetArticleDetails(gomock.Any(), 1).Return(m.ResArticle{}, utils.ErrNotFound)
+				var article []interface{}
+				mockUsecase.EXPECT().GetArticleDetails(gomock.Any(), 1).Return(article, sql.ErrNoRows)
 			},
 		},
 		{
-			name: "repository error",
+			name: "usecase error",
 			args: args{
 				method: http.MethodGet,
 				path:   "/article?id=1",
@@ -306,19 +314,26 @@ func Test_handler_GetArticleDetails(t *testing.T) {
 				statusCode: http.StatusInternalServerError,
 			},
 			mock: func() {
-				mockRepository.EXPECT().GetArticleDetails(gomock.Any(), 1).Return(m.ResArticle{
-					Id:          1,
-					Title:       "title 1",
-					Slug:        "article-1",
-					HtmlContent: "<p> this is article 1</p>",
-					ResCategory: m.ResCategory{
-						Id:    1,
-						Title: "category 1",
-						Slug:  "category-1",
+				data := []m.ResArticle{
+					{
+						Id:          1,
+						Title:       "title 1",
+						Slug:        "article-1",
+						HtmlContent: "<p> this is article 1</p>",
+						ResCategory: m.ResCategory{
+							Id:    1,
+							Title: "catgegory 1",
+							Slug:  "category-1",
+						},
+						CreatedAt: "2022-12-01 20:29:00",
+						UpdatedAt: "2022-12-01 20:29:00",
 					},
-					CreatedAt: "2022-12-01 20:29:00",
-					UpdatedAt: "2022-12-01 20:29:00",
-				}, errors.New("repository error"))
+				}
+				var article []interface{}
+				for _, v := range data {
+					article = append(article, v)
+				}
+				mockUsecase.EXPECT().GetArticleDetails(gomock.Any(), 1).Return(article, errors.New("usecase error"))
 			},
 		},
 	}
@@ -332,7 +347,7 @@ func Test_handler_GetArticleDetails(t *testing.T) {
 			tt.mock()
 
 			h := &handler{
-				repository: mockRepository,
+				usecase: mockUsecase,
 			}
 
 			if err := h.GetArticleDetails(c); err != nil {
@@ -347,8 +362,7 @@ func Test_handler_InsertArticle(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockRepository := mock_repo.NewMockRepository(ctrl)
-
+	mockUsecase := mock_usecase.NewMockUsecaseHandler(ctrl)
 	metadataString := `{
 		"meta_title":"Test Article",
 		"meta_description":"This is a test article",
@@ -384,10 +398,10 @@ func Test_handler_InsertArticle(t *testing.T) {
 				method: http.MethodPost,
 				path: func() string {
 					values := url.Values{}
-					values.Add("title", "title1")
-					values.Add("slug", "title-1")
-					values.Add("html_content", "<p>article1</p>")
-					values.Add("category_id", "1")
+					values.Add("title", "title 1")
+					values.Add("slug", "article-1")
+					values.Add("htmlcontent", "<p> this is article 1</p>")
+					values.Add("categoryid", "1")
 					values.Add("metadata", metadataString)
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
@@ -398,19 +412,23 @@ func Test_handler_InsertArticle(t *testing.T) {
 				statusCode: http.StatusOK,
 			},
 			mock: func() {
-				mockRepository.EXPECT().InsertArticle(gomock.Any(), gomock.Any()).Return(m.ResArticle{
+				data := m.ResArticle{
 					Id:          1,
-					Title:       "title1",
+					Title:       "title 1",
 					Slug:        "article-1",
-					HtmlContent: "<p>article1</p>",
+					HtmlContent: "<p> this is article 1</p>",
 					ResCategory: m.ResCategory{
 						Id:    1,
-						Title: "category 1",
+						Title: "catgegory 1",
 						Slug:  "category-1",
 					},
 					CreatedAt: "2022-12-01 20:29:00",
 					UpdatedAt: "2022-12-01 20:29:00",
-				}, nil)
+				}
+				var article []interface{}
+				article = append(article, data)
+
+				mockUsecase.EXPECT().InsertArticle(gomock.Any(), "title 1", "article-1", "<p> this is article 1</p>", 1, metadataString).Return(article, nil)
 			},
 		},
 		{
@@ -420,9 +438,9 @@ func Test_handler_InsertArticle(t *testing.T) {
 				path: func() string {
 					values := url.Values{}
 					values.Add("title", "")
-					values.Add("slug", "title-1")
-					values.Add("html_content", "<p>article1</p>")
-					values.Add("category_id", "1")
+					values.Add("slug", "article-1")
+					values.Add("htmlcontent", "<p> this is article 1</p>")
+					values.Add("categoryid", "1")
 					values.Add("metadata", metadataString)
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
@@ -440,10 +458,10 @@ func Test_handler_InsertArticle(t *testing.T) {
 				method: http.MethodPost,
 				path: func() string {
 					values := url.Values{}
-					values.Add("title", "new title")
+					values.Add("title", "title")
 					values.Add("slug", "")
-					values.Add("html_content", "<p>article1</p>")
-					values.Add("category_id", "1")
+					values.Add("htmlcontent", "<p> this is article 1</p>")
+					values.Add("categoryid", "1")
 					values.Add("metadata", metadataString)
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
@@ -456,15 +474,15 @@ func Test_handler_InsertArticle(t *testing.T) {
 			mock: func() {},
 		},
 		{
-			name: "error empty html_content",
+			name: "error empty htmlcontent",
 			args: args{
 				method: http.MethodPost,
 				path: func() string {
 					values := url.Values{}
-					values.Add("title", "new title")
-					values.Add("slug", "new-slug")
-					values.Add("html_content", "")
-					values.Add("category_id", "1")
+					values.Add("title", "title")
+					values.Add("slug", "article-1")
+					values.Add("htmlcontent", "")
+					values.Add("categoryid", "1")
 					values.Add("metadata", metadataString)
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
@@ -477,15 +495,15 @@ func Test_handler_InsertArticle(t *testing.T) {
 			mock: func() {},
 		},
 		{
-			name: "error empty category_id",
+			name: "error empty categoryid",
 			args: args{
 				method: http.MethodPost,
 				path: func() string {
 					values := url.Values{}
-					values.Add("title", "new title")
-					values.Add("slug", "new-slug")
-					values.Add("html_content", "<p>This is article content</p>")
-					values.Add("category_id", "")
+					values.Add("title", "title")
+					values.Add("slug", "article-1")
+					values.Add("htmlcontent", "<p> this is article 1</p>")
+					values.Add("categoryid", "")
 					values.Add("metadata", metadataString)
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
@@ -503,10 +521,10 @@ func Test_handler_InsertArticle(t *testing.T) {
 				method: http.MethodPost,
 				path: func() string {
 					values := url.Values{}
-					values.Add("title", "new title")
-					values.Add("slug", "new-slug")
-					values.Add("html_content", "<p>This is article content</p>")
-					values.Add("category_id", "1")
+					values.Add("title", "title")
+					values.Add("slug", "article-1")
+					values.Add("htmlcontent", "<p> this is article 1</p>")
+					values.Add("categoryid", "1")
 					values.Add("metadata", "")
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
@@ -519,51 +537,15 @@ func Test_handler_InsertArticle(t *testing.T) {
 			mock: func() {},
 		},
 		{
-			name: "error unmarshal metadata",
-			args: args{
-				method: http.MethodPost,
-				path: func() string {
-					metaString := `{
-						meta_ title:"Test Article",
-						meta_ description:"This is a test article",
-						meta_ author:"Test Author",
-						meta_ keywords:
-						[
-							"test",
-							"article"
-						],
-						meta_ robots:
-						[	
-							"index",
-							"follow"
-						]
-					}`
-					values := url.Values{}
-					values.Add("title", "new title")
-					values.Add("slug", "new-slug")
-					values.Add("html_content", "<p>This is article content</p>")
-					values.Add("category_id", "1")
-					values.Add("metadata", metaString)
-
-					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
-					return urlPath
-				},
-			},
-			wants: wants{
-				statusCode: http.StatusBadRequest,
-			},
-			mock: func() {},
-		},
-		{
-			name: "repository error",
+			name: "error usecase",
 			args: args{
 				method: http.MethodPost,
 				path: func() string {
 					values := url.Values{}
-					values.Add("title", "title1")
-					values.Add("slug", "title-1")
-					values.Add("html_content", "<p>article1</p>")
-					values.Add("category_id", "1")
+					values.Add("title", "title 1")
+					values.Add("slug", "article-1")
+					values.Add("htmlcontent", "<p> this is article 1</p>")
+					values.Add("categoryid", "1")
 					values.Add("metadata", metadataString)
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
@@ -574,19 +556,7 @@ func Test_handler_InsertArticle(t *testing.T) {
 				statusCode: http.StatusInternalServerError,
 			},
 			mock: func() {
-				mockRepository.EXPECT().InsertArticle(gomock.Any(), gomock.Any()).Return(m.ResArticle{
-					Id:          1,
-					Title:       "title1",
-					Slug:        "article-1",
-					HtmlContent: "<p>article1</p>",
-					ResCategory: m.ResCategory{
-						Id:    1,
-						Title: "category 1",
-						Slug:  "category-1",
-					},
-					CreatedAt: "2022-12-01 20:29:00",
-					UpdatedAt: "2022-12-01 20:29:00",
-				}, errors.New("repository error"))
+				mockUsecase.EXPECT().InsertArticle(gomock.Any(), "title 1", "article-1", "<p> this is article 1</p>", 1, metadataString).Return(nil, errors.New("error usecase"))
 			},
 		},
 	}
@@ -600,7 +570,7 @@ func Test_handler_InsertArticle(t *testing.T) {
 			tt.mock()
 
 			h := &handler{
-				repository: mockRepository,
+				usecase: mockUsecase,
 			}
 
 			if err := h.InsertArticle(c); err != nil {
@@ -615,8 +585,7 @@ func Test_handler_UpdateArticle(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockRepository := mock_repo.NewMockRepository(ctrl)
-
+	mockUsecase := mock_usecase.NewMockUsecaseHandler(ctrl)
 	metadataString := `{
 		"meta_title":"Test Article",
 		"meta_description":"This is a test article",
@@ -653,10 +622,10 @@ func Test_handler_UpdateArticle(t *testing.T) {
 				path: func() string {
 					values := url.Values{}
 					values.Add("id", "1")
-					values.Add("title", "title1")
-					values.Add("slug", "title-1")
-					values.Add("html_content", "<p>article1</p>")
-					values.Add("category_id", "1")
+					values.Add("title", "title 1")
+					values.Add("slug", "article-1")
+					values.Add("htmlcontent", "<p> this is article 1</p>")
+					values.Add("categoryid", "1")
 					values.Add("metadata", metadataString)
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
@@ -667,212 +636,36 @@ func Test_handler_UpdateArticle(t *testing.T) {
 				statusCode: http.StatusOK,
 			},
 			mock: func() {
-				mockRepository.EXPECT().UpdateArticle(gomock.Any(), gomock.Any()).Return(m.ResArticle{
+				data := m.ResArticle{
 					Id:          1,
-					Title:       "title1",
+					Title:       "title 1",
 					Slug:        "article-1",
-					HtmlContent: "<p>article1</p>",
+					HtmlContent: "<p> this is article 1</p>",
 					ResCategory: m.ResCategory{
 						Id:    1,
-						Title: "category 1",
+						Title: "catgegory 1",
 						Slug:  "category-1",
 					},
 					CreatedAt: "2022-12-01 20:29:00",
 					UpdatedAt: "2022-12-01 20:29:00",
-				}, nil)
-			},
-		},
-		{
-			name: "Success with empty title",
-			args: args{
-				method: http.MethodPatch,
-				path: func() string {
-					values := url.Values{}
-					values.Add("id", "1")
-					values.Add("title", "")
-					values.Add("slug", "title-1")
-					values.Add("html_content", "<p>article1</p>")
-					values.Add("category_id", "1")
-					values.Add("metadata", metadataString)
+				}
+				var article []interface{}
+				article = append(article, data)
 
-					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
-					return urlPath
-				},
-			},
-			wants: wants{
-				statusCode: http.StatusOK,
-			},
-			mock: func() {
-				mockRepository.EXPECT().UpdateArticle(gomock.Any(), gomock.Any()).Return(m.ResArticle{
-					Id:          1,
-					Title:       "",
-					Slug:        "article-1",
-					HtmlContent: "<p>article1</p>",
-					ResCategory: m.ResCategory{
-						Id:    1,
-						Title: "category 1",
-						Slug:  "category-1",
-					},
-					CreatedAt: "2022-12-01 20:29:00",
-					UpdatedAt: "2022-12-01 20:29:00",
-				}, nil)
+				mockUsecase.EXPECT().UpdateArticle(gomock.Any(), 1, "title 1", "article-1", "<p> this is article 1</p>", 1, metadataString).Return(article, nil)
 			},
 		},
 		{
-			name: "Success with empty slug",
+			name: "Error id not integer",
 			args: args{
 				method: http.MethodPatch,
 				path: func() string {
 					values := url.Values{}
-					values.Add("id", "1")
-					values.Add("title", "title1")
-					values.Add("slug", "")
-					values.Add("html_content", "<p>article1</p>")
-					values.Add("category_id", "1")
-					values.Add("metadata", metadataString)
-
-					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
-					return urlPath
-				},
-			},
-			wants: wants{
-				statusCode: http.StatusOK,
-			},
-			mock: func() {
-				mockRepository.EXPECT().UpdateArticle(gomock.Any(), gomock.Any()).Return(m.ResArticle{
-					Id:          1,
-					Title:       "title1",
-					Slug:        "",
-					HtmlContent: "<p>article1</p>",
-					ResCategory: m.ResCategory{
-						Id:    1,
-						Title: "category 1",
-						Slug:  "category-1",
-					},
-					CreatedAt: "2022-12-01 20:29:00",
-					UpdatedAt: "2022-12-01 20:29:00",
-				}, nil)
-			},
-		},
-		{
-			name: "Success with empty html_content",
-			args: args{
-				method: http.MethodPatch,
-				path: func() string {
-					values := url.Values{}
-					values.Add("id", "1")
-					values.Add("title", "title1")
-					values.Add("slug", "title-1")
-					values.Add("html_content", "")
-					values.Add("category_id", "1")
-					values.Add("metadata", metadataString)
-
-					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
-					return urlPath
-				},
-			},
-			wants: wants{
-				statusCode: http.StatusOK,
-			},
-			mock: func() {
-				mockRepository.EXPECT().UpdateArticle(gomock.Any(), gomock.Any()).Return(m.ResArticle{
-					Id:          1,
-					Title:       "title1",
-					Slug:        "article-1",
-					HtmlContent: "",
-					ResCategory: m.ResCategory{
-						Id:    1,
-						Title: "category 1",
-						Slug:  "category-1",
-					},
-					CreatedAt: "2022-12-01 20:29:00",
-					UpdatedAt: "2022-12-01 20:29:00",
-				}, nil)
-			},
-		},
-		{
-			name: "Success with empty category_id",
-			args: args{
-				method: http.MethodPatch,
-				path: func() string {
-					values := url.Values{}
-					values.Add("id", "1")
-					values.Add("title", "title1")
-					values.Add("slug", "title-1")
-					values.Add("html_content", "<p>article1</p>")
-					values.Add("category_id", "")
-					values.Add("metadata", metadataString)
-
-					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
-					return urlPath
-				},
-			},
-			wants: wants{
-				statusCode: http.StatusOK,
-			},
-			mock: func() {
-				mockRepository.EXPECT().UpdateArticle(gomock.Any(), gomock.Any()).Return(m.ResArticle{
-					Id:          1,
-					Title:       "title1",
-					Slug:        "article-1",
-					HtmlContent: "<p>article1</p>",
-					ResCategory: m.ResCategory{
-						Id:    1,
-						Title: "category 1",
-						Slug:  "category-1",
-					},
-					CreatedAt: "2022-12-01 20:29:00",
-					UpdatedAt: "2022-12-01 20:29:00",
-				}, nil)
-			},
-		},
-		{
-			name: "Success with empty metadata",
-			args: args{
-				method: http.MethodPatch,
-				path: func() string {
-					values := url.Values{}
-					values.Add("id", "1")
-					values.Add("title", "title1")
-					values.Add("slug", "title-1")
-					values.Add("html_content", "<p>article1</p>")
-					values.Add("category_id", "1")
-					values.Add("metadata", "")
-
-					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
-					return urlPath
-				},
-			},
-			wants: wants{
-				statusCode: http.StatusOK,
-			},
-			mock: func() {
-				mockRepository.EXPECT().UpdateArticle(gomock.Any(), gomock.Any()).Return(m.ResArticle{
-					Id:          1,
-					Title:       "title1",
-					Slug:        "article-1",
-					HtmlContent: "<p>article1</p>",
-					ResCategory: m.ResCategory{
-						Id:    1,
-						Title: "category 1",
-						Slug:  "category-1",
-					},
-					CreatedAt: "2022-12-01 20:29:00",
-					UpdatedAt: "2022-12-01 20:29:00",
-				}, nil)
-			},
-		},
-		{
-			name: "error empty id",
-			args: args{
-				method: http.MethodPatch,
-				path: func() string {
-					values := url.Values{}
-					values.Add("id", "")
-					values.Add("title", "title1")
-					values.Add("slug", "title-1")
-					values.Add("html_content", "<p>article1</p>")
-					values.Add("category_id", "1")
+					values.Add("id", "not_number")
+					values.Add("title", "title 1")
+					values.Add("slug", "article-1")
+					values.Add("htmlcontent", "<p> this is article 1</p>")
+					values.Add("categoryid", "1")
 					values.Add("metadata", metadataString)
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
@@ -885,16 +678,16 @@ func Test_handler_UpdateArticle(t *testing.T) {
 			mock: func() {},
 		},
 		{
-			name: "error wrong slug format",
+			name: "Error invalid slug",
 			args: args{
 				method: http.MethodPatch,
 				path: func() string {
 					values := url.Values{}
 					values.Add("id", "1")
-					values.Add("title", "title1")
-					values.Add("slug", "Title@#$%^&(!+-1")
-					values.Add("html_content", "<p>article1</p>")
-					values.Add("category_id", "1")
+					values.Add("title", "title 1")
+					values.Add("slug", "article - 1")
+					values.Add("htmlcontent", "<p> this is article 1</p>")
+					values.Add("categoryid", "1")
 					values.Add("metadata", metadataString)
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
@@ -907,16 +700,16 @@ func Test_handler_UpdateArticle(t *testing.T) {
 			mock: func() {},
 		},
 		{
-			name: "error category_id not integer",
+			name: "Error categoryid not integer",
 			args: args{
 				method: http.MethodPatch,
 				path: func() string {
 					values := url.Values{}
 					values.Add("id", "1")
-					values.Add("title", "title1")
-					values.Add("slug", "title-1")
-					values.Add("html_content", "<p>article1</p>")
-					values.Add("category_id", "not_number")
+					values.Add("title", "title 1")
+					values.Add("slug", "article-1")
+					values.Add("htmlcontent", "<p> this is article 1</p>")
+					values.Add("categoryid", "not_number")
 					values.Add("metadata", metadataString)
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
@@ -929,53 +722,16 @@ func Test_handler_UpdateArticle(t *testing.T) {
 			mock: func() {},
 		},
 		{
-			name: "error unmarshal metadata",
+			name: "Error sql no rows affected",
 			args: args{
 				method: http.MethodPatch,
 				path: func() string {
-					metaString := `{
-						meta_ title:"Test Article",
-						meta_ description:"This is a test article",
-						meta_ author:"Test Author",
-						meta_ keywords:
-						[
-							"test",
-							"article"
-						],
-						meta_ robots:
-						[	
-							"index",
-							"follow"
-						]
-					}`
 					values := url.Values{}
 					values.Add("id", "1")
-					values.Add("title", "new title")
-					values.Add("slug", "new-slug")
-					values.Add("html_content", "<p>This is article content</p>")
-					values.Add("category_id", "1")
-					values.Add("metadata", metaString)
-
-					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
-					return urlPath
-				},
-			},
-			wants: wants{
-				statusCode: http.StatusBadRequest,
-			},
-			mock: func() {},
-		},
-		{
-			name: "error data not found",
-			args: args{
-				method: http.MethodPost,
-				path: func() string {
-					values := url.Values{}
-					values.Add("id", "20")
-					values.Add("title", "new title")
-					values.Add("slug", "new-slug")
-					values.Add("html_content", "<p>This is article content</p>")
-					values.Add("category_id", "1")
+					values.Add("title", "title 1")
+					values.Add("slug", "article-1")
+					values.Add("htmlcontent", "<p> this is article 1</p>")
+					values.Add("categoryid", "1")
 					values.Add("metadata", metadataString)
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
@@ -983,23 +739,39 @@ func Test_handler_UpdateArticle(t *testing.T) {
 				},
 			},
 			wants: wants{
-				statusCode: http.StatusNotFound,
+				statusCode: http.StatusOK,
 			},
 			mock: func() {
-				mockRepository.EXPECT().UpdateArticle(gomock.Any(), gomock.Any()).Return(m.ResArticle{}, utils.ErrNotFound)
+				data := m.ResArticle{
+					Id:          1,
+					Title:       "title 1",
+					Slug:        "article-1",
+					HtmlContent: "<p> this is article 1</p>",
+					ResCategory: m.ResCategory{
+						Id:    1,
+						Title: "catgegory 1",
+						Slug:  "category-1",
+					},
+					CreatedAt: "2022-12-01 20:29:00",
+					UpdatedAt: "2022-12-01 20:29:00",
+				}
+				var article []interface{}
+				article = append(article, data)
+
+				mockUsecase.EXPECT().UpdateArticle(gomock.Any(), 1, "title 1", "article-1", "<p> this is article 1</p>", 1, metadataString).Return(article, sql.ErrNoRows)
 			},
 		},
 		{
-			name: "error repository",
+			name: "Error usecase",
 			args: args{
-				method: http.MethodPost,
+				method: http.MethodPatch,
 				path: func() string {
 					values := url.Values{}
 					values.Add("id", "1")
-					values.Add("title", "new title")
-					values.Add("slug", "new-slug")
-					values.Add("html_content", "<p>This is article content</p>")
-					values.Add("category_id", "1")
+					values.Add("title", "title 1")
+					values.Add("slug", "article-1")
+					values.Add("htmlcontent", "<p> this is article 1</p>")
+					values.Add("categoryid", "1")
 					values.Add("metadata", metadataString)
 
 					urlPath := fmt.Sprintf("/admin/v1/article?%s", values.Encode())
@@ -1010,7 +782,23 @@ func Test_handler_UpdateArticle(t *testing.T) {
 				statusCode: http.StatusInternalServerError,
 			},
 			mock: func() {
-				mockRepository.EXPECT().UpdateArticle(gomock.Any(), gomock.Any()).Return(m.ResArticle{}, errors.New("repository error"))
+				data := m.ResArticle{
+					Id:          1,
+					Title:       "title 1",
+					Slug:        "article-1",
+					HtmlContent: "<p> this is article 1</p>",
+					ResCategory: m.ResCategory{
+						Id:    1,
+						Title: "catgegory 1",
+						Slug:  "category-1",
+					},
+					CreatedAt: "2022-12-01 20:29:00",
+					UpdatedAt: "2022-12-01 20:29:00",
+				}
+				var article []interface{}
+				article = append(article, data)
+
+				mockUsecase.EXPECT().UpdateArticle(gomock.Any(), 1, "title 1", "article-1", "<p> this is article 1</p>", 1, metadataString).Return(article, errors.New("usecase error"))
 			},
 		},
 	}
@@ -1024,7 +812,7 @@ func Test_handler_UpdateArticle(t *testing.T) {
 			tt.mock()
 
 			h := &handler{
-				repository: mockRepository,
+				usecase: mockUsecase,
 			}
 
 			if err := h.UpdateArticle(c); err != nil {
@@ -1039,7 +827,7 @@ func Test_handler_DeleteArticle(t *testing.T) {
 	ctrl := gomock.NewController(t)
 	defer ctrl.Finish()
 
-	mockRepository := mock_repo.NewMockRepository(ctrl)
+	mockUsecase := mock_usecase.NewMockUsecaseHandler(ctrl)
 
 	type args struct {
 		method string
@@ -1058,20 +846,20 @@ func Test_handler_DeleteArticle(t *testing.T) {
 			name: "success",
 			args: args{
 				method: http.MethodDelete,
-				path:   "/admin/v1/article?id=1",
+				path:   "/article?id=1",
 			},
 			wants: wants{
 				statusCode: http.StatusOK,
 			},
 			mock: func() {
-				mockRepository.EXPECT().DeleteArticle(gomock.Any(), 1).Return(nil)
+				mockUsecase.EXPECT().DeleteArticle(gomock.Any(), 1).Return(nil)
 			},
 		},
 		{
 			name: "error id not number",
 			args: args{
 				method: http.MethodDelete,
-				path:   "/admin/v1/article?id=not_number",
+				path:   "/article?id=not_number",
 			},
 			wants: wants{
 				statusCode: http.StatusBadRequest,
@@ -1082,26 +870,26 @@ func Test_handler_DeleteArticle(t *testing.T) {
 			name: "no rows affected",
 			args: args{
 				method: http.MethodDelete,
-				path:   "/admin/v1/article?id=1",
+				path:   "/article?id=1",
 			},
 			wants: wants{
 				statusCode: http.StatusOK,
 			},
 			mock: func() {
-				mockRepository.EXPECT().DeleteArticle(gomock.Any(), 1).Return(utils.NoRowsAffected)
+				mockUsecase.EXPECT().DeleteArticle(gomock.Any(), 1).Return(msg.ERROR_NO_ROWS_AFFECTED)
 			},
 		},
 		{
-			name: "internal server error",
+			name: "usecase error",
 			args: args{
 				method: http.MethodDelete,
-				path:   "/admin/v1/article?id=1",
+				path:   "/article?id=1",
 			},
 			wants: wants{
 				statusCode: http.StatusInternalServerError,
 			},
 			mock: func() {
-				mockRepository.EXPECT().DeleteArticle(gomock.Any(), 1).Return(errors.New("repository error"))
+				mockUsecase.EXPECT().DeleteArticle(gomock.Any(), 1).Return(errors.New("usecase error"))
 			},
 		},
 	}
@@ -1115,7 +903,7 @@ func Test_handler_DeleteArticle(t *testing.T) {
 			tt.mock()
 
 			h := &handler{
-				repository: mockRepository,
+				usecase: mockUsecase,
 			}
 
 			if err := h.DeleteArticle(c); err != nil {

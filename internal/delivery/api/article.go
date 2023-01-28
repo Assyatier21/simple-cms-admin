@@ -2,13 +2,15 @@ package api
 
 import (
 	m "cms-admin/models"
+	msg "cms-admin/models/lib"
 	"cms-admin/utils"
-	"encoding/json"
+	"database/sql"
 	"log"
 	"net/http"
 	"strconv"
 
 	"github.com/labstack/echo/v4"
+	"github.com/lib/pq"
 )
 
 func (h *handler) GetArticles(ctx echo.Context) (err error) {
@@ -17,43 +19,32 @@ func (h *handler) GetArticles(ctx echo.Context) (err error) {
 		offset int
 	)
 
-	if ctx.FormValue("limit") == "" {
-		limit = 100
-	} else {
+	limit = 100
+	if ctx.FormValue("limit") != "" {
 		limit, err = strconv.Atoi(ctx.FormValue("limit"))
 		if err != nil {
-			res := m.SetError(http.StatusBadRequest, utils.ErrorFormatLimitStr)
+			res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_ID)
 			return ctx.JSON(http.StatusBadRequest, res)
 		}
 	}
 
-	if ctx.FormValue("offset") == "" {
-		offset = 0
-	} else {
+	offset = 0
+	if ctx.FormValue("offset") != "" {
 		offset, err = strconv.Atoi(ctx.FormValue("offset"))
 		if err != nil {
-			res := m.SetError(http.StatusBadRequest, utils.ErrorFormatOffsetStr)
+			res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_OFFSET)
 			return ctx.JSON(http.StatusBadRequest, res)
 		}
 	}
 
-	datas, err := h.repository.GetArticles(ctx.Request().Context(), limit, offset)
+	articles, err := h.usecase.GetArticles(ctx.Request().Context(), limit, offset)
 	if err != nil {
-		if err == utils.ErrNotFound {
-			res := m.SetResponse(http.StatusOK, utils.ErrNotFound.Error(), []interface{}{})
-			return ctx.JSON(http.StatusOK, res)
-		} else {
-			log.Println("[Delivery][GetArticles] can't get list of articles, err:", err.Error())
-			res := m.SetError(http.StatusInternalServerError, "failed to get list of articles")
-			return ctx.JSON(http.StatusInternalServerError, res)
-		}
+		log.Println("[Delivery][GetArticles] can't get list of articles, err:", err.Error())
+		res := m.SetError(http.StatusInternalServerError, utils.STATUS_FAILED, err.Error())
+		return ctx.JSON(http.StatusInternalServerError, res)
 	}
 
-	articles := make([]interface{}, len(datas))
-	for i, v := range datas {
-		articles[i] = v
-	}
-	res := m.SetResponse(http.StatusOK, "success", articles)
+	res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "list of articles returned successfully", articles)
 	return ctx.JSON(http.StatusOK, res)
 }
 func (h *handler) GetArticleDetails(ctx echo.Context) (err error) {
@@ -63,144 +54,134 @@ func (h *handler) GetArticleDetails(ctx echo.Context) (err error) {
 
 	id, err = strconv.Atoi(ctx.FormValue("id"))
 	if err != nil {
-		res := m.SetError(http.StatusBadRequest, utils.ErrorFormatIDStr)
+		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_EMPTY_ID)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
-	article, err := h.repository.GetArticleDetails(ctx.Request().Context(), id)
+	article, err := h.usecase.GetArticleDetails(ctx.Request().Context(), id)
 	if err != nil {
-		if err == utils.ErrNotFound {
-			res := m.SetResponse(http.StatusOK, utils.ErrNotFound.Error(), []interface{}{})
+		if err == sql.ErrNoRows {
+			res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "no article found", []interface{}{})
 			return ctx.JSON(http.StatusOK, res)
-		} else {
-			log.Println("[Delivery][GetArticleDetails] can't get article details, err:", err.Error())
-			res := m.SetError(http.StatusInternalServerError, "failed to get article details")
-			return ctx.JSON(http.StatusInternalServerError, res)
 		}
+		log.Println("[Delivery][GetArticleDetails] can't get article details, err:", err.Error())
+		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, err.Error())
+		return ctx.JSON(http.StatusInternalServerError, res)
 	}
 
-	var data []interface{}
-	data = append(data, article)
-
-	res := m.SetResponse(http.StatusOK, "success", data)
+	res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "article details returned successfully", article)
 	return ctx.JSON(http.StatusOK, res)
 }
 func (h *handler) InsertArticle(ctx echo.Context) (err error) {
 	var (
-		returnArticle m.Article
+		title       string
+		slug        string
+		htmlcontent string
+		categoryid  int
+		metadata    string
 	)
 
-	if ctx.FormValue("title") == "" {
-		res := m.SetError(http.StatusBadRequest, utils.ErrorTitleEmptyStr)
+	title = ctx.FormValue("title")
+	if title == "" {
+		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_EMPTY_TITLE)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
-	if ctx.FormValue("slug") == "" || !utils.IsValidSlug(ctx.FormValue("slug")) {
-		res := m.SetError(http.StatusBadRequest, utils.ErrorFormatSlugStr)
+	slug = ctx.FormValue("slug")
+	if slug == "" || !utils.IsValidSlug(slug) {
+		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_EMPTY_SLUG)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
-	if ctx.FormValue("html_content") == "" {
-		res := m.SetError(http.StatusBadRequest, utils.ErrorFHTMLContenEmptyStr)
+	htmlcontent = ctx.FormValue("htmlcontent")
+	if htmlcontent == "" {
+		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_EMPTY_htmlcontent)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
-	if ctx.FormValue("category_id") == "" || !utils.IsValidNumeric(ctx.FormValue("category_id")) {
-		res := m.SetError(http.StatusBadRequest, utils.ErrorFormatCatIDStr)
-		return ctx.JSON(http.StatusBadRequest, res)
-	}
-
-	if ctx.FormValue("metadata") == "" {
-		res := m.SetError(http.StatusBadRequest, utils.ErrorMetadataEmptyStr)
-		return ctx.JSON(http.StatusBadRequest, res)
-	} else {
-		metadataJSON := ctx.FormValue("metadata")
-		err := json.Unmarshal([]byte(metadataJSON), &returnArticle.MetaData)
-		if err != nil {
-			res := m.SetError(http.StatusBadRequest, "error unmarshalling metadata")
-			return ctx.JSON(http.StatusBadRequest, res)
-		}
-	}
-
-	ctx.Bind(&returnArticle)
-	utils.SetArticleCreatedUpdatedTimeNow(&returnArticle)
-
-	article, err := h.repository.InsertArticle(ctx.Request().Context(), returnArticle)
+	categoryid, err = strconv.Atoi(ctx.FormValue("categoryid"))
 	if err != nil {
+		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_EMPTY_categoryid)
+		return ctx.JSON(http.StatusBadRequest, res)
+	}
+
+	metadata = ctx.FormValue("metadata")
+	if metadata == "" {
+		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_EMPTY_METADATA)
+		return ctx.JSON(http.StatusBadRequest, res)
+	}
+
+	article, err := h.usecase.InsertArticle(ctx.Request().Context(), title, slug, htmlcontent, categoryid, metadata)
+	if err != nil {
+		if pqErr, ok := err.(*pq.Error); ok {
+			if pqErr.Code == "23505" {
+				res := m.SetError(http.StatusConflict, utils.STATUS_FAILED, pqErr.Error())
+				return ctx.JSON(http.StatusOK, res)
+			}
+		}
 		log.Println("[Delivery][InsertArticle] can't insert article, err:", err.Error())
-		res := m.SetError(http.StatusInternalServerError, err.Error())
+		res := m.SetError(http.StatusInternalServerError, utils.STATUS_FAILED, err.Error())
 		return ctx.JSON(http.StatusInternalServerError, res)
 	}
 
-	var data []interface{}
-	data = append(data, article)
-
-	res := m.SetResponse(http.StatusOK, "success", data)
+	res := m.SetResponse(http.StatusCreated, utils.STATUS_SUCCESS, "article created successfully", article)
 	return ctx.JSON(http.StatusOK, res)
 }
 func (h *handler) UpdateArticle(ctx echo.Context) (err error) {
 	var (
-		updatedArticle m.Article
+		id          int
+		title       string
+		slug        string
+		htmlcontent string
+		categoryid  int
+		metadata    string
 	)
 
-	_, err = strconv.Atoi(ctx.FormValue("id"))
+	id, err = strconv.Atoi(ctx.FormValue("id"))
 	if err != nil {
-		res := m.SetError(http.StatusBadRequest, utils.ErrorFormatIDStr)
+		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_EMPTY_ID)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
-	if ctx.FormValue("title") == "" {
-		updatedArticle.Title = ""
-	}
+	title = ctx.FormValue("title")
 
-	if ctx.FormValue("slug") == "" {
-		updatedArticle.Slug = ""
-	} else if !utils.IsValidSlug(ctx.FormValue("slug")) {
-		res := m.SetError(http.StatusBadRequest, "slug format wrong")
+	slug = ctx.FormValue("slug")
+	if slug != "" && !utils.IsValidSlug(slug) {
+		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_SLUG)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
-	if ctx.FormValue("html_content") == "" {
-		updatedArticle.HtmlContent = ""
-	}
+	htmlcontent = ctx.FormValue("htmlcontent")
 
-	if ctx.FormValue("category_id") == "" {
-		updatedArticle.CategoryID = 0
-	} else if _, err = strconv.Atoi(ctx.FormValue("category_id")); err != nil {
-		res := m.SetError(http.StatusBadRequest, "category_id must be an integer")
-		return ctx.JSON(http.StatusBadRequest, res)
-	}
-
-	if ctx.FormValue("metadata") == "" {
-		updatedArticle.MetaData = m.MetaData{}
-	} else {
-		metadataJSON := ctx.FormValue("metadata")
-		err := json.Unmarshal([]byte(metadataJSON), &updatedArticle.MetaData)
+	categoryid = 0
+	if ctx.FormValue("categoryid") != "" {
+		categoryid, err = strconv.Atoi(ctx.FormValue("categoryid"))
 		if err != nil {
-			res := m.SetError(http.StatusBadRequest, "error unmarshalling metadata")
+			res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_categoryid)
 			return ctx.JSON(http.StatusBadRequest, res)
 		}
 	}
 
-	ctx.Bind(&updatedArticle)
-	utils.SetArticleUpdatedTimeNow(&updatedArticle)
+	metadata = ctx.FormValue("metadata")
 
-	article, err := h.repository.UpdateArticle(ctx.Request().Context(), updatedArticle)
+	article, err := h.usecase.UpdateArticle(ctx.Request().Context(), id, title, slug, htmlcontent, categoryid, metadata)
 	if err != nil {
-		log.Println("[Delivery][UpdateArticle] can't update article, err:", err.Error())
-		if err == utils.ErrNotFound {
-			res := m.SetError(http.StatusNotFound, utils.ErrNotFound.Error())
-			return ctx.JSON(http.StatusNotFound, res)
-		} else {
-			res := m.SetError(http.StatusInternalServerError, err.Error())
-			return ctx.JSON(http.StatusInternalServerError, res)
+		if err == sql.ErrNoRows {
+			res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "no article updated", []interface{}{})
+			return ctx.JSON(http.StatusOK, res)
 		}
+		if pqErr, ok := err.(*pq.Error); ok {
+			if pqErr.Code == "23505" {
+				res := m.SetError(http.StatusConflict, utils.STATUS_FAILED, "slug has been used in another article")
+				return ctx.JSON(http.StatusOK, res)
+			}
+		}
+		log.Println("[Delivery][UpdateArticle] can't update article, err:", err.Error())
+		res := m.SetError(http.StatusInternalServerError, utils.STATUS_FAILED, err.Error())
+		return ctx.JSON(http.StatusInternalServerError, res)
 	}
 
-	var data []interface{}
-	data = append(data, article)
-
-	res := m.SetResponse(http.StatusOK, "success", data)
+	res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "article updated successfully", article)
 	return ctx.JSON(http.StatusOK, res)
 }
 func (h *handler) DeleteArticle(ctx echo.Context) (err error) {
@@ -210,22 +191,22 @@ func (h *handler) DeleteArticle(ctx echo.Context) (err error) {
 
 	id, err = strconv.Atoi(ctx.FormValue("id"))
 	if err != nil {
-		res := m.SetError(http.StatusBadRequest, utils.ErrorFormatIDStr)
+		res := m.SetError(http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_EMPTY_ID)
 		return ctx.JSON(http.StatusBadRequest, res)
 	}
 
-	err = h.repository.DeleteArticle(ctx.Request().Context(), id)
+	err = h.usecase.DeleteArticle(ctx.Request().Context(), id)
 	if err != nil {
-		if err == utils.NoRowsAffected {
-			log.Println("[Delivery][DeleteArticle] can't delete article, err:", err.Error())
-			res := m.SetError(http.StatusOK, utils.NoRowsAffected.Error())
+		if err == msg.ERROR_NO_ROWS_AFFECTED {
+			res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "no article deleted", nil)
 			return ctx.JSON(http.StatusOK, res)
-		} else {
-			log.Println("[Delivery][DeleteArticle] can't delete article, err:", err.Error())
-			res := m.SetError(http.StatusInternalServerError, err.Error())
-			return ctx.JSON(http.StatusInternalServerError, res)
 		}
+		log.Println("[Delivery][DeleteArticle] can't delete article, err:", err.Error())
+		res := m.SetError(http.StatusInternalServerError, utils.STATUS_FAILED, err.Error())
+		return ctx.JSON(http.StatusInternalServerError, res)
+
 	}
 
-	return ctx.JSON(http.StatusOK, map[string]string{"message": "OK"})
+	res := m.SetResponse(http.StatusNoContent, utils.STATUS_SUCCESS, "article deleted successfully", []interface{}{})
+	return ctx.JSON(http.StatusOK, res)
 }

@@ -1,20 +1,18 @@
 package api
 
 import (
-	"cms-admin/internal/repository/postgres"
+	"cms-admin/internal/usecase"
 
 	"github.com/labstack/echo/v4"
 )
 
-type Handler interface {
-	// Article Handler
+type DeliveryHandler interface {
 	GetArticles(ctx echo.Context) (err error)
 	GetArticleDetails(ctx echo.Context) (err error)
 	InsertArticle(ctx echo.Context) (err error)
 	UpdateArticle(ctx echo.Context) (err error)
 	DeleteArticle(ctx echo.Context) (err error)
 
-	// Category Handler
 	GetCategoryTree(ctx echo.Context) (err error)
 	GetCategoryDetails(ctx echo.Context) (err error)
 	InsertCategory(ctx echo.Context) (err error)
@@ -23,11 +21,11 @@ type Handler interface {
 }
 
 type handler struct {
-	repository postgres.Repository
+	usecase usecase.UsecaseHandler
 }
 
-func New(repository postgres.Repository) Handler {
+func NewHandler(usecase usecase.UsecaseHandler) DeliveryHandler {
 	return &handler{
-		repository: repository,
+		usecase: usecase,
 	}
 }
