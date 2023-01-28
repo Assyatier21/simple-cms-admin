@@ -194,7 +194,7 @@ func Test_handler_GetArticles(t *testing.T) {
 			mock: func() {},
 		},
 		{
-			name: "error repository",
+			name: "error usecase",
 			args: args{
 				method: http.MethodGet,
 				path:   "/articles?limit=5&offset=0",
@@ -203,7 +203,7 @@ func Test_handler_GetArticles(t *testing.T) {
 				statusCode: http.StatusInternalServerError,
 			},
 			mock: func() {
-				mockUsecase.EXPECT().GetArticles(gomock.Any(), 5, 0).Return(nil, errors.New("repository error"))
+				mockUsecase.EXPECT().GetArticles(gomock.Any(), 5, 0).Return(nil, errors.New("usecase error"))
 			},
 		},
 	}
@@ -305,7 +305,7 @@ func Test_handler_GetArticleDetails(t *testing.T) {
 			},
 		},
 		{
-			name: "repository error",
+			name: "usecase error",
 			args: args{
 				method: http.MethodGet,
 				path:   "/article?id=1",
@@ -333,7 +333,7 @@ func Test_handler_GetArticleDetails(t *testing.T) {
 				for _, v := range data {
 					article = append(article, v)
 				}
-				mockUsecase.EXPECT().GetArticleDetails(gomock.Any(), 1).Return(article, errors.New("repository error"))
+				mockUsecase.EXPECT().GetArticleDetails(gomock.Any(), 1).Return(article, errors.New("usecase error"))
 			},
 		},
 	}
@@ -537,7 +537,7 @@ func Test_handler_InsertArticle(t *testing.T) {
 			mock: func() {},
 		},
 		{
-			name: "error repository",
+			name: "error usecase",
 			args: args{
 				method: http.MethodPost,
 				path: func() string {
@@ -556,7 +556,7 @@ func Test_handler_InsertArticle(t *testing.T) {
 				statusCode: http.StatusInternalServerError,
 			},
 			mock: func() {
-				mockUsecase.EXPECT().InsertArticle(gomock.Any(), "title 1", "article-1", "<p> this is article 1</p>", 1, metadataString).Return(nil, errors.New("error repository"))
+				mockUsecase.EXPECT().InsertArticle(gomock.Any(), "title 1", "article-1", "<p> this is article 1</p>", 1, metadataString).Return(nil, errors.New("error usecase"))
 			},
 		},
 	}
@@ -762,7 +762,7 @@ func Test_handler_UpdateArticle(t *testing.T) {
 			},
 		},
 		{
-			name: "Error repository",
+			name: "Error usecase",
 			args: args{
 				method: http.MethodPatch,
 				path: func() string {
@@ -779,7 +779,7 @@ func Test_handler_UpdateArticle(t *testing.T) {
 				},
 			},
 			wants: wants{
-				statusCode: http.StatusOK,
+				statusCode: http.StatusInternalServerError,
 			},
 			mock: func() {
 				data := m.ResArticle{
@@ -798,7 +798,7 @@ func Test_handler_UpdateArticle(t *testing.T) {
 				var article []interface{}
 				article = append(article, data)
 
-				mockUsecase.EXPECT().UpdateArticle(gomock.Any(), 1, "title 1", "article-1", "<p> this is article 1</p>", 1, metadataString).Return(article, errors.New("repository error"))
+				mockUsecase.EXPECT().UpdateArticle(gomock.Any(), 1, "title 1", "article-1", "<p> this is article 1</p>", 1, metadataString).Return(article, errors.New("usecase error"))
 			},
 		},
 	}
@@ -880,7 +880,7 @@ func Test_handler_DeleteArticle(t *testing.T) {
 			},
 		},
 		{
-			name: "repository error",
+			name: "usecase error",
 			args: args{
 				method: http.MethodDelete,
 				path:   "/article?id=1",
@@ -889,7 +889,7 @@ func Test_handler_DeleteArticle(t *testing.T) {
 				statusCode: http.StatusInternalServerError,
 			},
 			mock: func() {
-				mockUsecase.EXPECT().DeleteArticle(gomock.Any(), 1).Return(errors.New("repository error"))
+				mockUsecase.EXPECT().DeleteArticle(gomock.Any(), 1).Return(errors.New("usecase error"))
 			},
 		},
 	}
