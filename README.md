@@ -1,6 +1,6 @@
 # Simple CMS Admin
 
-Welcome to the Simple CMS Admin Service. An open-source Content Management System based on the echo framework. This service allows you to manage articles and categories as an admin. This service has implemented clean architecture principles, a practical software architecture solution from Robert C. Martin (known as Uncle Bob).
+Welcome to the Simple CMS Admin Service. An open-source Content Management System based on the echo framework. As admin, we can use the features provided by this service in the form of management of articles and categories. By using this service we can insert, update, delete and get details of each item (article and category). This service has implemented clean architecture principles, a practical software architecture solution from Robert C. Martin (known as Uncle Bob).
 
 ## Getting Started
 
@@ -54,12 +54,12 @@ $ go run cmd/main.go
 
 ### Features
 
-The API has the following endpoints:
+This service has the following API endpoints:
 
-- `/v1/articles`: get list of articles
-- `/v1/article`: insert, update, delete and get details of article (method: POST, PATCH, DELETE, and GET)
-- `/v1/categories`: get list of categories
-- `/v1/category`: insert, update, delete and get details of category (method: POST, PATCH, DELETE, and GET)
+- `admin/v1/articles`: get list of articles
+- `admin/v1/article`: insert, update, delete and get details of article (method: POST, PATCH, DELETE, and GET)
+- `admin/v1/categories`: get list of categories
+- `admin/v1/category`: insert, update, delete and get details of category (method: POST, PATCH, DELETE, and GET)
 
 We can test the endpoint using the postman collection in `simple-cms-admin/tools`.
 
