@@ -1,0 +1,94 @@
+{
+	"info": {
+		"_postman_id": "4fa80506-a3c6-4331-b6d7-bbac9a6e9b83",
+		"name": "Elasticsearch CMS Collection",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "21912170"
+	},
+	"item": [
+		{
+			"name": "Create Index",
+			"request": {
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"settings\": {\n        \"number_of_shards\": 1,\n        \"number_of_replicas\": 1\n    },\n    \"mappings\": {\n        \"properties\": {\n            \"title\": {\n                \"type\": \"text\",\n                \"fields\": {\n                    \"keyword\": {\n                        \"type\": \"keyword\",\n                        \"ignore_above\": 256\n                    }\n                }\n            },\n            \"slug\": {\n                \"type\": \"text\",\n                \"fields\": {\n                    \"keyword\": {\n                        \"type\": \"keyword\",\n                        \"ignore_above\": 256\n                    }\n                }\n            },\n            \"html_content\": {\n                \"type\": \"text\",\n                \"fields\": {\n                    \"keyword\": {\n                        \"type\": \"keyword\",\n                        \"ignore_above\": 256\n                    }\n                }\n            },\n            \"categories\": {\n                \"properties\": {\n                    \"id\": {\n                        \"type\": \"long\"\n                    },\n                    \"title\": {\n                        \"type\": \"text\",\n                        \"fields\": {\n                            \"keyword\": {\n                                \"type\": \"keyword\",\n                                \"ignore_above\": 256\n                            }\n                        }\n                    },\n                    \"slug\": {\n                        \"type\": \"text\",\n                        \"fields\": {\n                            \"keyword\": {\n                                \"type\": \"keyword\",\n                                \"ignore_above\": 256\n                            }\n                        }\n                    }\n                }\n            },\n            \"metadata\": {\n                \"properties\": {\n                    \"title\": {\n                        \"type\": \"text\",\n                        \"fields\": {\n                            \"keyword\": {\n                                \"type\": \"keyword\",\n                                \"ignore_above\": 256\n                            }\n                        }\n                    },\n                    \"description\": {\n                        \"type\": \"text\",\n                        \"fields\": {\n                            \"keyword\": {\n                                \"type\": \"keyword\",\n                                \"ignore_above\": 256\n                            }\n                        }\n                    },\n                    \"author\": {\n                        \"type\": \"text\",\n                        \"fields\": {\n                            \"keyword\": {\n                                \"type\": \"keyword\",\n                                \"ignore_above\": 256\n                            }\n                        }\n                    },\n                    \"keywords\": {\n                        \"type\": \"text\",\n                        \"fields\": {\n                            \"keyword\": {\n                                \"type\": \"keyword\",\n                                \"ignore_above\": 256\n                            }\n                        }\n                    },\n                    \"robots\": {\n                        \"type\": \"text\",\n                        \"fields\": {\n                            \"keyword\": {\n                                \"type\": \"keyword\",\n                                \"ignore_above\": 256\n                            }\n                        }\n                    }\n                }\n            },\n            \"created_at\": {\n                \"type\": \"date\"\n            },\n            \"updated_at\": {\n                \"type\": \"date\"\n            }\n        }\n    }\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:9200/simple_cms_admin",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "9200",
+					"path": [
+						"simple_cms_admin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Get Mapping",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "http://127.0.0.1:9200/simple_cms_admin",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "9200",
+					"path": [
+						"simple_cms_admin"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Change Index Alias",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n  \"actions\": [\n    {\n      \"add\": {\n        \"index\": \"simple_cms_admin\",\n        \"alias\": \"cms_articles\"\n      }\n    }\n  ]\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "http://127.0.0.1:9200/_aliases",
+					"protocol": "http",
+					"host": [
+						"127",
+						"0",
+						"0",
+						"1"
+					],
+					"port": "9200",
+					"path": [
+						"_aliases"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
