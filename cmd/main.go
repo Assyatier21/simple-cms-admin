@@ -1,7 +1,7 @@
 package main
 
 import (
-	db "cms-admin/database"
+	repo "cms-admin/database"
 	"cms-admin/internal/delivery/api"
 	"cms-admin/internal/repository/postgres"
 	"cms-admin/internal/usecase"
@@ -10,7 +10,9 @@ import (
 )
 
 func main() {
-	db := db.Init()
+	db := repo.Init()
+	esClient := repo.InitElasticClient()
+	_ = esClient
 
 	repository := postgres.NewRepository(db)
 	usecase := usecase.NewUsecase(repository)

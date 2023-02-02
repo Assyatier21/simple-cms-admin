@@ -2,11 +2,13 @@ package database
 
 import (
 	"cms-admin/config"
+	"context"
 	"database/sql"
 	"fmt"
 	"log"
 
 	_ "github.com/lib/pq"
+	"github.com/olivere/elastic/v7"
 )
 
 func Init() *sql.DB {
@@ -16,6 +18,7 @@ func Init() *sql.DB {
 		log.Println(err)
 		return nil
 	}
+	log.Println("[Database] initialized...")
 
 	err = db.Ping()
 	if err != nil {
@@ -25,4 +28,24 @@ func Init() *sql.DB {
 
 	log.Println("[Database] successfully connected")
 	return db
+}
+
+func InitElasticClient() *elastic.Client {
+	ctx := context.Background()
+	client, err := elastic.NewClient(elastic.SetURL(config.ESADDRESS),
+		elastic.SetSniff(false),
+		elastic.SetHealthcheck(false))
+
+	log.Println("[Elasticsearch] initialized...")
+	if err != nil {
+		log.Println("[Elasticsearch] can't connect to elasticsearch: ", err.Error())
+		return nil
+	}
+
+	info, _, err := client.Ping(config.ESADDRESS).Do(ctx)
+	if err != nil {
+		panic(err)
+	}
+	log.Printf("[Elasticsearch] successfully connected. running version %s\n", info.Version.Number)
+	return client
 }
