@@ -11,11 +11,10 @@ import (
 
 func main() {
 	db := repo.Init()
-	esClient := repo.InitElasticClient()
-	_ = esClient
+	es := repo.InitElasticClient()
 
 	repository := postgres.NewRepository(db)
-	usecase := usecase.NewUsecase(repository)
+	usecase := usecase.NewUsecase(repository, es)
 	delivery := api.NewHandler(usecase)
 	echo := routes.GetRoutes(delivery)
 

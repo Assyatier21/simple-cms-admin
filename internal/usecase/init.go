@@ -1,6 +1,7 @@
 package usecase
 
 import (
+	elastic "cms-admin/internal/repository/elasticsearch"
 	"cms-admin/internal/repository/postgres"
 	"context"
 )
@@ -21,10 +22,12 @@ type UsecaseHandler interface {
 
 type usecase struct {
 	repository postgres.RepositoryHandler
+	es         elastic.ElasticHandler
 }
 
-func NewUsecase(repository postgres.RepositoryHandler) UsecaseHandler {
+func NewUsecase(repository postgres.RepositoryHandler, es elastic.ElasticHandler) UsecaseHandler {
 	return &usecase{
 		repository: repository,
+		es:         es,
 	}
 }
