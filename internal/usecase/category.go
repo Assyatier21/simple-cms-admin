@@ -59,6 +59,13 @@ func (u *usecase) InsertCategory(ctx context.Context, title string, slug string)
 		log.Println("[Usecase][InsertCategory] can't insert category, err:", err.Error())
 		return category, err
 	}
+
+	err = u.es.InsertCategory(ctx, resData)
+	if err != nil {
+		log.Println("[Usecase][InsertCategory] can't insert category, err:", err.Error())
+		return category, err
+	}
+
 	utils.FormatTimeResCategory(&resData)
 
 	category = append(category, resData)
