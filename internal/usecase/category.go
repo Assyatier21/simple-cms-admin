@@ -31,7 +31,7 @@ func (u *usecase) GetCategoryDetails(ctx context.Context, id int) ([]interface{}
 		category []interface{}
 	)
 
-	resData, err := u.repository.GetCategoryDetails(ctx, id)
+	resData, err := u.es.GetCategoryDetails(ctx, id)
 	if err != nil {
 		log.Println("[Usecase][GetCategoryDetails] can't get category details, err:", err.Error())
 		return category, err
