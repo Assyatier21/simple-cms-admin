@@ -10,9 +10,14 @@ import (
 func (u *usecase) GetCategoryTree(ctx context.Context) ([]interface{}, error) {
 	var (
 		categories []interface{}
+		limit      int
+		offset     int
 	)
 
-	resData, err := u.repository.GetCategoryTree(ctx)
+	limit = 100
+	offset = 0
+
+	resData, err := u.es.GetCategoryTree(ctx, limit, offset)
 	if err != nil {
 		log.Println("[Usecase][GetCategoryTree] can't get list of categories, err:", err.Error())
 		return categories, err
@@ -76,7 +81,7 @@ func (u *usecase) UpdateCategory(ctx context.Context, id int, title string, slug
 		category []interface{}
 	)
 
-	categoryData, _ := u.repository.GetCategoryDetails(ctx, id)
+	categoryData, _ := u.es.GetCategoryDetails(ctx, id)
 
 	if title != "" {
 		categoryData.Title = title
@@ -88,7 +93,7 @@ func (u *usecase) UpdateCategory(ctx context.Context, id int, title string, slug
 	categoryData.CreatedAt = utils.FormattedTime(categoryData.CreatedAt)
 	categoryData.UpdatedAt = utils.FormattedTime(utils.TimeNow)
 
-	categoryData, err := u.repository.UpdateCategory(ctx, categoryData)
+	categoryData, err := u.es.UpdateCategory(ctx, categoryData)
 	if err != nil {
 		log.Println("[Usecase][UpdateCategory] can't update category, err:", err.Error())
 		return category, err
