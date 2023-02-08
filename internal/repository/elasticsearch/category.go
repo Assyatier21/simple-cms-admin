@@ -79,31 +79,3 @@ func (r *elasticRepository) InsertCategory(ctx context.Context, category m.Categ
 	}
 	return nil
 }
-func (r *elasticRepository) UpdateCategory(ctx context.Context, category m.Category) (m.Category, error) {
-	var (
-		categoryJSON []byte
-		err          error
-	)
-
-	categoryJSON, err = json.Marshal(category)
-	categoryIdStr := strconv.Itoa(category.Id)
-
-	_, err = r.es.Update().
-		Index("index_name").
-		Id(categoryIdStr).
-		Doc(categoryJSON).
-		Do(ctx)
-
-	if err != nil {
-		log.Println("[Elastic][UpdateCategory] can't update category, err:", err.Error())
-		return category, err
-	}
-
-	category, err = r.GetCategoryDetails(ctx, category.Id)
-	if err != nil {
-		log.Println("[Elastic][GetCategoryDetails] can't get category details, err:", err.Error())
-		return category, err
-	}
-
-	return category, nil
-}

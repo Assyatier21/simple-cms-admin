@@ -93,12 +93,6 @@ func (u *usecase) UpdateCategory(ctx context.Context, id int, title string, slug
 	categoryData.CreatedAt = utils.FormattedTime(categoryData.CreatedAt)
 	categoryData.UpdatedAt = utils.FormattedTime(utils.TimeNow)
 
-	categoryData, err := u.es.UpdateCategory(ctx, categoryData)
-	if err != nil {
-		log.Println("[Usecase][UpdateCategory] can't update category, err:", err.Error())
-		return category, err
-	}
-
 	category = append(category, categoryData)
 	return category, nil
 }
