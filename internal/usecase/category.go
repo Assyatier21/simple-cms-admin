@@ -5,6 +5,9 @@ import (
 	"cms-admin/utils"
 	"context"
 	"log"
+	"strconv"
+
+	"github.com/olivere/elastic/v7"
 )
 
 func (u *usecase) GetCategoryTree(ctx context.Context) ([]interface{}, error) {
@@ -34,9 +37,14 @@ func (u *usecase) GetCategoryTree(ctx context.Context) ([]interface{}, error) {
 func (u *usecase) GetCategoryDetails(ctx context.Context, id int) ([]interface{}, error) {
 	var (
 		category []interface{}
+		query    elastic.Query
 	)
 
-	resData, err := u.es.GetCategoryDetails(ctx, id)
+	strId := strconv.Itoa(id)
+	query = elastic.NewMatchQuery("id", strId)
+	query = elastic.NewMatchQuery("created_at", "2023-02-10 20:32:43")
+
+	resData, err := u.es.GetCategoryDetails(ctx, query)
 	if err != nil {
 		log.Println("[Usecase][GetCategoryDetails] can't get category details, err:", err.Error())
 		return category, err
@@ -79,9 +87,13 @@ func (u *usecase) InsertCategory(ctx context.Context, title string, slug string)
 func (u *usecase) UpdateCategory(ctx context.Context, id int, title string, slug string) ([]interface{}, error) {
 	var (
 		category []interface{}
+		query    elastic.Query
 	)
 
-	categoryData, _ := u.es.GetCategoryDetails(ctx, id)
+	strId := strconv.Itoa(id)
+	query = elastic.NewMatchQuery("id", strId)
+
+	categoryData, _ := u.es.GetCategoryDetails(ctx, query)
 
 	if title != "" {
 		categoryData.Title = title

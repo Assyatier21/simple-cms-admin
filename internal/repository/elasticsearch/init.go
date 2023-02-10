@@ -9,7 +9,7 @@ import (
 
 type ElasticHandler interface {
 	GetCategoryTree(ctx context.Context, limit int, offset int) ([]m.Category, error)
-	GetCategoryDetails(ctx context.Context, id int) (m.Category, error)
+	GetCategoryDetails(ctx context.Context, query elastic.Query) (m.Category, error)
 	InsertCategory(ctx context.Context, category m.Category) error
 }
 

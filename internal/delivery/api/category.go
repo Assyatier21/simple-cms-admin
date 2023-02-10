@@ -8,6 +8,7 @@ import (
 	"log"
 	"net/http"
 	"strconv"
+	"strings"
 
 	"github.com/labstack/echo/v4"
 	"github.com/lib/pq"
@@ -37,11 +38,15 @@ func (h *handler) GetCategoryDetails(ctx echo.Context) (err error) {
 
 	category, err := h.usecase.GetCategoryDetails(ctx.Request().Context(), id)
 	if err != nil {
+		log.Println("[Delivery][GetCategoryDetails] can't get category details, err:", err.Error())
+		if strings.Contains(err.Error(), "Bad Request") {
+			res := m.SetResponse(http.StatusBadRequest, utils.STATUS_FAILED, "bad request", []interface{}{})
+			return ctx.JSON(http.StatusBadRequest, res)
+		}
 		if err == sql.ErrNoRows {
 			res := m.SetResponse(http.StatusOK, utils.STATUS_SUCCESS, "no category found", []interface{}{})
 			return ctx.JSON(http.StatusOK, res)
 		}
-		log.Println("[Delivery][GetCategoryDetails] can't get category details, err:", err.Error())
 		res := m.SetError(http.StatusInternalServerError, utils.STATUS_FAILED, err.Error())
 		return ctx.JSON(http.StatusInternalServerError, res)
 	}
