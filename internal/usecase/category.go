@@ -39,16 +39,24 @@ func (u *usecase) GetCategoryDetails(ctx context.Context, id int) ([]interface{}
 		category []interface{}
 		query    elastic.Query
 	)
+	titleQuery := elastic.NewMatchQuery("title", "Sambo")
+	slugQuery := elastic.NewMatchQuery("slug", "new-sambo")
 
-	strId := strconv.Itoa(id)
-	query = elastic.NewMatchQuery("id", strId)
-	query = elastic.NewMatchQuery("created_at", "2023-02-10 20:32:43")
+	query = elastic.NewBoolQuery().Must(titleQuery, slugQuery)
+
+	// strId := strconv.Itoa(id)
+	// query = elastic.NewMatchQuery("id", strId)
 
 	resData, err := u.es.GetCategoryDetails(ctx, query)
 	if err != nil {
 		log.Println("[Usecase][GetCategoryDetails] can't get category details, err:", err.Error())
 		return category, err
 	}
+
+	if resData.Id == 0 {
+		return category, nil
+	}
+
 	utils.FormatTimeResCategory(&resData)
 
 	category = append(category, resData)
@@ -73,11 +81,11 @@ func (u *usecase) InsertCategory(ctx context.Context, title string, slug string)
 		return category, err
 	}
 
-	err = u.es.InsertCategory(ctx, resData)
-	if err != nil {
-		log.Println("[Usecase][InsertCategory] can't insert category, err:", err.Error())
-		return category, err
-	}
+	// err = u.es.InsertCategory(ctx, resData)
+	// if err != nil {
+	// 	log.Println("[Usecase][InsertCategory] can't insert category, err:", err.Error())
+	// 	return category, err
+	// }
 
 	utils.FormatTimeResCategory(&resData)
 
