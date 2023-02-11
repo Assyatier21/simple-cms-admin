@@ -39,13 +39,13 @@ func (u *usecase) GetCategoryDetails(ctx context.Context, id int) ([]interface{}
 		category []interface{}
 		query    elastic.Query
 	)
-	titleQuery := elastic.NewMatchQuery("title", "Sambo")
-	slugQuery := elastic.NewMatchQuery("slug", "new-sambo")
+	// titleQuery := elastic.NewMatchQuery("title", "Sambo")
+	// slugQuery := elastic.NewMatchQuery("slug", "new-sambo")
 
-	query = elastic.NewBoolQuery().Must(titleQuery, slugQuery)
+	// query = elastic.NewBoolQuery().Must(titleQuery, slugQuery)
 
-	// strId := strconv.Itoa(id)
-	// query = elastic.NewMatchQuery("id", strId)
+	strId := strconv.Itoa(id)
+	query = elastic.NewMatchQuery("id", strId)
 
 	resData, err := u.es.GetCategoryDetails(ctx, query)
 	if err != nil {

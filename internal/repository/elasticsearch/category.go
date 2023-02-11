@@ -27,7 +27,8 @@ func (r *elasticRepository) GetCategoryTree(ctx context.Context, limit int, offs
 			var category m.Category
 			err = json.Unmarshal(hit.Source, &category)
 			if err != nil {
-				panic(err)
+				log.Println("[Elastic][GetCategoryDetails] failed to unmarshall category, err: ", err.Error())
+				return categories, err
 			}
 			categories = append(categories, category)
 		}
@@ -49,7 +50,8 @@ func (r *elasticRepository) GetCategoryDetails(ctx context.Context, query elasti
 	if res.Hits.TotalHits.Value > 0 {
 		err = json.Unmarshal(res.Hits.Hits[0].Source, &category)
 		if err != nil {
-			panic(err)
+			log.Println("[Elastic][GetCategoryDetails] failed to unmarshall category, err: ", err.Error())
+			return category, err
 		}
 	}
 
