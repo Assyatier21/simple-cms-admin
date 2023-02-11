@@ -70,7 +70,7 @@ func (r *elasticRepository) InsertCategory(ctx context.Context, category m.Categ
 		Do(ctx)
 
 	if err != nil {
-		log.Println("[Elastic][InsertCategory] can't insert category, err:", err.Error())
+		log.Println("[Elastic][InsertCategory] can't insert category, err: ", err.Error())
 		return err
 	}
 	return nil

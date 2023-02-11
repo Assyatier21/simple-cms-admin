@@ -59,13 +59,19 @@ func (u *usecase) InsertArticle(ctx context.Context, title string, slug string, 
 
 	err := json.Unmarshal([]byte(metadata), &articleData.MetaData)
 	if err != nil {
-		log.Println("[Usecase][InsertArticle] can't insert article, err:", err.Error())
+		log.Println("[Usecase][InsertArticle] can't insert article, err: ", err.Error())
 		return article, nil
 	}
 
 	resData, err := u.repository.InsertArticle(ctx, articleData)
 	if err != nil {
-		log.Println("[Usecase][InsertArticle] can't insert category, err:", err.Error())
+		log.Println("[Usecase][InsertArticle] can't insert category, err: ", err.Error())
+		return article, err
+	}
+
+	err = u.es.InsertArticle(ctx, resData)
+	if err != nil {
+		log.Println("[Usecase][InsertArticle] can't insert article, err: ", err.Error())
 		return article, err
 	}
 
