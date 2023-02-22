@@ -18,7 +18,7 @@ import (
 func (h *handler) GetCategoryTree(ctx echo.Context) (err error) {
 	categories, err := h.usecase.GetCategoryTree(ctx.Request().Context())
 	if err != nil {
-		log.Println("[Delivery][GetCategoryTree] can't get list of categories, err: ", err)
+		log.Println("[Delivery][GetCategoryTree] failed to get list of categories, err: ", err)
 		res := m.SetError(http.StatusInternalServerError, utils.STATUS_FAILED, err.Error())
 		return ctx.JSON(http.StatusInternalServerError, res)
 	}
@@ -38,7 +38,7 @@ func (h *handler) GetCategoryDetails(ctx echo.Context) (err error) {
 
 	category, err := h.usecase.GetCategoryDetails(ctx.Request().Context(), id)
 	if err != nil {
-		log.Println("[Delivery][GetCategoryDetails] can't get category details, err: ", err)
+		log.Println("[Delivery][GetCategoryDetails] failed to get category details, err: ", err)
 		if strings.Contains(err.Error(), "Bad Request") {
 			return helper.WriteResponse(ctx, http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_BAD_REQUEST, nil)
 		}
@@ -73,7 +73,7 @@ func (h *handler) InsertCategory(ctx echo.Context) (err error) {
 				return helper.WriteResponse(ctx, http.StatusConflict, utils.STATUS_FAILED, "slug has been used in another category", nil)
 			}
 		}
-		log.Println("[Delivery][InsertCategory] can't insert category, err: ", err)
+		log.Println("[Delivery][InsertCategory] failed to insert category, err: ", err)
 		return helper.WriteResponse(ctx, http.StatusInternalServerError, utils.STATUS_FAILED, err.Error(), nil)
 	}
 	return helper.WriteResponse(ctx, http.StatusOK, utils.STATUS_SUCCESS, "category created successfully", category)
@@ -107,7 +107,7 @@ func (h *handler) UpdateCategory(ctx echo.Context) (err error) {
 				return helper.WriteResponse(ctx, http.StatusConflict, utils.STATUS_FAILED, "slug has been used in another category", nil)
 			}
 		}
-		log.Println("[Delivery][UpdateCategory] can't update category, err: ", err)
+		log.Println("[Delivery][UpdateCategory] failed to update category, err: ", err)
 		return helper.WriteResponse(ctx, http.StatusInternalServerError, utils.STATUS_FAILED, err.Error(), nil)
 	}
 	return helper.WriteResponse(ctx, http.StatusOK, utils.STATUS_SUCCESS, "category updated successfully", category)
@@ -127,7 +127,7 @@ func (h *handler) DeleteCategory(ctx echo.Context) (err error) {
 		if err == msg.ERROR_NO_ROWS_AFFECTED {
 			return helper.WriteResponse(ctx, http.StatusOK, utils.STATUS_SUCCESS, "no category deleted", nil)
 		}
-		log.Println("[Delivery][DeleteCategory] can't delete category, err: ", err)
+		log.Println("[Delivery][DeleteCategory] failed to delete category, err: ", err)
 		return helper.WriteResponse(ctx, http.StatusInternalServerError, utils.STATUS_FAILED, err.Error(), nil)
 	}
 	return helper.WriteResponse(ctx, http.StatusOK, utils.STATUS_SUCCESS, "category deleted successfully", nil)

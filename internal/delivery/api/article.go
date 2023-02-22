@@ -39,7 +39,7 @@ func (h *handler) GetArticles(ctx echo.Context) (err error) {
 
 	articles, err := h.usecase.GetArticles(ctx.Request().Context(), limit, offset)
 	if err != nil {
-		log.Println("[Delivery][GetArticles] can't get list of articles, err: ", err)
+		log.Println("[Delivery][GetArticles] failed to get list of articles, err: ", err)
 		return helper.WriteResponse(ctx, http.StatusInternalServerError, utils.STATUS_FAILED, err.Error(), nil)
 
 	}
@@ -60,7 +60,7 @@ func (h *handler) GetArticleDetails(ctx echo.Context) (err error) {
 		if err == sql.ErrNoRows {
 			return helper.WriteResponse(ctx, http.StatusOK, utils.STATUS_SUCCESS, "no article found", nil)
 		}
-		log.Println("[Delivery][GetArticleDetails] can't get article details, err: ", err)
+		log.Println("[Delivery][GetArticleDetails] failed to get article details, err: ", err)
 		return helper.WriteResponse(ctx, http.StatusInternalServerError, utils.STATUS_FAILED, err.Error(), nil)
 	}
 	return helper.WriteResponse(ctx, http.StatusOK, utils.STATUS_SUCCESS, "article details returned successfully", article)
@@ -107,7 +107,7 @@ func (h *handler) InsertArticle(ctx echo.Context) (err error) {
 				return helper.WriteResponse(ctx, http.StatusConflict, utils.STATUS_FAILED, "slug has been used in another article", nil)
 			}
 		}
-		log.Println("[Delivery][InsertArticle] can't insert article, err: ", err)
+		log.Println("[Delivery][InsertArticle] failed to insert article, err: ", err)
 		return helper.WriteResponse(ctx, http.StatusInternalServerError, utils.STATUS_FAILED, err.Error(), nil)
 	}
 	return helper.WriteResponse(ctx, http.StatusOK, utils.STATUS_SUCCESS, "article created successfully", article)
@@ -156,7 +156,7 @@ func (h *handler) UpdateArticle(ctx echo.Context) (err error) {
 				return helper.WriteResponse(ctx, http.StatusConflict, utils.STATUS_FAILED, "slug has been used in another article", nil)
 			}
 		}
-		log.Println("[Delivery][UpdateArticle] can't update article, err: ", err)
+		log.Println("[Delivery][UpdateArticle] failed to update article, err: ", err)
 		return helper.WriteResponse(ctx, http.StatusInternalServerError, utils.STATUS_FAILED, err.Error(), nil)
 	}
 	return helper.WriteResponse(ctx, http.StatusOK, utils.STATUS_SUCCESS, "article updated successfully", article)
@@ -176,7 +176,7 @@ func (h *handler) DeleteArticle(ctx echo.Context) (err error) {
 		if err == msg.ERROR_NO_ROWS_AFFECTED {
 			return helper.WriteResponse(ctx, http.StatusOK, utils.STATUS_SUCCESS, "no article deleted", nil)
 		}
-		log.Println("[Delivery][DeleteArticle] can't delete article, err: ", err)
+		log.Println("[Delivery][DeleteArticle] failed to delete article, err: ", err)
 		return helper.WriteResponse(ctx, http.StatusInternalServerError, utils.STATUS_FAILED, err.Error(), nil)
 	}
 	return helper.WriteResponse(ctx, http.StatusOK, utils.STATUS_SUCCESS, "article deleted successfully", nil)

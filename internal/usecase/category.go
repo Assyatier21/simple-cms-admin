@@ -115,7 +115,7 @@ func (u *usecase) UpdateCategory(ctx context.Context, id int, title string, slug
 func (u *usecase) DeleteCategory(ctx context.Context, id int) error {
 	err := u.repository.DeleteCategory(ctx, id)
 	if err != nil {
-		log.Println("[Usecase][DeleteCategory] can't delete category, err: ", err)
+		log.Println("[Usecase][DeleteCategory] failed to delete category, err: ", err)
 		return err
 	}
 
