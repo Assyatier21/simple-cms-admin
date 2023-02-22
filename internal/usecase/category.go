@@ -22,7 +22,7 @@ func (u *usecase) GetCategoryTree(ctx context.Context) ([]interface{}, error) {
 
 	resData, err := u.es.GetCategoryTree(ctx, limit, offset)
 	if err != nil {
-		log.Println("[Usecase][GetCategoryTree] can't get list of categories, err: ", err)
+		log.Println("[Usecase][GetCategoryTree] failed to get list of categories, err: ", err)
 		return categories, err
 	}
 
@@ -39,17 +39,13 @@ func (u *usecase) GetCategoryDetails(ctx context.Context, id int) ([]interface{}
 		category []interface{}
 		query    elastic.Query
 	)
-	// titleQuery := elastic.NewMatchQuery("title", "Sambo")
-	// slugQuery := elastic.NewMatchQuery("slug", "new-sambo")
-
-	// query = elastic.NewBoolQuery().Must(titleQuery, slugQuery)
 
 	strId := strconv.Itoa(id)
 	query = elastic.NewMatchQuery("id", strId)
 
 	resData, err := u.es.GetCategoryDetails(ctx, query)
 	if err != nil {
-		log.Println("[Usecase][GetCategoryDetails] can't get category details, err: ", err)
+		log.Println("[Usecase][GetCategoryDetails] failed to get category details, err: ", err)
 		return category, err
 	}
 
@@ -77,13 +73,13 @@ func (u *usecase) InsertCategory(ctx context.Context, title string, slug string)
 
 	resData, err := u.repository.InsertCategory(ctx, categoryData)
 	if err != nil {
-		log.Println("[Usecase][InsertCategory] can't insert category, err: ", err)
+		log.Println("[Usecase][InsertCategory] failed to insert category, err: ", err)
 		return category, err
 	}
 
 	err = u.es.InsertCategory(ctx, resData)
 	if err != nil {
-		log.Println("[Usecase][InsertCategory] can't insert category, err: ", err)
+		log.Println("[Usecase][InsertCategory] failed to insert category to elastic, err: ", err)
 		return category, err
 	}
 

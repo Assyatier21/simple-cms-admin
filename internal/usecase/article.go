@@ -19,7 +19,7 @@ func (u *usecase) GetArticles(ctx context.Context, limit int, offset int) ([]int
 
 	resData, err := u.es.GetArticles(ctx, limit, offset)
 	if err != nil {
-		log.Println("[Usecase][GetCategoryTree] can't get list of categories, err: ", err)
+		log.Println("[Usecase][GetCategoryTree] failed to get list of articles, err: ", err)
 		return articles, err
 	}
 
@@ -42,7 +42,7 @@ func (u *usecase) GetArticleDetails(ctx context.Context, id int) ([]interface{},
 
 	resData, err := u.es.GetArticleDetails(ctx, query)
 	if err != nil {
-		log.Println("[Usecase][GetArticleDetails] can't get article details, err: ", err.Error())
+		log.Println("[Usecase][GetArticleDetails] failed to get article details, err: ", err.Error())
 		return article, err
 	}
 	utils.FormatTimeResArticle(&resData)
