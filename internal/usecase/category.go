@@ -4,8 +4,10 @@ import (
 	m "cms-admin/models"
 	"cms-admin/utils"
 	"context"
+	"errors"
 	"log"
 	"strconv"
+	"sync"
 
 	"github.com/olivere/elastic/v7"
 )
@@ -113,9 +115,41 @@ func (u *usecase) UpdateCategory(ctx context.Context, id int, title string, slug
 	return category, nil
 }
 func (u *usecase) DeleteCategory(ctx context.Context, id int) error {
-	err := u.repository.DeleteCategory(ctx, id)
-	if err != nil {
-		log.Println("[Usecase][DeleteCategory] failed to delete category, err: ", err)
+	var (
+		categoryDeleted bool
+		elasticDeleted  bool
+		err             error
+		wg              sync.WaitGroup
+	)
+
+	wg = sync.WaitGroup{}
+	wg.Add(2)
+
+	go func() {
+		err = u.repository.DeleteCategory(ctx, id)
+		if err != nil {
+			log.Println("[Usecase][DeleteCategory] failed to delete category, err: ", err)
+		} else {
+			categoryDeleted = true
+		}
+		wg.Done()
+	}()
+
+	go func() {
+		category_id := strconv.Itoa(id)
+		err = u.es.DeleteCategory(ctx, category_id)
+		if err != nil {
+			log.Println("[Usecase][DeleteCategory] failed to delete category from elastic, err: ", err)
+		} else {
+			elasticDeleted = true
+		}
+		wg.Done()
+	}()
+
+	wg.Wait()
+
+	if !categoryDeleted && !elasticDeleted {
+		err = errors.New("category not found")
 		return err
 	}
 
