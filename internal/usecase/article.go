@@ -19,7 +19,7 @@ func (u *usecase) GetArticles(ctx context.Context, limit int, offset int) ([]int
 
 	resData, err := u.es.GetArticles(ctx, limit, offset)
 	if err != nil {
-		log.Println("[Usecase][GetCategoryTree] can't get list of categories, err:", err.Error())
+		log.Println("[Usecase][GetCategoryTree] can't get list of categories, err: ", err)
 		return articles, err
 	}
 
@@ -91,11 +91,17 @@ func (u *usecase) InsertArticle(ctx context.Context, title string, slug string, 
 func (u *usecase) UpdateArticle(ctx context.Context, id int, title string, slug string, htmlcontent string, categoryid int, metadata string) ([]interface{}, error) {
 	var (
 		article        []interface{}
+		err            error
 		resArticleData m.ResArticle
 		articleData    m.Article
 	)
 
-	resArticleData, _ = u.repository.GetArticleDetails(ctx, id)
+	resArticleData, err = u.repository.GetArticleDetails(ctx, id)
+	if err != nil {
+		log.Println("[Usecase][UpdateArticle] failed to get article details, err: ", err)
+		return article, err
+	}
+
 	if title != "" {
 		resArticleData.Title = title
 	}
@@ -113,9 +119,9 @@ func (u *usecase) UpdateArticle(ctx context.Context, id int, title string, slug 
 	}
 
 	if metadata != "" {
-		err := json.Unmarshal([]byte(metadata), &resArticleData.MetaData)
+		err = json.Unmarshal([]byte(metadata), &resArticleData.MetaData)
 		if err != nil {
-			log.Println("[Usecase][UpdateArticle] can't update article, err:", err.Error())
+			log.Println("[Usecase][UpdateArticle] failed to update article, err: ", err)
 			return article, nil
 		}
 	}
@@ -132,9 +138,9 @@ func (u *usecase) UpdateArticle(ctx context.Context, id int, title string, slug 
 
 	articleData.UpdatedAt = utils.FormattedTime(utils.TimeNow)
 
-	resArticleData, err := u.repository.UpdateArticle(ctx, articleData)
+	resArticleData, err = u.repository.UpdateArticle(ctx, articleData)
 	if err != nil {
-		log.Println("[Usecase][UpdateArticle] can't update article, err:", err.Error())
+		log.Println("[Usecase][UpdateArticle] failed to update article, err: ", err)
 		return article, err
 	}
 
@@ -147,7 +153,7 @@ func (u *usecase) UpdateArticle(ctx context.Context, id int, title string, slug 
 func (u *usecase) DeleteArticle(ctx context.Context, id int) error {
 	err := u.repository.DeleteArticle(ctx, id)
 	if err != nil {
-		log.Println("[Usecase][DeleteArticle] can't delete article, err:", err.Error())
+		log.Println("[Usecase][DeleteArticle] failed to delete article, err: ", err)
 		return err
 	}
 

@@ -22,7 +22,7 @@ func (u *usecase) GetCategoryTree(ctx context.Context) ([]interface{}, error) {
 
 	resData, err := u.es.GetCategoryTree(ctx, limit, offset)
 	if err != nil {
-		log.Println("[Usecase][GetCategoryTree] can't get list of categories, err:", err.Error())
+		log.Println("[Usecase][GetCategoryTree] can't get list of categories, err: ", err)
 		return categories, err
 	}
 
@@ -49,7 +49,7 @@ func (u *usecase) GetCategoryDetails(ctx context.Context, id int) ([]interface{}
 
 	resData, err := u.es.GetCategoryDetails(ctx, query)
 	if err != nil {
-		log.Println("[Usecase][GetCategoryDetails] can't get category details, err:", err.Error())
+		log.Println("[Usecase][GetCategoryDetails] can't get category details, err: ", err)
 		return category, err
 	}
 
@@ -77,13 +77,13 @@ func (u *usecase) InsertCategory(ctx context.Context, title string, slug string)
 
 	resData, err := u.repository.InsertCategory(ctx, categoryData)
 	if err != nil {
-		log.Println("[Usecase][InsertCategory] can't insert category, err:", err.Error())
+		log.Println("[Usecase][InsertCategory] can't insert category, err: ", err)
 		return category, err
 	}
 
 	err = u.es.InsertCategory(ctx, resData)
 	if err != nil {
-		log.Println("[Usecase][InsertCategory] can't insert category, err:", err.Error())
+		log.Println("[Usecase][InsertCategory] can't insert category, err: ", err)
 		return category, err
 	}
 
@@ -119,7 +119,7 @@ func (u *usecase) UpdateCategory(ctx context.Context, id int, title string, slug
 func (u *usecase) DeleteCategory(ctx context.Context, id int) error {
 	err := u.repository.DeleteCategory(ctx, id)
 	if err != nil {
-		log.Println("[Usecase][DeleteCategory] can't delete category, err:", err.Error())
+		log.Println("[Usecase][DeleteCategory] can't delete category, err: ", err)
 		return err
 	}
 

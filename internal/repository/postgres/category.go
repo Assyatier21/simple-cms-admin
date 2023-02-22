@@ -19,7 +19,7 @@ func (r *repository) GetCategoryTree(ctx context.Context) ([]m.Category, error) 
 
 	rows, err = r.db.Query(database.GetCategoryTree)
 	if err != nil {
-		log.Println("[Repository][GetCategoryTree] can't get list of categories, err:", err.Error())
+		log.Println("[Repository][GetCategoryTree] can't get list of categories, err: ", err)
 		return nil, err
 	}
 
@@ -46,7 +46,7 @@ func (r *repository) GetCategoryDetails(ctx context.Context, id int) (m.Category
 
 	err = r.db.QueryRow(database.GetCategoryDetails, id).Scan(&category.Id, &category.Title, &category.Slug, &category.CreatedAt, &category.UpdatedAt)
 	if err != nil {
-		log.Println("[Repository][GetCategoryDetails] failed to scan category, err:", err.Error())
+		log.Println("[Repository][GetCategoryDetails] failed to scan category, err: ", err)
 		return m.Category{}, err
 	}
 
@@ -55,7 +55,7 @@ func (r *repository) GetCategoryDetails(ctx context.Context, id int) (m.Category
 func (r *repository) InsertCategory(ctx context.Context, category m.Category) (m.Category, error) {
 	err := r.db.QueryRow(database.InsertCategory, category.Title, category.Slug, category.CreatedAt, category.UpdatedAt).Scan(&category.Id)
 	if err != nil {
-		log.Println("[Repository][InsertCategory] can't insert category, err:", err.Error())
+		log.Println("[Repository][InsertCategory] can't insert category, err: ", err)
 		return m.Category{}, err
 	}
 
@@ -64,7 +64,7 @@ func (r *repository) InsertCategory(ctx context.Context, category m.Category) (m
 func (r *repository) UpdateCategory(ctx context.Context, category m.Category) (m.Category, error) {
 	rows, err := r.db.Exec(database.UpdateCategory, &category.Title, &category.Slug, &category.UpdatedAt, &category.Id)
 	if err != nil {
-		log.Println("[Repository][UpdateCategory] can't update category, err:", err.Error())
+		log.Println("[Repository][UpdateCategory] can't update category, err: ", err)
 		return m.Category{}, err
 	}
 
@@ -78,7 +78,7 @@ func (r *repository) UpdateCategory(ctx context.Context, category m.Category) (m
 func (r *repository) DeleteCategory(ctx context.Context, id int) error {
 	rows, err := r.db.Exec(database.DeleteCategory, id)
 	if err != nil {
-		log.Println("[Repository][DeleteCategory] can't delete category, err:", err.Error())
+		log.Println("[Repository][DeleteCategory] can't delete category, err: ", err)
 		return err
 	}
 
