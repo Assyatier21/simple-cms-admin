@@ -5,9 +5,10 @@ import (
 	"cms-admin/utils"
 	"context"
 	"encoding/json"
-	"strconv"
-
+	"errors"
 	"log"
+	"strconv"
+	"sync"
 
 	"github.com/olivere/elastic/v7"
 )
@@ -151,9 +152,40 @@ func (u *usecase) UpdateArticle(ctx context.Context, id int, title string, slug 
 	return article, nil
 }
 func (u *usecase) DeleteArticle(ctx context.Context, id int) error {
-	err := u.repository.DeleteArticle(ctx, id)
-	if err != nil {
-		log.Println("[Usecase][DeleteArticle] failed to delete article, err: ", err)
+	var (
+		articleDeleted bool
+		elasticDeleted bool
+		err            error
+		wg             sync.WaitGroup
+	)
+
+	wg = sync.WaitGroup{}
+	wg.Add(2)
+
+	go func() {
+		err := u.repository.DeleteArticle(ctx, id)
+		if err != nil {
+			log.Println("[Usecase][DeleteArticle] failed to delete article, err: ", err)
+		} else {
+			articleDeleted = true
+		}
+		wg.Done()
+	}()
+
+	go func() {
+		article_id := strconv.Itoa(id)
+		err := u.es.DeleteArticle(ctx, article_id)
+		if err != nil {
+			log.Println("[Usecase][DeleteArticle] failed to delete article from elastic, err: ", err)
+		} else {
+			elasticDeleted = true
+		}
+		wg.Done()
+	}()
+
+	wg.Wait()
+	if !articleDeleted && !elasticDeleted {
+		err = errors.New("article not found")
 		return err
 	}
 
