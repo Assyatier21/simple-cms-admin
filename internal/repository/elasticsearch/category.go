@@ -87,6 +87,35 @@ func (r *elasticRepository) InsertCategory(ctx context.Context, category m.Categ
 
 	return nil
 }
+func (r *elasticRepository) UpdateCategory(ctx context.Context, category m.Category) error {
+	var (
+		categoryJSON []byte
+		category_id  string
+		body         string
+		err          error
+	)
+
+	category_id = strconv.Itoa(category.Id)
+	categoryJSON, err = json.Marshal(category)
+	if err != nil {
+		log.Println("[Elastic][UpdateCategory] failed to marshal category, err: ", err)
+		return err
+	}
+
+	body = string(categoryJSON)
+	_, err = r.es.Update().
+		Index(config.ES_INDEX_CATEGORY).
+		Id(category_id).
+		Doc(body).
+		Do(ctx)
+
+	if err != nil {
+		log.Println("[Elastic][UpdateCategory] failed to update category, err: ", err)
+		return err
+	}
+
+	return nil
+}
 func (r *elasticRepository) DeleteCategory(ctx context.Context, id string) error {
 	var (
 		err error
