@@ -26,7 +26,7 @@ func (r *repository) GetCategoryTree(ctx context.Context) ([]m.Category, error) 
 	for rows.Next() {
 		var temp = m.Category{}
 		if err := rows.Scan(&temp.Id, &temp.Title, &temp.Slug, &temp.CreatedAt, &temp.UpdatedAt); err != nil {
-			log.Println("[Repository][GetCategoryTree] failed to scan category, err :", err.Error())
+			log.Println("[Repository][GetCategoryTree] failed to scan category, err :", err)
 			return nil, err
 		}
 		categories = append(categories, temp)

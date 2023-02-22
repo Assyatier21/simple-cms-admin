@@ -42,7 +42,7 @@ func (u *usecase) GetArticleDetails(ctx context.Context, id int) ([]interface{},
 
 	resData, err := u.es.GetArticleDetails(ctx, query)
 	if err != nil {
-		log.Println("[Usecase][GetArticleDetails] failed to get article details, err: ", err.Error())
+		log.Println("[Usecase][GetArticleDetails] failed to get article details, err: ", err)
 		return article, err
 	}
 	utils.FormatTimeResArticle(&resData)

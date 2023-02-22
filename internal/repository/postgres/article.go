@@ -29,13 +29,13 @@ func (r *repository) GetArticles(ctx context.Context, limit int, offset int) ([]
 		)
 
 		if err := rows.Scan(&temp.Id, &temp.Title, &temp.Slug, &temp.HtmlContent, &temp.ResCategory.Id, &temp.ResCategory.Title, &temp.ResCategory.Slug, &temp.CreatedAt, &temp.UpdatedAt); err != nil {
-			log.Println("[Repository][GetArticles] failed to scan article, err :", err.Error())
+			log.Println("[Repository][GetArticles] failed to scan article, err :", err)
 			return nil, err
 		}
 
 		err = r.db.QueryRow(database.GetMetaData, temp.Id).Scan(&byteMetadata)
 		if err != nil {
-			log.Println("[Repository][GetArticles] failed to scan metadata, err :", err.Error())
+			log.Println("[Repository][GetArticles] failed to scan metadata, err :", err)
 			return nil, err
 		}
 
@@ -64,7 +64,7 @@ func (r *repository) GetArticleDetails(ctx context.Context, id int) (m.ResArticl
 
 	err = r.db.QueryRow(database.GetMetaData, article.Id).Scan(&byteMetadata)
 	if err != nil {
-		log.Println("[Repository][GetArticleDetails] failed to scan metadata, err :", err.Error())
+		log.Println("[Repository][GetArticleDetails] failed to scan metadata, err :", err)
 		return m.ResArticle{}, err
 	}
 	json.Unmarshal(byteMetadata, &article.MetaData)

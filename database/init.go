@@ -22,7 +22,7 @@ func Init() *sql.DB {
 
 	err = db.Ping()
 	if err != nil {
-		log.Println("[Database] failed to connect to database: ", err.Error())
+		log.Println("[Database] failed to connect to database: ", err)
 		return nil
 	}
 
@@ -38,7 +38,7 @@ func InitElasticClient() *elastic.Client {
 
 	log.Println("[Elasticsearch] initialized...")
 	if err != nil {
-		log.Println("[Elasticsearch] failed to connect to elasticsearch: ", err.Error())
+		log.Println("[Elasticsearch] failed to connect to elasticsearch: ", err)
 		return nil
 	}
 

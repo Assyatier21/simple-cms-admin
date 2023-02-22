@@ -28,7 +28,7 @@ func (r *elasticRepository) GetCategoryTree(ctx context.Context, limit int, offs
 			var category m.Category
 			err = json.Unmarshal(hit.Source, &category)
 			if err != nil {
-				log.Println("[Elastic][GetCategoryDetails] failed to unmarshal category, err: ", err.Error())
+				log.Println("[Elastic][GetCategoryDetails] failed to unmarshal category, err: ", err)
 				return categories, err
 			}
 			categories = append(categories, category)
@@ -51,7 +51,7 @@ func (r *elasticRepository) GetCategoryDetails(ctx context.Context, query elasti
 	if res.Hits.TotalHits.Value > 0 {
 		err = json.Unmarshal(res.Hits.Hits[0].Source, &category)
 		if err != nil {
-			log.Println("[Elastic][GetCategoryDetails] failed to unmarshal category, err: ", err.Error())
+			log.Println("[Elastic][GetCategoryDetails] failed to unmarshal category, err: ", err)
 			return category, err
 		}
 	}
@@ -81,8 +81,24 @@ func (r *elasticRepository) InsertCategory(ctx context.Context, category m.Categ
 		Do(ctx)
 
 	if err != nil {
-		log.Println("[Elastic][InsertCategory] failed to insert category, err: ", err.Error())
+		log.Println("[Elastic][InsertCategory] failed to insert category, err: ", err)
 		return err
 	}
+
+	return nil
+}
+func (r *elasticRepository) DeleteCategory(ctx context.Context, id string) error {
+	var (
+		err error
+	)
+	_, err = r.es.Delete().
+		Index(config.ES_INDEX_CATEGORY).
+		Id(id).
+		Do(ctx)
+	if err != nil {
+		log.Println("[Elastic][DeleteCategory] failed to delete category, err: ", err)
+		return err
+	}
+
 	return nil
 }

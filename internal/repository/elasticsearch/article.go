@@ -86,3 +86,18 @@ func (r *elasticRepository) InsertArticle(ctx context.Context, article m.ResArti
 
 	return err
 }
+func (r *elasticRepository) DeleteArticle(ctx context.Context, id string) error {
+	var (
+		err error
+	)
+	_, err = r.es.Delete().
+		Index(config.ES_INDEX_ARTICLE).
+		Id(id).
+		Do(ctx)
+	if err != nil {
+		log.Println("[Elastic][DeleteArticle] failed to delete article, err: ", err)
+		return err
+	}
+
+	return nil
+}
