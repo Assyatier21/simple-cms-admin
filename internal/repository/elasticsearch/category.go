@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"strconv"
 
 	"github.com/olivere/elastic/v7"
 )
@@ -50,7 +51,7 @@ func (r *elasticRepository) GetCategoryDetails(ctx context.Context, query elasti
 	if res.Hits.TotalHits.Value > 0 {
 		err = json.Unmarshal(res.Hits.Hits[0].Source, &category)
 		if err != nil {
-			log.Println("[Elastic][GetCategoryDetails] failed to unmarshall category, err: ", err.Error())
+			log.Println("[Elastic][GetCategoryDetails] failed to unmarshal category, err: ", err.Error())
 			return category, err
 		}
 	}
@@ -60,19 +61,27 @@ func (r *elasticRepository) GetCategoryDetails(ctx context.Context, query elasti
 func (r *elasticRepository) InsertCategory(ctx context.Context, category m.Category) error {
 	var (
 		categoryJSON []byte
+		category_id  string
 		body         string
 		err          error
 	)
 
+	category_id = strconv.Itoa(category.Id)
 	categoryJSON, err = json.Marshal(category)
+	if err != nil {
+		log.Println("[Elastic][InsertCategory] failed to marshal category, err: ", err)
+		return err
+	}
+
 	body = string(categoryJSON)
 	_, err = r.es.Index().
 		Index(config.ES_INDEX_CATEGORY).
+		Id(category_id).
 		BodyJson(body).
 		Do(ctx)
 
 	if err != nil {
-		log.Println("[Elastic][InsertCategory] can't insert category, err: ", err.Error())
+		log.Println("[Elastic][InsertCategory] failed to insert category, err: ", err.Error())
 		return err
 	}
 	return nil

@@ -67,19 +67,19 @@ func (u *usecase) InsertArticle(ctx context.Context, title string, slug string, 
 
 	err := json.Unmarshal([]byte(metadata), &articleData.MetaData)
 	if err != nil {
-		log.Println("[Usecase][InsertArticle] can't insert article, err: ", err.Error())
-		return article, nil
+		log.Println("[Usecase][InsertArticle] failed to unmarshal article metadata, err: ", err)
+		return article, err
 	}
 
 	resData, err := u.repository.InsertArticle(ctx, articleData)
 	if err != nil {
-		log.Println("[Usecase][InsertArticle] can't insert category, err: ", err.Error())
+		log.Println("[Usecase][InsertArticle] failed to insert article, err: ", err)
 		return article, err
 	}
 
 	err = u.es.InsertArticle(ctx, resData)
 	if err != nil {
-		log.Println("[Usecase][InsertArticle] can't insert article, err: ", err.Error())
+		log.Println("[Usecase][InsertArticle] failed to insert article to elastic, err: ", err)
 		return article, err
 	}
 

@@ -6,6 +6,7 @@ import (
 	"context"
 	"encoding/json"
 	"log"
+	"strconv"
 
 	"github.com/olivere/elastic/v7"
 )
@@ -59,19 +60,27 @@ func (r *elasticRepository) GetArticleDetails(ctx context.Context, query elastic
 func (r *elasticRepository) InsertArticle(ctx context.Context, article m.ResArticle) error {
 	var (
 		articleJSON []byte
+		article_id  string
 		body        string
 		err         error
 	)
 
+	article_id = strconv.Itoa(article.Id)
 	articleJSON, err = json.Marshal(article)
+	if err != nil {
+		log.Println("[Elastic][InsertArticle] failed to marshal article, err: ", err)
+		return err
+	}
+
 	body = string(articleJSON)
 	_, err = r.es.Index().
 		Index(config.ES_INDEX_ARTICLE).
+		Id(article_id).
 		BodyJson(body).
 		Do(ctx)
 
 	if err != nil {
-		log.Println("[Elastic][InsertArticle] can't insert article, err: ", err.Error())
+		log.Println("[Elastic][InsertArticle] failed to insert article, err: ", err)
 		return err
 	}
 
