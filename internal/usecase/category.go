@@ -108,10 +108,23 @@ func (u *usecase) UpdateCategory(ctx context.Context, id int, title string, slug
 	if slug != "" {
 		categoryData.Slug = slug
 	}
-	categoryData.CreatedAt = utils.FormattedTime(categoryData.CreatedAt)
-	categoryData.UpdatedAt = utils.FormattedTime(utils.TimeNow)
 
-	category = append(category, categoryData)
+	resData, err := u.repository.UpdateCategory(ctx, categoryData)
+	if err != nil {
+		log.Println("[Usecase][UpdateCategory] failed to update category, err: ", err)
+		return category, err
+	}
+
+	err = u.es.UpdateCategory(ctx, categoryData)
+	if err != nil {
+		log.Println("[Usecase][InsertCategory] failed to update category to elastic, err: ", err)
+		return category, err
+	}
+
+	resData.CreatedAt = utils.FormattedTime(resData.CreatedAt)
+	resData.UpdatedAt = utils.FormattedTime(utils.TimeNow)
+
+	category = append(category, resData)
 	return category, nil
 }
 func (u *usecase) DeleteCategory(ctx context.Context, id int) error {

@@ -6,3 +6,6 @@ config:
 
 run:
 	go run cmd/main.go
+
+psql:
+	brew services run postgresql

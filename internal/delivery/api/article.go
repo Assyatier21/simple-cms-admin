@@ -84,12 +84,12 @@ func (h *handler) InsertArticle(ctx echo.Context) (err error) {
 		return helper.WriteResponse(ctx, http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_EMPTY_SLUG, nil)
 	}
 
-	htmlcontent = ctx.FormValue("htmlcontent")
+	htmlcontent = ctx.FormValue("html_content")
 	if htmlcontent == "" {
 		return helper.WriteResponse(ctx, http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_EMPTY_HTMLCONTENT, nil)
 	}
 
-	categoryid, err = strconv.Atoi(ctx.FormValue("categoryid"))
+	categoryid, err = strconv.Atoi(ctx.FormValue("category_id"))
 	if err != nil {
 		return helper.WriteResponse(ctx, http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_EMPTY_CATEGORYID, nil)
 	}
@@ -134,11 +134,11 @@ func (h *handler) UpdateArticle(ctx echo.Context) (err error) {
 		return helper.WriteResponse(ctx, http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_EMPTY_SLUG, nil)
 	}
 
-	htmlcontent = ctx.FormValue("htmlcontent")
+	htmlcontent = ctx.FormValue("html_content")
 
 	categoryid = 0
-	if ctx.FormValue("categoryid") != "" {
-		categoryid, err = strconv.Atoi(ctx.FormValue("categoryid"))
+	if ctx.FormValue("category_id") != "" {
+		categoryid, err = strconv.Atoi(ctx.FormValue("category_id"))
 		if err != nil {
 			return helper.WriteResponse(ctx, http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_CATEGORYID, nil)
 		}

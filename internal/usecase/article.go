@@ -145,6 +145,8 @@ func (u *usecase) UpdateArticle(ctx context.Context, id int, title string, slug 
 		return article, err
 	}
 
+	u.es.UpdateArticle(ctx, resArticleData)
+
 	resArticleData.CreatedAt = utils.FormattedTime(resArticleData.CreatedAt)
 	resArticleData.UpdatedAt = utils.FormattedTime(utils.TimeNow)
 

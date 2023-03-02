@@ -88,24 +88,15 @@ func (r *elasticRepository) InsertArticle(ctx context.Context, article m.ResArti
 }
 func (r *elasticRepository) UpdateArticle(ctx context.Context, article m.ResArticle) error {
 	var (
-		articleJSON []byte
-		article_id  string
-		body        string
-		err         error
+		article_id string
+		err        error
 	)
 
 	article_id = strconv.Itoa(article.Id)
-	articleJSON, err = json.Marshal(article)
-	if err != nil {
-		log.Println("[Elastic][UpdateArticle] failed to marshal article, err: ", err)
-		return err
-	}
-
-	body = string(articleJSON)
 	_, err = r.es.Update().
 		Index(config.ES_INDEX_ARTICLE).
 		Id(article_id).
-		Doc(body).
+		Doc(article).
 		Do(ctx)
 
 	if err != nil {
