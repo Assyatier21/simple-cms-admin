@@ -3,6 +3,7 @@ package usecase
 import (
 	m "cms-admin/models"
 	"cms-admin/utils"
+	"cms-admin/utils/helper"
 	"context"
 	"encoding/json"
 	"errors"
@@ -19,9 +20,7 @@ func (u *usecase) GetArticles(ctx context.Context, limit int, offset int, sort_b
 		articles      []interface{}
 	)
 
-	if sort_by == "" {
-		sort_by = "updated_at"
-	}
+	sort_by = helper.ValidateSortBy(sort_by)
 
 	order_by_bool = false
 	if order_by == "asc" {
