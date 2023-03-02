@@ -16,8 +16,10 @@ import (
 
 func (h *handler) GetArticles(ctx echo.Context) (err error) {
 	var (
-		limit  int
-		offset int
+		limit    int
+		offset   int
+		sort_by  string
+		order_by string
 	)
 
 	limit = 100
@@ -33,11 +35,13 @@ func (h *handler) GetArticles(ctx echo.Context) (err error) {
 		offset, err = strconv.Atoi(ctx.FormValue("offset"))
 		if err != nil {
 			return helper.WriteResponse(ctx, http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_OFFSET, nil)
-
 		}
 	}
 
-	articles, err := h.usecase.GetArticles(ctx.Request().Context(), limit, offset)
+	sort_by = ctx.FormValue("sort_by")
+	order_by = ctx.FormValue("order_by")
+
+	articles, err := h.usecase.GetArticles(ctx.Request().Context(), limit, offset, sort_by, order_by)
 	if err != nil {
 		log.Println("[Delivery][GetArticles] failed to get list of articles, err: ", err)
 		return helper.WriteResponse(ctx, http.StatusInternalServerError, utils.STATUS_FAILED, err.Error(), nil)

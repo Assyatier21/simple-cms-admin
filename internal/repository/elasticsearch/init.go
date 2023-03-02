@@ -8,7 +8,7 @@ import (
 )
 
 type ElasticHandler interface {
-	GetArticles(ctx context.Context, limit int, offset int) ([]m.ResArticle, error)
+	GetArticles(ctx context.Context, limit int, offset int, sort_by string, order_by bool) ([]m.ResArticle, error)
 	GetArticleDetails(ctx context.Context, query elastic.Query) (m.ResArticle, error)
 	InsertArticle(ctx context.Context, article m.ResArticle) error
 	UpdateArticle(ctx context.Context, article m.ResArticle) error

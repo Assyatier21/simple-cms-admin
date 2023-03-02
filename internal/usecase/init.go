@@ -7,7 +7,7 @@ import (
 )
 
 type UsecaseHandler interface {
-	GetArticles(ctx context.Context, limit int, offset int) ([]interface{}, error)
+	GetArticles(ctx context.Context, limit int, offset int, sort_by string, order_by string) ([]interface{}, error)
 	GetArticleDetails(ctx context.Context, id int) ([]interface{}, error)
 	InsertArticle(ctx context.Context, title string, slug string, htmlcontent string, categoryid int, metadata string) ([]interface{}, error)
 	UpdateArticle(ctx context.Context, id int, title string, slug string, htmlcontent string, categoryid int, metadata string) ([]interface{}, error)

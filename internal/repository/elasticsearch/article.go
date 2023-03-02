@@ -11,14 +11,14 @@ import (
 	"github.com/olivere/elastic/v7"
 )
 
-func (r *elasticRepository) GetArticles(ctx context.Context, limit int, offset int) ([]m.ResArticle, error) {
+func (r *elasticRepository) GetArticles(ctx context.Context, limit int, offset int, sort_by string, order_by bool) ([]m.ResArticle, error) {
 	var (
 		articles = []m.ResArticle{}
 		res      *elastic.SearchResult
 		err      error
 	)
 
-	res, err = r.es.Search().Index(config.ES_INDEX_ARTICLE).From(offset).Size(limit).Do(ctx)
+	res, err = r.es.Search().Index(config.ES_INDEX_ARTICLE).From(offset).Size(limit).Sort(sort_by, order_by).Do(ctx)
 	if err != nil {
 		return articles, err
 	}
@@ -28,7 +28,7 @@ func (r *elasticRepository) GetArticles(ctx context.Context, limit int, offset i
 			var article m.ResArticle
 			err = json.Unmarshal(hit.Source, &article)
 			if err != nil {
-				panic(err)
+				log.Println(err)
 			}
 			articles = append(articles, article)
 		}

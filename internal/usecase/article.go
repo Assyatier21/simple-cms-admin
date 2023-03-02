@@ -13,12 +13,24 @@ import (
 	"github.com/olivere/elastic/v7"
 )
 
-func (u *usecase) GetArticles(ctx context.Context, limit int, offset int) ([]interface{}, error) {
+func (u *usecase) GetArticles(ctx context.Context, limit int, offset int, sort_by string, order_by string) ([]interface{}, error) {
 	var (
-		articles []interface{}
+		order_by_bool bool
+		articles      []interface{}
 	)
 
-	resData, err := u.es.GetArticles(ctx, limit, offset)
+	if sort_by == "" {
+		sort_by = "updated_at"
+	}
+
+	order_by_bool = false
+	if order_by == "asc" {
+		order_by_bool = true
+	} else if order_by == "desc" {
+		order_by_bool = false
+	}
+
+	resData, err := u.es.GetArticles(ctx, limit, offset, sort_by, order_by_bool)
 	if err != nil {
 		log.Println("[Usecase][GetCategoryTree] failed to get list of articles, err: ", err)
 		return articles, err

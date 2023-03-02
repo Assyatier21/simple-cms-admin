@@ -6,6 +6,7 @@ var (
 	ERROR_FORMAT_ID         = "id must be an integer"
 	ERROR_FORMAT_LIMIT      = "limit must be an integer"
 	ERROR_FORMAT_OFFSET     = "offset must be an integer"
+	ERROR_FORMAT_ORDER_BY   = "order by must be a boolean"
 	ERROR_FORMAT_SLUG       = "incorrect slug format"
 	ERROR_FORMAT_CATEGORYID = "categoryid must be an integer"
 	ERROR_FORMAT_METADATA   = "incorrect metadata format"
