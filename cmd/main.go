@@ -21,6 +21,6 @@ func main() {
 	delivery := api.NewHandler(usecase)
 
 	echo := routes.GetRoutes(delivery)
-	host := fmt.Sprintf("%s:%s", "127.0.0.1", "8800")
+	host := fmt.Sprintf("%s:%s", "127.0.0.1", "8888")
 	_ = echo.Start(host)
 }

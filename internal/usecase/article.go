@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"errors"
 	"log"
-	"strconv"
 	"sync"
 
 	"github.com/olivere/elastic/v7"
@@ -21,13 +20,7 @@ func (u *usecase) GetArticles(ctx context.Context, limit int, offset int, sort_b
 	)
 
 	sort_by = helper.ValidateSortBy(sort_by)
-
-	order_by_bool = false
-	if order_by == "asc" {
-		order_by_bool = true
-	} else if order_by == "desc" {
-		order_by_bool = false
-	}
+	order_by_bool = helper.ValidateOrderBy(order_by)
 
 	resData, err := u.es.GetArticles(ctx, limit, offset, sort_by, order_by_bool)
 	if err != nil {
@@ -43,14 +36,13 @@ func (u *usecase) GetArticles(ctx context.Context, limit int, offset int, sort_b
 
 	return articles, nil
 }
-func (u *usecase) GetArticleDetails(ctx context.Context, id int) ([]interface{}, error) {
+func (u *usecase) GetArticleDetails(ctx context.Context, id string) ([]interface{}, error) {
 	var (
 		article []interface{}
 		query   elastic.Query
 	)
 
-	strId := strconv.Itoa(id)
-	query = elastic.NewMatchQuery("id", strId)
+	query = elastic.NewMatchQuery("id", id)
 
 	resData, err := u.es.GetArticleDetails(ctx, query)
 	if err != nil {
@@ -69,6 +61,7 @@ func (u *usecase) InsertArticle(ctx context.Context, title string, slug string, 
 	)
 
 	articleData = m.Article{
+		Id:          helper.GenerateUUIDString(),
 		Title:       title,
 		Slug:        slug,
 		HtmlContent: htmlcontent,
@@ -100,7 +93,7 @@ func (u *usecase) InsertArticle(ctx context.Context, title string, slug string, 
 	article = append(article, resData)
 	return article, nil
 }
-func (u *usecase) UpdateArticle(ctx context.Context, id int, title string, slug string, htmlcontent string, categoryid int, metadata string) ([]interface{}, error) {
+func (u *usecase) UpdateArticle(ctx context.Context, id string, title string, slug string, htmlcontent string, categoryid int, metadata string) ([]interface{}, error) {
 	var (
 		article        []interface{}
 		err            error
@@ -164,7 +157,7 @@ func (u *usecase) UpdateArticle(ctx context.Context, id int, title string, slug 
 	article = append(article, resArticleData)
 	return article, nil
 }
-func (u *usecase) DeleteArticle(ctx context.Context, id int) error {
+func (u *usecase) DeleteArticle(ctx context.Context, id string) error {
 	var (
 		articleDeleted bool
 		elasticDeleted bool
@@ -186,8 +179,7 @@ func (u *usecase) DeleteArticle(ctx context.Context, id int) error {
 	}()
 
 	go func() {
-		article_id := strconv.Itoa(id)
-		err := u.es.DeleteArticle(ctx, article_id)
+		err := u.es.DeleteArticle(ctx, id)
 		if err != nil {
 			log.Println("[Usecase][DeleteArticle] failed to delete article from elastic, err: ", err)
 		} else {

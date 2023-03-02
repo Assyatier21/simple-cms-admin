@@ -6,7 +6,6 @@ import (
 	"context"
 	"encoding/json"
 	"log"
-	"strconv"
 
 	"github.com/olivere/elastic/v7"
 )
@@ -51,7 +50,7 @@ func (r *elasticRepository) GetArticleDetails(ctx context.Context, query elastic
 	if res.Hits.TotalHits.Value > 0 {
 		err = json.Unmarshal(res.Hits.Hits[0].Source, &article)
 		if err != nil {
-			panic(err)
+			log.Println("Error failed to unmarshal json, err: ", err)
 		}
 	}
 
@@ -60,12 +59,10 @@ func (r *elasticRepository) GetArticleDetails(ctx context.Context, query elastic
 func (r *elasticRepository) InsertArticle(ctx context.Context, article m.ResArticle) error {
 	var (
 		articleJSON []byte
-		article_id  string
 		body        string
 		err         error
 	)
 
-	article_id = strconv.Itoa(article.Id)
 	articleJSON, err = json.Marshal(article)
 	if err != nil {
 		log.Println("[Elastic][InsertArticle] failed to marshal article, err: ", err)
@@ -75,7 +72,7 @@ func (r *elasticRepository) InsertArticle(ctx context.Context, article m.ResArti
 	body = string(articleJSON)
 	_, err = r.es.Index().
 		Index(config.ES_INDEX_ARTICLE).
-		Id(article_id).
+		Id(article.Id).
 		BodyJson(body).
 		Do(ctx)
 
@@ -88,14 +85,12 @@ func (r *elasticRepository) InsertArticle(ctx context.Context, article m.ResArti
 }
 func (r *elasticRepository) UpdateArticle(ctx context.Context, article m.ResArticle) error {
 	var (
-		article_id string
-		err        error
+		err error
 	)
 
-	article_id = strconv.Itoa(article.Id)
 	_, err = r.es.Update().
 		Index(config.ES_INDEX_ARTICLE).
-		Id(article_id).
+		Id(article.Id).
 		Doc(article).
 		Do(ctx)
 

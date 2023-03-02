@@ -8,10 +8,10 @@ import (
 
 type RepositoryHandler interface {
 	GetArticles(ctx context.Context, limit int, offset int) ([]m.ResArticle, error)
-	GetArticleDetails(ctx context.Context, id int) (m.ResArticle, error)
+	GetArticleDetails(ctx context.Context, id string) (m.ResArticle, error)
 	InsertArticle(ctx context.Context, article m.Article) (m.ResArticle, error)
 	UpdateArticle(ctx context.Context, article m.Article) (m.ResArticle, error)
-	DeleteArticle(ctx context.Context, id int) error
+	DeleteArticle(ctx context.Context, id string) error
 
 	GetCategoryTree(ctx context.Context) ([]m.Category, error)
 	GetCategoryDetails(ctx context.Context, id int) (m.Category, error)

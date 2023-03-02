@@ -107,13 +107,16 @@ func (r *elasticRepository) UpdateCategory(ctx context.Context, category m.Categ
 
 	return nil
 }
-func (r *elasticRepository) DeleteCategory(ctx context.Context, id string) error {
+func (r *elasticRepository) DeleteCategory(ctx context.Context, id int) error {
 	var (
-		err error
+		category_id string
+		err         error
 	)
+
+	category_id = strconv.Itoa(id)
 	_, err = r.es.Delete().
 		Index(config.ES_INDEX_CATEGORY).
-		Id(id).
+		Id(category_id).
 		Do(ctx)
 	if err != nil {
 		log.Println("[Elastic][DeleteCategory] failed to delete category, err: ", err)

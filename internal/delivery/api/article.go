@@ -51,15 +51,12 @@ func (h *handler) GetArticles(ctx echo.Context) (err error) {
 }
 func (h *handler) GetArticleDetails(ctx echo.Context) (err error) {
 	var (
-		id int
+		article []interface{}
+		id      string
 	)
 
-	id, err = strconv.Atoi(ctx.FormValue("id"))
-	if err != nil {
-		return helper.WriteResponse(ctx, http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_EMPTY_ID, nil)
-	}
-
-	article, err := h.usecase.GetArticleDetails(ctx.Request().Context(), id)
+	id = ctx.FormValue("id")
+	article, err = h.usecase.GetArticleDetails(ctx.Request().Context(), id)
 	if err != nil {
 		if err == sql.ErrNoRows {
 			return helper.WriteResponse(ctx, http.StatusOK, utils.STATUS_SUCCESS, "no article found", nil)
@@ -118,7 +115,7 @@ func (h *handler) InsertArticle(ctx echo.Context) (err error) {
 }
 func (h *handler) UpdateArticle(ctx echo.Context) (err error) {
 	var (
-		id          int
+		id          string
 		title       string
 		slug        string
 		htmlcontent string
@@ -126,11 +123,7 @@ func (h *handler) UpdateArticle(ctx echo.Context) (err error) {
 		metadata    string
 	)
 
-	id, err = strconv.Atoi(ctx.FormValue("id"))
-	if err != nil {
-		return helper.WriteResponse(ctx, http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_EMPTY_ID, nil)
-	}
-
+	id = ctx.FormValue("id")
 	title = ctx.FormValue("title")
 
 	slug = ctx.FormValue("slug")
@@ -166,14 +159,7 @@ func (h *handler) UpdateArticle(ctx echo.Context) (err error) {
 	return helper.WriteResponse(ctx, http.StatusOK, utils.STATUS_SUCCESS, "article updated successfully", article)
 }
 func (h *handler) DeleteArticle(ctx echo.Context) (err error) {
-	var (
-		id int
-	)
-
-	id, err = strconv.Atoi(ctx.FormValue("id"))
-	if err != nil {
-		return helper.WriteResponse(ctx, http.StatusBadRequest, utils.STATUS_FAILED, msg.ERROR_FORMAT_EMPTY_ID, nil)
-	}
+	id := ctx.FormValue("id")
 
 	err = h.usecase.DeleteArticle(ctx.Request().Context(), id)
 	if err != nil {

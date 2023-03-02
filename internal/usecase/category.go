@@ -149,8 +149,7 @@ func (u *usecase) DeleteCategory(ctx context.Context, id int) error {
 	}()
 
 	go func() {
-		category_id := strconv.Itoa(id)
-		err = u.es.DeleteCategory(ctx, category_id)
+		err = u.es.DeleteCategory(ctx, id)
 		if err != nil {
 			log.Println("[Usecase][DeleteCategory] failed to delete category from elastic, err: ", err)
 		} else {

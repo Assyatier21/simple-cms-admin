@@ -44,7 +44,7 @@ func InitElasticClient() *elastic.Client {
 
 	info, _, err := client.Ping(config.ESADDRESS).Do(ctx)
 	if err != nil {
-		panic(err)
+		log.Println("Error ping, err: ", err)
 	}
 	log.Printf("[Elasticsearch] successfully connected. running version %s\n", info.Version.Number)
 	return client

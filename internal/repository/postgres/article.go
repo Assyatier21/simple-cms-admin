@@ -49,7 +49,7 @@ func (r *repository) GetArticles(ctx context.Context, limit int, offset int) ([]
 
 	return articles, nil
 }
-func (r *repository) GetArticleDetails(ctx context.Context, id int) (m.ResArticle, error) {
+func (r *repository) GetArticleDetails(ctx context.Context, id string) (m.ResArticle, error) {
 	var (
 		article      m.ResArticle
 		err          error
@@ -73,7 +73,6 @@ func (r *repository) GetArticleDetails(ctx context.Context, id int) (m.ResArticl
 }
 func (r *repository) InsertArticle(ctx context.Context, article m.Article) (m.ResArticle, error) {
 	var (
-		lastId     int
 		resArticle m.ResArticle
 		err        error
 	)
@@ -84,13 +83,13 @@ func (r *repository) InsertArticle(ctx context.Context, article m.Article) (m.Re
 		return m.ResArticle{}, err
 	}
 
-	err = r.db.QueryRow(database.InsertArticle, article.Title, article.Slug, article.HtmlContent, article.CategoryID, marshaled_metadata, article.CreatedAt, article.UpdatedAt).Scan(&lastId)
+	_, err = r.db.Exec(database.InsertArticle, article.Id, article.Title, article.Slug, article.HtmlContent, article.CategoryID, marshaled_metadata, article.CreatedAt, article.UpdatedAt)
 	if err != nil {
 		log.Println("[Repository][InsertArticle] failed to insert article, err: ", err)
 		return m.ResArticle{}, err
 	}
 
-	resArticle, err = r.GetArticleDetails(context.Background(), lastId)
+	resArticle, err = r.GetArticleDetails(context.Background(), article.Id)
 	if err != nil {
 		log.Println("[Repository][InsertArticle] failed to get article details response, err: ", err)
 		return m.ResArticle{}, err
@@ -130,7 +129,7 @@ func (r *repository) UpdateArticle(ctx context.Context, article m.Article) (m.Re
 
 	return resArticle, nil
 }
-func (r *repository) DeleteArticle(ctx context.Context, id int) error {
+func (r *repository) DeleteArticle(ctx context.Context, id string) error {
 	rows, err := r.db.Exec(database.DeleteArticle, id)
 	if err != nil {
 		log.Println("[Repository][DeleteArticle] failed to delete article, err: ", err)

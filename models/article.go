@@ -1,7 +1,7 @@
 package models
 
 type Article struct {
-	Id          int      `json:"id" form:"id"`
+	Id          string   `json:"id" form:"id"`
 	Title       string   `json:"title" form:"title"`
 	Slug        string   `json:"slug" form:"slug"`
 	HtmlContent string   `json:"html_content" form:"html_content"`
@@ -12,7 +12,7 @@ type Article struct {
 }
 
 type ResArticle struct {
-	Id          int         `json:"id"`
+	Id          string      `json:"id"`
 	Title       string      `json:"title"`
 	Slug        string      `json:"slug"`
 	HtmlContent string      `json:"html_content"`

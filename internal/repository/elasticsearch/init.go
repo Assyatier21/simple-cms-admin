@@ -18,7 +18,7 @@ type ElasticHandler interface {
 	GetCategoryDetails(ctx context.Context, query elastic.Query) (m.Category, error)
 	InsertCategory(ctx context.Context, category m.Category) error
 	UpdateCategory(ctx context.Context, category m.Category) error
-	DeleteCategory(ctx context.Context, id string) error
+	DeleteCategory(ctx context.Context, id int) error
 }
 
 type elasticRepository struct {
