@@ -1,7 +1,8 @@
 package postgres
 
 import (
-	database "cms-admin/database/queries"
+	DB_QUERY "cms-admin/database/queries"
+
 	m "cms-admin/models"
 	"context"
 	"database/sql"
@@ -15,7 +16,7 @@ func (r *repository) GetUserRegistry(ctx context.Context, phone string, password
 		err  error
 	)
 
-	rows, err = r.db.Query(database.GetUser, phone, password)
+	rows, err = r.db.Query(DB_QUERY.GET_USER, phone)
 	if err != nil {
 		log.Printf("[Repository][MySQL][GetUserRegistry] failed to get user registry, err: %v\n", err)
 		return user, err

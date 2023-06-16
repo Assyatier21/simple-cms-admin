@@ -6,7 +6,6 @@ import (
 	"cms-admin/internal/repository/postgres"
 	"cms-admin/internal/usecase"
 	"cms-admin/routes"
-	"fmt"
 )
 
 func main() {
@@ -17,6 +16,5 @@ func main() {
 	delivery := api.NewHandler(usecase)
 	echo := routes.GetRoutes(delivery)
 
-	host := fmt.Sprintf("%s:%s", "127.0.0.1", "8800")
-	_ = echo.Start(host)
+	echo.Start(":8800")
 }

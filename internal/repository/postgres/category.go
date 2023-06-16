@@ -1,7 +1,7 @@
 package postgres
 
 import (
-	database "cms-admin/database/queries"
+	DB_QUERY "cms-admin/database/queries"
 	m "cms-admin/models"
 	msg "cms-admin/models/lib"
 
@@ -17,7 +17,7 @@ func (r *repository) GetCategoryTree(ctx context.Context) ([]m.Category, error) 
 		err        error
 	)
 
-	rows, err = r.db.Query(database.GetCategoryTree)
+	rows, err = r.db.Query(DB_QUERY.GET_CATEGORY_TREE)
 	if err != nil {
 		log.Println("[Repository][GetCategoryTree] can't get list of categories, err:", err.Error())
 		return nil, err
@@ -44,7 +44,7 @@ func (r *repository) GetCategoryDetails(ctx context.Context, id int) (m.Category
 		err      error
 	)
 
-	err = r.db.QueryRow(database.GetCategoryDetails, id).Scan(&category.Id, &category.Title, &category.Slug, &category.CreatedAt, &category.UpdatedAt)
+	err = r.db.QueryRow(DB_QUERY.GET_CATEGORY_DETAILS, id).Scan(&category.Id, &category.Title, &category.Slug, &category.CreatedAt, &category.UpdatedAt)
 	if err != nil {
 		log.Println("[Repository][GetCategoryDetails] failed to scan category, err:", err.Error())
 		return m.Category{}, err
@@ -53,7 +53,7 @@ func (r *repository) GetCategoryDetails(ctx context.Context, id int) (m.Category
 	return category, nil
 }
 func (r *repository) InsertCategory(ctx context.Context, category m.Category) (m.Category, error) {
-	err := r.db.QueryRow(database.InsertCategory, category.Title, category.Slug, category.CreatedAt, category.UpdatedAt).Scan(&category.Id)
+	err := r.db.QueryRow(DB_QUERY.INSERT_CATEGORY, category.Title, category.Slug, category.CreatedAt, category.UpdatedAt).Scan(&category.Id)
 	if err != nil {
 		log.Println("[Repository][InsertCategory] can't insert category, err:", err.Error())
 		return m.Category{}, err
@@ -62,7 +62,7 @@ func (r *repository) InsertCategory(ctx context.Context, category m.Category) (m
 	return category, nil
 }
 func (r *repository) UpdateCategory(ctx context.Context, category m.Category) (m.Category, error) {
-	rows, err := r.db.Exec(database.UpdateCategory, &category.Title, &category.Slug, &category.UpdatedAt, &category.Id)
+	rows, err := r.db.Exec(DB_QUERY.UPDATE_CATEGORY, &category.Title, &category.Slug, &category.UpdatedAt, &category.Id)
 	if err != nil {
 		log.Println("[Repository][UpdateCategory] can't update category, err:", err.Error())
 		return m.Category{}, err
@@ -76,7 +76,7 @@ func (r *repository) UpdateCategory(ctx context.Context, category m.Category) (m
 	return category, nil
 }
 func (r *repository) DeleteCategory(ctx context.Context, id int) error {
-	rows, err := r.db.Exec(database.DeleteCategory, id)
+	rows, err := r.db.Exec(DB_QUERY.DELETE_CATEGORY, id)
 	if err != nil {
 		log.Println("[Repository][DeleteCategory] can't delete category, err:", err.Error())
 		return err

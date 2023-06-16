@@ -10,7 +10,7 @@ import (
 )
 
 func Init() *sql.DB {
-	psqlInfo := fmt.Sprintf("postgres://%s:%s@%s/%s?sslmode=disable&search_path=%s", config.User, config.Password, config.Host, config.Database, config.Schema)
+	psqlInfo := fmt.Sprintf("postgres://%s:%s@%s:%s/%s?sslmode=%s&search_path=%s", config.POSTGRE_USER, config.POSTGRE_PASSWORD, config.POSTGRE_HOST, config.POSTGRE_PORT, config.POSTGRE_DATABASE, config.POSTGRE_SSLMODE, config.POSTGRE_SCHEMA)
 	db, err := sql.Open("postgres", psqlInfo)
 	if err != nil {
 		log.Println(err)

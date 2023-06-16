@@ -1,7 +1,7 @@
 package postgres
 
 import (
-	database "cms-admin/database/queries"
+	DB_QUERY "cms-admin/database/queries"
 	m "cms-admin/models"
 	msg "cms-admin/models/lib"
 	"context"
@@ -16,7 +16,7 @@ func (r *repository) GetArticles(ctx context.Context, limit int, offset int) ([]
 		rows     *sql.Rows
 		err      error
 	)
-	rows, err = r.db.Query(database.GetArticles, limit, offset)
+	rows, err = r.db.Query(DB_QUERY.GET_ARTICLES, limit, offset)
 	if err != nil {
 		log.Println("[Repository][GetArticles] can't get list of articles, err:", err.Error())
 		return nil, err
@@ -33,7 +33,7 @@ func (r *repository) GetArticles(ctx context.Context, limit int, offset int) ([]
 			return nil, err
 		}
 
-		err = r.db.QueryRow(database.GetMetaData, temp.Id).Scan(&byteMetadata)
+		err = r.db.QueryRow(DB_QUERY.GET_METADATA, temp.Id).Scan(&byteMetadata)
 		if err != nil {
 			log.Println("[Repository][GetArticles] failed to scan metadata, err :", err.Error())
 			return nil, err
@@ -56,13 +56,13 @@ func (r *repository) GetArticleDetails(ctx context.Context, id int) (m.ResArticl
 		byteMetadata []byte
 	)
 
-	err = r.db.QueryRow(database.GetArticleDetails, id).Scan(&article.Id, &article.Title, &article.Slug, &article.HtmlContent, &article.ResCategory.Id, &article.ResCategory.Title, &article.ResCategory.Slug, &article.CreatedAt, &article.UpdatedAt)
+	err = r.db.QueryRow(DB_QUERY.GET_ARTICLE_DETAILS, id).Scan(&article.Id, &article.Title, &article.Slug, &article.HtmlContent, &article.ResCategory.Id, &article.ResCategory.Title, &article.ResCategory.Slug, &article.CreatedAt, &article.UpdatedAt)
 	if err != nil {
 		log.Println("[Repository][GetArticleDetails] failed to scan article, err:", err.Error())
 		return m.ResArticle{}, err
 	}
 
-	err = r.db.QueryRow(database.GetMetaData, article.Id).Scan(&byteMetadata)
+	err = r.db.QueryRow(DB_QUERY.GET_METADATA, article.Id).Scan(&byteMetadata)
 	if err != nil {
 		log.Println("[Repository][GetArticleDetails] failed to scan metadata, err :", err.Error())
 		return m.ResArticle{}, err
@@ -84,7 +84,7 @@ func (r *repository) InsertArticle(ctx context.Context, article m.Article) (m.Re
 		return m.ResArticle{}, err
 	}
 
-	err = r.db.QueryRow(database.InsertArticle, article.Title, article.Slug, article.HtmlContent, article.CategoryID, marshalled_metadata, article.CreatedAt, article.UpdatedAt).Scan(&lastId)
+	err = r.db.QueryRow(DB_QUERY.INSERT_ARTICLE, article.Title, article.Slug, article.HtmlContent, article.CategoryID, marshalled_metadata, article.CreatedAt, article.UpdatedAt).Scan(&lastId)
 	if err != nil {
 		log.Println("[Repository][InsertArticle] can't insert article, err:", err.Error())
 		return m.ResArticle{}, err
@@ -111,7 +111,7 @@ func (r *repository) UpdateArticle(ctx context.Context, article m.Article) (m.Re
 		return m.ResArticle{}, err
 	}
 
-	rows, err = r.db.Exec(database.UpdateArticle, &article.Title, &article.Slug, &article.HtmlContent, &article.CategoryID, marshalled_metadata, &article.UpdatedAt, &article.Id)
+	rows, err = r.db.Exec(DB_QUERY.UPDATE_ARTICLE, &article.Title, &article.Slug, &article.HtmlContent, &article.CategoryID, marshalled_metadata, &article.UpdatedAt, &article.Id)
 	if err != nil {
 		log.Println("[Repository][UpdateArticle] can't update article, err:", err.Error())
 		return m.ResArticle{}, err
@@ -131,7 +131,7 @@ func (r *repository) UpdateArticle(ctx context.Context, article m.Article) (m.Re
 	return resArticle, nil
 }
 func (r *repository) DeleteArticle(ctx context.Context, id int) error {
-	rows, err := r.db.Exec(database.DeleteArticle, id)
+	rows, err := r.db.Exec(DB_QUERY.DELETE_ARTICLE, id)
 	if err != nil {
 		log.Println("[Repository][DeleteArticle] can't delete article, err:", err.Error())
 		return err
