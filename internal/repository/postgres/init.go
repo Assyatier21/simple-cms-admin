@@ -18,6 +18,8 @@ type RepositoryHandler interface {
 	InsertCategory(ctx context.Context, category m.Category) (m.Category, error)
 	UpdateCategory(ctx context.Context, category m.Category) (m.Category, error)
 	DeleteCategory(ctx context.Context, id int) error
+
+	GetUserRegistry(ctx context.Context, phone string, password string) (m.User, error)
 }
 
 type repository struct {

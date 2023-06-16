@@ -146,6 +146,20 @@ func (mr *MockDeliveryHandlerMockRecorder) InsertCategory(ctx interface{}) *gomo
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertCategory", reflect.TypeOf((*MockDeliveryHandler)(nil).InsertCategory), ctx)
 }
 
+// LoginUser mocks base method.
+func (m *MockDeliveryHandler) LoginUser(ctx echo.Context) error {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "LoginUser", ctx)
+	ret0, _ := ret[0].(error)
+	return ret0
+}
+
+// LoginUser indicates an expected call of LoginUser.
+func (mr *MockDeliveryHandlerMockRecorder) LoginUser(ctx interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "LoginUser", reflect.TypeOf((*MockDeliveryHandler)(nil).LoginUser), ctx)
+}
+
 // UpdateArticle mocks base method.
 func (m *MockDeliveryHandler) UpdateArticle(ctx echo.Context) error {
 	m.ctrl.T.Helper()

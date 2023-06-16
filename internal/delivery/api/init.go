@@ -18,6 +18,8 @@ type DeliveryHandler interface {
 	InsertCategory(ctx echo.Context) (err error)
 	UpdateCategory(ctx echo.Context) (err error)
 	DeleteCategory(ctx echo.Context) (err error)
+
+	LoginUser(ctx echo.Context) (err error)
 }
 
 type handler struct {

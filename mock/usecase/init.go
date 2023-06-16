@@ -152,6 +152,21 @@ func (mr *MockUsecaseHandlerMockRecorder) InsertCategory(ctx, title, slug interf
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "InsertCategory", reflect.TypeOf((*MockUsecaseHandler)(nil).InsertCategory), ctx, title, slug)
 }
 
+// Login mocks base method.
+func (m *MockUsecaseHandler) Login(ctx context.Context, phone, password string) (interface{}, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "Login", ctx, phone, password)
+	ret0, _ := ret[0].(interface{})
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// Login indicates an expected call of Login.
+func (mr *MockUsecaseHandlerMockRecorder) Login(ctx, phone, password interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "Login", reflect.TypeOf((*MockUsecaseHandler)(nil).Login), ctx, phone, password)
+}
+
 // UpdateArticle mocks base method.
 func (m *MockUsecaseHandler) UpdateArticle(ctx context.Context, id int, title, slug, htmlcontent string, categoryid int, metadata string) ([]interface{}, error) {
 	m.ctrl.T.Helper()

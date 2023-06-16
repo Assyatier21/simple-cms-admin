@@ -49,8 +49,8 @@ func (u *usecase) InsertArticle(ctx context.Context, title string, slug string, 
 	)
 
 	articleData = m.Article{
-		Title:       title,
-		Slug:        slug,
+		Title: title,
+		Slug: slug,
 		HtmlContent: htmlcontent,
 		CategoryID:  categoryid,
 		CreatedAt:   utils.TimeNow,

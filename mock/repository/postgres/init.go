@@ -123,6 +123,21 @@ func (mr *MockRepositoryHandlerMockRecorder) GetCategoryTree(ctx interface{}) *g
 	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetCategoryTree", reflect.TypeOf((*MockRepositoryHandler)(nil).GetCategoryTree), ctx)
 }
 
+// GetUserRegistry mocks base method.
+func (m *MockRepositoryHandler) GetUserRegistry(ctx context.Context, phone, password string) (models.User, error) {
+	m.ctrl.T.Helper()
+	ret := m.ctrl.Call(m, "GetUserRegistry", ctx, phone, password)
+	ret0, _ := ret[0].(models.User)
+	ret1, _ := ret[1].(error)
+	return ret0, ret1
+}
+
+// GetUserRegistry indicates an expected call of GetUserRegistry.
+func (mr *MockRepositoryHandlerMockRecorder) GetUserRegistry(ctx, phone, password interface{}) *gomock.Call {
+	mr.mock.ctrl.T.Helper()
+	return mr.mock.ctrl.RecordCallWithMethodType(mr.mock, "GetUserRegistry", reflect.TypeOf((*MockRepositoryHandler)(nil).GetUserRegistry), ctx, phone, password)
+}
+
 // InsertArticle mocks base method.
 func (m *MockRepositoryHandler) InsertArticle(ctx context.Context, article models.Article) (models.ResArticle, error) {
 	m.ctrl.T.Helper()

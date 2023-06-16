@@ -17,6 +17,8 @@ type UsecaseHandler interface {
 	InsertCategory(ctx context.Context, title string, slug string) ([]interface{}, error)
 	UpdateCategory(ctx context.Context, id int, title string, slug string) ([]interface{}, error)
 	DeleteCategory(ctx context.Context, id int) error
+
+	Login(ctx context.Context, phone string, password string) (interface{}, error)
 }
 
 type usecase struct {
